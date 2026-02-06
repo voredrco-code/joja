@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <h1 class="brand-font" style="text-align: center; margin-bottom: 40px;">Admin Dashboard</h1>
+    
+    <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <!-- Sales Card -->
+        <div class="card" style="border: 1px solid #eee; padding: 30px; text-align: center; background: var(--joja-white); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h3 style="color: #666; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Total Sales</h3>
+            <p style="font-size: 3rem; font-weight: bold; color: var(--joja-black); margin: 20px 0;">@(((decimal)ViewBag.TotalSales).ToString("C"))</p>
+        </div>
+
+        <!-- Orders Card -->
+        <div class="card" style="border: 1px solid #eee; padding: 30px; text-align: center; background: var(--joja-white); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h3 style="color: #666; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Pending Orders</h3>
+            <p style="font-size: 3rem; font-weight: bold; color: #d9534f; margin: 20px 0;">@ViewBag.PendingOrders</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 50px; text-align: center;">
+        <a asp-action="AdminSubscribers" class="btn-joja-dark">View Newsletter Subscribers</a>
+    </div>
+</div>

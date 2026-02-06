@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - JOJA</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="~/images/favicon.png" />
+    <!-- Add FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container nav-container">
+                <!-- Logo Left -->
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.webp" alt="JOJA" class="logo-img" />
+                </a>
+
+                <!-- Nav Center -->
+                <ul class="nav-links">
+                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a href="#">Shop</a></li>
+                    <li><a href="#">Hair Care</a></li>
+                    <li><a href="#">Skin Care</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+
+                <!-- Icons Right -->
+                <div class="nav-icons">
+                    <a href="#"><i class="fas fa-search"></i></a>
+                    <a href="#"><i class="fas fa-user"></i></a>
+                    <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-cart"></i></a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>About JOJA</h3>
+                    <p>Natural skincare products made with love and organic ingredients.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Shop All</a></li>
+                        <li><a href="#">Best Sellers</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 JOJA Skincare. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Newsletter Modal -->
+    <div id="newsletterModal" class="joja-modal">
+        <div class="modal-content">
+            <span class="close-modal" style="position:absolute; right:20px; top:10px; cursor:pointer; font-size:24px;">&times;</span>
+            <h2 class="brand-font">Join the Club</h2>
+            <p>Subscribe to get exclusive skincare tips and offers.</p>
+            <input type="email" id="subscriberEmail" placeholder="Enter your email" />
+            <button onclick="submitSubscription()" class="btn-joja-dark">Subscribe</button>
+        </div>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Modal Logic
+        document.addEventListener("DOMContentLoaded", function() {
+            // Show modal after 3 seconds if not subscribed
+            if (!localStorage.getItem('joja_subscribed')) {
+                setTimeout(function() {
+                    document.getElementById('newsletterModal').style.display = 'flex';
+                }, 3000);
+            }
+
+            document.querySelector('.close-modal').onclick = function() {
+                document.getElementById('newsletterModal').style.display = 'none';
+            }
+        });
+
+        function submitSubscription() {
+            var email = document.getElementById('subscriberEmail').value;
+            if(email) {
+                fetch('/Home/SubscribeNewsletter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'email=' + encodeURIComponent(email)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        alert(data.message);
+                        document.getElementById('newsletterModal').style.display = 'none';
+                        localStorage.setItem('joja_subscribed', 'true');
+                    }
+                });
+            }
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

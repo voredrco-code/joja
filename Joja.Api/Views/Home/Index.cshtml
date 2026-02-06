@@ -1,0 +1,98 @@
+@model Joja.Api.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/logo.webp');">
+    <div class="container hero-content">
+        <h1>Natural Beauty for You</h1>
+        <p>Discover our organic collection</p>
+        <a href="#" class="btn-primary">Shop Now</a>
+    </div>
+</section>
+
+<!-- Joja Moments (Video Stories) -->
+<section class="video-stories-section py-5" style="padding: 50px 0;">
+    <div class="container text-center">
+        <h2 class="brand-font mb-4" style="text-align:center; margin-bottom:30px;">Joja Moments</h2>
+        <div class="d-flex justify-content-center flex-wrap gap-4" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+            @foreach (var product in Model.Products.Where(p => !string.IsNullOrEmpty(p.VideoUrl)))
+            {
+                <div class="video-card" style="text-align:center;">
+                    <video muted loop playsinline class="joja-video-thumb" onmouseover="this.play()" onmouseout="this.pause()" onclick="openVideo('@product.VideoUrl', '@product.Name')">
+                        <source src="@product.VideoUrl" type="video/mp4">
+                    </video>
+                    <p class="mt-2">@product.Name</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Filter Buttons -->
+<div class="container">
+    <h2 class="section-title">Best Sellers</h2>
+    <div class="filter-buttons text-center my-4" style="text-align: center; margin-bottom: 30px;">
+        <button class="btn-filter active" onclick="filter(null)">All</button>
+        @foreach(var cat in Model.Categories) {
+            <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>
+        }
+    </div>
+
+    <!-- Product Grid Container -->
+    <div id="product-container" class="product-grid">
+        @await Html.PartialAsync("_ProductGrid", Model.Products)
+    </div>
+</div>
+
+<!-- Video Modal -->
+<div id="videoModal" class="joja-video-modal" style="display:none;">
+    <div class="modal-content-video">
+        <span class="close-video" onclick="closeVideo()">&times;</span>
+        <video id="modalVideo" controls autoplay muted loop>
+            <source src="" type="video/mp4">
+        </video>
+        <div class="video-info text-center mt-3" style="text-align:center; margin-top:15px;">
+            <h3 id="videoProductName" class="brand-font" style="margin-bottom:10px;"></h3>
+            <button class="btn-joja-dark px-4 py-2">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function openVideo(videoUrl, productName) {
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('modalVideo');
+        const name = document.getElementById('videoProductName');
+
+        video.src = videoUrl;
+        name.innerText = productName;
+        
+        $(modal).fadeIn(300);
+        video.play();
+    }
+
+    function closeVideo() {
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('modalVideo');
+        
+        $(modal).fadeOut(300, function() {
+            video.pause();
+            video.src = "";
+        });
+    }
+
+    function filter(catId) {
+        $.get("/Home/FilterProducts", { categoryId: catId }, function(data) {
+            $("#product-container").html(data);
+        });
+        
+        // Toggle active class
+        $(".btn-filter").removeClass("active");
+        event.target.classList.add("active");
+    }
+</script>
+}

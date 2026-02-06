@@ -1,0 +1,15 @@
+@model IEnumerable<Joja.Api.Models.Product>
+
+@foreach (var product in Model)
+{
+    <div class="product-card">
+        <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id">
+            <img src="@product.MainImageUrl" alt="@product.Name" class="product-image" />
+        </a>
+        <div class="product-info">
+            <h3 class="product-name">@product.Name</h3>
+            <p class="product-price">@product.Price.ToString("C")</p>
+            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">View Details</a>
+        </div>
+    </div>
+}

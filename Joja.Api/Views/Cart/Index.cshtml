@@ -1,0 +1,52 @@
+@model Joja.Api.Services.CartService
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <h1 class="section-title">Your Shopping Cart</h1>
+
+    @if (Joja.Api.Services.CartService.Items.Count == 0)
+    {
+        <div style="text-align: center; margin: 50px 0;">
+            <p>Your cart is empty.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn-primary">Continue Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-table" style="width: 100%; border-collapse: collapse; display: table;">
+            <div style="display: table-header-group; font-weight: bold; border-bottom: 2px solid #ddd;">
+                <div style="display: table-row;">
+                    <div style="display: table-cell; padding: 15px;">Product</div>
+                    <div style="display: table-cell; padding: 15px;">Price</div>
+                    <div style="display: table-cell; padding: 15px;">Quantity</div>
+                    <div style="display: table-cell; padding: 15px;">Total</div>
+                    <div style="display: table-cell; padding: 15px;"></div>
+                </div>
+            </div>
+            <div style="display: table-row-group;">
+                @foreach (var item in Joja.Api.Services.CartService.Items)
+                {
+                    <div style="display: table-row; border-bottom: 1px solid #eee;">
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">
+                            <img src="@item.Product.MainImageUrl" style="width: 50px; vertical-align: middle; margin-right: 10px;" />
+                            @item.Product.Name
+                        </div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.PriceAtPurchase.ToString("C")</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.Quantity</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@((item.PriceAtPurchase * item.Quantity).ToString("C"))</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">
+                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: red; text-decoration: none;">&times; Remove</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="cart-summary" style="margin-top: 30px; text-align: right;">
+            <h3>Total: @Model.Total.ToString("C")</h3>
+            <a href="#" class="btn-primary" style="margin-top: 20px; display: inline-block;">Proceed to Checkout</a>
+        </div>
+    }
+</div>

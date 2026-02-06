@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+
+:root {
+    /* "Minimalist Luxury" Palette */
+    --joja-black: #000000;
+    --joja-white: #ffffff;
+    --joja-nude: #F3E9E2;
+    --joja-hover: #E5D1C5;
+    --joja-text: #333333;
+
+    /* Mappings */
+    --primary-color: var(--joja-black);
+    --secondary-color: var(--joja-text);
+    --accent-color: var(--joja-nude);
+    --text-color: var(--joja-text);
+
+    --header-height: 80px;
+    --container-width: 1200px;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--joja-text);
+    margin: 0;
+    padding: 0;
+    background-color: var(--joja-white);
+}
+
+h1,
+h2,
+h3,
+.brand-font,
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--joja-black);
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--joja-white);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.5rem 0;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+}
+
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 15px;
+    width: 100%;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--joja-text);
+    transition: color 0.3s;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.nav-links a:hover {
+    color: #999;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-joja-dark {
+    background-color: var(--joja-black);
+    color: var(--joja-white);
+    padding: 12px 30px;
+    border: none;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-family: 'Montserrat', sans-serif;
+    display: inline-block;
+}
+
+.btn-primary:hover,
+.btn-joja-dark:hover {
+    background-color: #333;
+}
+
+/* Product Cards */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.product-card {
+    border: 1px solid #eee;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.product-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    color: #666;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* Video Stories */
+.joja-video-thumb {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--joja-nude);
+    transition: transform 0.3s ease, border-color 0.3s;
+    cursor: pointer;
+}
+
+.joja-video-thumb:hover {
+    transform: scale(1.05);
+    border-color: var(--joja-black);
+}
+
+.video-card p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Video Modal */
+.joja-video-modal {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content-video {
+    position: relative;
+    background: var(--joja-white);
+    padding: 0;
+    /* Removing padding for immersive feel or keep small padding */
+    border-radius: 10px;
+    max-width: 400px;
+    /* Mobile style vertical */
+    width: 90%;
+    overflow: hidden;
+}
+
+#modalVideo {
+    width: 100%;
+    display: block;
+    max-height: 80vh;
+}
+
+.video-info {
+    padding: 20px;
+    background: white;
+}
+
+.close-video {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: white;
+    /* Depends on video background, maybe mix-blend-mode or fixed */
+    font-size: 35px;
+    cursor: pointer;
+    z-index: 1001;
+    text-shadow: 0 0 5px black;
+}
+
+/* Filter Buttons */
+.btn-filter {
+    background: transparent;
+    border: 1px solid var(--joja-black);
+    padding: 8px 25px;
+    margin: 5px;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: 0.3s;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.btn-filter.active,
+.btn-filter:hover {
+    background-color: var(--joja-nude);
+    color: var(--joja-black);
+    border-color: var(--joja-nude);
+}
+
+/* Footer (Basic) */
+footer {
+    background-color: var(--joja-nude);
+    padding: 40px 0;
+    margin-top: 80px;
+    text-align: center;
+}
