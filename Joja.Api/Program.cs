@@ -8,6 +8,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 
+// Add Response Compression for faster loading
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
+
 // Register CartService as Singleton for session-like behavior
 builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 
@@ -32,8 +38,18 @@ using (var scope = app.Services.CreateScope())
 //    app.UseSwaggerUI();
 // }
 
+// Enable Response Compression
+app.UseResponseCompression();
+
 // app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static files for 30 days
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=2592000");
+    }
+});
 
 app.UseAuthorization();
 

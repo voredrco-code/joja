@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - JOJA</title>
+    
+    <!-- Performance & SEO -->
+    <meta name="description" content="JOJA Organic - Natural skincare products for your beauty" />
+    <meta name="theme-color" content="#F3E9E2" />
+    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="icon" type="image/png" href="~/images/favicon.png" />
     <!-- Add FontAwesome for icons -->
@@ -18,8 +23,13 @@
                     <img src="~/images/logo.webp" alt="JOJA" class="logo-img" />
                 </a>
 
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+
                 <!-- Nav Center -->
-                <ul class="nav-links">
+                <ul class="nav-links" id="navLinks">
                     <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a href="#">Shop</a></li>
                     <li><a href="#">Hair Care</a></li>
@@ -36,6 +46,21 @@
             </div>
         </nav>
     </header>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navLinks');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+                nav.classList.remove('active');
+            }
+        });
+    </script>
 
     <main role="main">
         @RenderBody()
