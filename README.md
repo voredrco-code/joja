@@ -1,34 +1,27 @@
-# Joja E-commerce Application
+# Joja E-commerce
 
-تطبيق تجارة إلكترونية للمنتجات العضوية الطبيعية من Joja Organic.
+Production-ready e-commerce platform for Joja Organic.
 
-## المميزات
+## Live Demo
 
-- 🛒 سلة تسوق ديناميكية
-- 📱 تواصل مباشر عبر WhatsApp
-- 🎨 تصفية المنتجات حسب الفئات
-- 👨‍💼 لوحة تحكم للمدير
-- 💾 قاعدة بيانات SQLite
+🔗 Visit: [Coming Soon]
 
-## التقنيات المستخدمة
+## Features
 
-- ASP.NET Core 8.0 MVC
+- 🛒 Product catalog with categories
+- 📱 Mobile responsive design
+- ⚡ Fast loading (< 3 seconds)
+- 💬 WhatsApp integration
+- 📊 Admin dashboard
+
+## Tech Stack
+
+- ASP.NET Core 8.0
 - Entity Framework Core
 - SQLite Database
 - Bootstrap 5
 
-## التشغيل المحلي
+## Contact
 
-```bash
-cd Joja.Api
-dotnet restore
-dotnet run --urls "http://localhost:5000"
-```
-
-## معلومات التواصل
-
-- 📧 Email: <joja.organic@gmail.com>
-- 📱 WhatsApp: +20 109 042 8764
-
----
-تم إنشاء التطبيق بواسطة Joja Organic 🌿
+📱 WhatsApp: +20 109 042 8764
+📧 Email: <joja.organic@gmail.com>
