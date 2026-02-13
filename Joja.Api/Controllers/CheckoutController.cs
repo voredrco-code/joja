@@ -21,7 +21,7 @@ public class CheckoutController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        if (_cartService.Items.Count == 0)
+        if (CartService.Items.Count == 0)
         {
             return RedirectToAction("Index", "Cart");
         }
@@ -36,7 +36,7 @@ public class CheckoutController : Controller
     [HttpPost]
     public async Task<IActionResult> PlaceOrder(CheckoutViewModel model)
     {
-        if (_cartService.Items.Count == 0)
+        if (CartService.Items.Count == 0)
         {
             return RedirectToAction("Index", "Cart");
         }
@@ -85,14 +85,14 @@ public class CheckoutController : Controller
             await _context.SaveChangesAsync();
 
             // 3. Create OrderItems
-            foreach (var item in _cartService.Items)
+            foreach (var item in CartService.Items)
             {
                 var orderItem = new OrderItem
                 {
                     OrderId = order.Id,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    Price = item.PriceAtPurchase,
+                    PriceAtPurchase = item.PriceAtPurchase,
                     SelectedVariantsJson = item.SelectedVariantsJson
                 };
                 _context.OrderItems.Add(orderItem);

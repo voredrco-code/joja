@@ -86,7 +86,7 @@
             <div style="background: #f8f8f8; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
                 <h3 style="margin-bottom: 20px;">Order Summary</h3>
                 
-                @foreach (var item in Model.Cart.Items)
+                @foreach (var item in Joja.Api.Services.CartService.Items)
                 {
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                         <span>@item.Product.Name x @item.Quantity</span>
