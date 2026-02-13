@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: joja-api
+    runtime: docker
+    dockerfilePath: ./Joja.Api/Dockerfile
+    
+    # Port configuration
+    port: 5000
+    
+    # Environment variables
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:5000
+
+    # Auto-deploy on push to main branch
+    autoDeploy: true
+    
+    # Health check configuration
+    healthCheck:
+      path: /
+      port: 5000
+      interval: 30000        # 30 seconds
+      timeout: 3000          # 3 seconds
+      initialDelay: 40000    # 40 seconds before first check
+    
+    # For database persistence (SQLite) - uncomment if using persistent disk
+    # diskSize: 1
+    # diskMountPath: /app/data
