@@ -14,23 +14,25 @@ public class HomeController : Controller
     private readonly ApplicationDbContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IConfiguration _configuration;
+    private readonly Services.ILocalizationService _localizationService;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, Services.ILocalizationService localizationService)
     {
         _logger = logger;
         _context = context;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
+        _localizationService = localizationService;
     }
 
     // Checkout Action (WhatsApp + Email)
     [HttpPost]
-    public async Task<IActionResult> Checkout(string email, string address)
+    public async Task<IActionResult> Checkout(string customerName, string phone, string email, string address, string orderItems)
     {
-        // 1. Save dummy order for demo
+        // 1. Save customer and order
         var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
         if (customer == null) {
-            customer = new Customer { Email = email };
+            customer = new Customer { Email = email, Name = customerName ?? "" };
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
         }
@@ -40,42 +42,118 @@ public class HomeController : Controller
             CustomerId = customer.Id, 
             OrderDate = DateTime.Now, 
             Status = "Pending",
-            TotalAmount = 550 // Mock total
+            TotalAmount = 0 // Will be calculated from items
         };
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
 
-        // 2. Send Email Notification (Try/Catch to avoid crash if SMTP not configured)
-        try 
+        // 2. Parse order items (formatted as JSON string from client)
+        decimal totalAmount = 0;
+        string orderItemsText = "";
+        
+        try
         {
-            var supportEmail = _configuration["BrandSettings:SupportEmail"];
-            // Mock Usage of System.Net.Mail
-            // var smtpClient = new SmtpClient("smtp.gmail.com") { Port = 587, Credentials = new NetworkCredential("user", "pass"), EnableSsl = true };
-            // smtpClient.Send("noreply@joja.com", supportEmail, "New Order Recieved! 🛍️", $"لديك طلب جديد برقم #{order.Id}، تحقق من الداشبورد الخاصة بك.");
+            // Example orderItems format: [{productName: "Product 1", variant: "50ml", quantity: 2, price: 100}]
+            var items = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, object>>>(orderItems ?? "[]");
+            if (items != null)
+            {
+                int itemNumber = 1;
+                foreach (var item in items)
+                {
+                    var productName = item.ContainsKey("productName") ? item["productName"].ToString() : "Product";
+                    var variant = item.ContainsKey("variant") ? item ["variant"].ToString() : "";
+                    var quantity = item.ContainsKey("quantity") ? Convert.ToInt32(item["quantity"]) : 1;
+                    var price = item.ContainsKey("price") ? Convert.ToDecimal(item["price"]) : 0;
+                    
+                    var itemTotal = price * quantity;
+                    totalAmount += itemTotal;
+                    
+                    orderItemsText += $"\n{itemNumber}. {productName}";
+                    if (!string.IsNullOrEmpty(variant)) orderItemsText += $" ({variant})";
+                    orderItemsText += $" - الكمية: {quantity} - السعر: {price} جنيه - الإجمالي: {itemTotal} جنيه";
+                    
+                    itemNumber++;
+                }
+            }
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex, "Failed to send email");
+            // If parsing fails, use simple text
+            orderItemsText = orderItems ?? "لا توجد تفاصيل";
         }
 
-        // 3. Redirect to WhatsApp
+        // Update order total
+        order.TotalAmount = totalAmount;
+        await _context.SaveChangesAsync();
+
+        // 3. Get customizable WhatsApp message template from settings
+        var settings = await _context.AppSettings.FirstOrDefaultAsync();
+        string messageTemplate = settings?.WhatsAppMessageTemplate ?? @"🛍️ *طلب جديد من Joja*
+
+🔢 *رقم الطلب:* #{OrderId}
+👤 *الاسم:* {CustomerName}
+📱 *الهاتف:* {Phone}
+📧 *البريد:* {Email}
+📍 *العنوان:* {Address}
+
+*المنتجات:*{OrderItems}
+
+💰 *المجموع الكلي:* {TotalAmount} جنيه
+
+_تم إرسال هذا الطلب في: {OrderDate}_
+
+أرجو تأكيد الطلب 🙏";
+
+        // Replace placeholders with actual values
+        string message = messageTemplate
+            .Replace("{OrderId}", order.Id.ToString())
+            .Replace("{CustomerName}", customerName ?? "")
+            .Replace("{Phone}", phone ?? "")
+            .Replace("{Email}", email ?? "")
+            .Replace("{Address}", address ?? "")
+            .Replace("{OrderItems}", orderItemsText)
+            .Replace("{TotalAmount}", totalAmount.ToString("0.00"))
+            .Replace("{OrderDate}", order.OrderDate.ToString("yyyy-MM-dd HH:mm"));
+
         var whatsappNumber = _configuration["BrandSettings:WhatsAppNumber"];
-        string message = $"Hello Joja, I would like to confirm my order #{order.Id}. Total: {order.TotalAmount} EGP.";
         string encodedMessage = System.Net.WebUtility.UrlEncode(message);
         string url = $"https://wa.me/{whatsappNumber}?text={encodedMessage}";
 
         return Redirect(url);
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? categoryId)
     {
-        // For Filter demo, assume keys exist.
-        // In real app, we need to seed data or handle empty DB.
+        // Get user language from cookie (default: Arabic)
+        var language = Request.Cookies["UserLanguage"] ?? "ar";
+        ViewBag.CurrentLanguage = language;
+        
+        // Get categories (always all for filter bar)
+        var categories = await _context.Categories.ToListAsync();
+        _localizationService.GetLocalizedCategories(categories, language);
+
+        // Get products (filtered if categoryId is present)
+        var query = _context.Products.AsQueryable();
+        if (categoryId.HasValue)
+        {
+            query = query.Where(p => p.CategoryId == categoryId.Value);
+        }
+        var products = await query.ToListAsync();
+        _localizationService.GetLocalizedProducts(products, language);
+        
+        // Get banners and video banners
+        var banners = await _context.Banners.OrderBy(b => b.DisplayOrder).ToListAsync();
+        var videoBanners = await _context.VideoBanners
+            .Where(v => v.IsActive)
+            .OrderBy(v => v.DisplayOrder)
+            .ToListAsync();
         
         var viewModel = new ViewModels.HomeViewModel
         {
-            Products = await _context.Products.ToListAsync(),
-            Categories = await _context.Categories.ToListAsync()
+            Products = products,
+            Categories = categories,
+            Banners = banners,
+            VideoBanners = videoBanners
         };
 
         if (!viewModel.Categories.Any())
@@ -88,11 +166,23 @@ public class HomeController : Controller
             };
         }
         
+        // Pass UI translations to view
+        ViewBag.HeroTitle = _localizationService.GetUiText("HeroTitle", language);
+        ViewBag.HeroSubtitle = _localizationService.GetUiText("HeroSubtitle", language);
+        ViewBag.ShopNow = _localizationService.GetUiText("ShopNow", language);
+        ViewBag.JojaMoments = _localizationService.GetUiText("JojaMoments", language);
+        ViewBag.BestSellers = _localizationService.GetUiText("BestSellers", language);
+        ViewBag.FilterAll = _localizationService.GetUiText("FilterAll", language);
+        ViewBag.AddToCart = _localizationService.GetUiText("AddToCart", language);
+        
         return View(viewModel);
     }
 
     public async Task<IActionResult> FilterProducts(int? categoryId)
     {
+        // Get user language from cookie
+        var language = Request.Cookies["UserLanguage"] ?? "ar";
+        
         var query = _context.Products.AsQueryable();
 
         if (categoryId.HasValue)
@@ -101,6 +191,10 @@ public class HomeController : Controller
         }
 
         var products = await query.ToListAsync();
+        
+        // Localize products
+        _localizationService.GetLocalizedProducts(products, language);
+        
         return PartialView("_ProductGrid", products);
     }
 

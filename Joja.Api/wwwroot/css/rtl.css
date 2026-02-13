@@ -1,0 +1,85 @@
+/* RTL (Right-to-Left) Styles for Arabic */
+
+html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Navbar RTL */
+html[dir="rtl"] .nav-container {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .nav-links {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .nav-links a {
+    margin-left: 0;
+    margin-right: 20px;
+}
+
+html[dir="rtl"] .nav-icons {
+    flex-direction: row-reverse;
+}
+
+/* Product Grid RTL */
+html[dir="rtl"] .product-grid {
+    direction: rtl;
+}
+
+html[dir="rtl"] .product-info {
+    text-align: center;
+}
+
+/* Filter Buttons RTL */
+html[dir="rtl"] .filter-buttons {
+    direction: rtl;
+}
+
+html[dir="rtl"] .btn-filter {
+    margin: 5px;
+}
+
+/* Footer RTL */
+html[dir="rtl"] .footer-grid {
+    direction: rtl;
+}
+
+html[dir="rtl"] .footer-col {
+    text-align: right;
+}
+
+html[dir="rtl"] .social-links {
+    flex-direction: row-reverse;
+}
+
+/* Forms RTL */
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select {
+    text-align: right;
+    direction: rtl;
+}
+
+/* Hero Section RTL */
+html[dir="rtl"] .hero-content {
+    text-align: center;
+    /* Keep hero centered */
+}
+
+/* Video Stories RTL */
+html[dir="rtl"] .video-stories-section .d-flex {
+    flex-direction: row-reverse;
+}
+
+/* Mobile Menu RTL */
+@media (max-width: 768px) {
+    html[dir="rtl"] .nav-links {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .nav-links a {
+        margin: 0;
+    }
+}

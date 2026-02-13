@@ -30,14 +30,31 @@
                 {
                     <div style="display: table-row; border-bottom: 1px solid #eee;">
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
-                            <img src="@item.Product.MainImageUrl" style="width: 50px; vertical-align: middle; margin-right: 10px;" />
-                            @item.Product.Name
+                            <div style="display: flex; align-items: center;">
+                                <img src="@item.Product.MainImageUrl" style="width: 50px; border-radius: 4px; margin-right: 15px;" />
+                                <div>
+                                    <div style="font-weight: bold;">@item.Product.Name</div>
+                                    @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
+                                    {
+                                        var variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
+                                        if (variants != null)
+                                        {
+                                            <div style="font-size: 0.8rem; color: #666;">
+                                                @foreach (var v in variants)
+                                                {
+                                                    <span>@v.Key: @v.Value</span>@if (v.Key != variants.Keys.Last()) { <span>, </span> }
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.PriceAtPurchase.ToString("C")</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.PriceAtPurchase.ToString("0.00") ج.م</div>
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.Quantity</div>
-                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@((item.PriceAtPurchase * item.Quantity).ToString("C"))</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@((item.PriceAtPurchase * item.Quantity).ToString("0.00")) ج.م</div>
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
-                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: red; text-decoration: none;">&times; Remove</a>
+                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: #B7477E; text-decoration: none; font-size: 0.9rem;">&times; Remove</a>
                         </div>
                     </div>
                 }

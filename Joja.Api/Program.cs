@@ -17,6 +17,9 @@ builder.Services.AddResponseCompression(options =>
 // Register CartService as Singleton for session-like behavior
 builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 
+// Register LocalizationService
+builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
+
 // Configure EF Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -24,10 +27,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var app = builder.Build();
 
 // Ensure database is created (for production/Railway)
-using (var scope = app.Services.CreateScope())
+try
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.EnsureCreated();
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Database.EnsureCreated();
+    }
+}
+catch (Exception ex)
+{
+    // Log error but don't crash the app
+    Console.WriteLine($"Database initialization error: {ex.Message}");
 }
 
 // Configure the HTTP request pipeline.
@@ -57,4 +68,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://0.0.0.0:{port}");

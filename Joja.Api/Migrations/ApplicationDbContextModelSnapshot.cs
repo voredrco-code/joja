@@ -17,6 +17,58 @@ namespace Joja.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
 
+            modelBuilder.Entity("Joja.Api.Models.AppSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("WhatsAppMessageTemplate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppSettings");
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.Banner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BannerType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LinkUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subtitle")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Banners");
+                });
+
             modelBuilder.Entity("Joja.Api.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -30,6 +82,96 @@ namespace Joja.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "العناية بالبشرة"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "العناية بالشعر"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "الزيوت الطبيعية"
+                        });
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.CategoryTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryTranslations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Language = "en",
+                            Name = "Skin Care"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 2,
+                            Language = "en",
+                            Name = "Hair Care"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 3,
+                            Language = "en",
+                            Name = "Natural Oils"
+                        });
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.ContentPage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPages");
                 });
 
             modelBuilder.Entity("Joja.Api.Models.Customer", b =>
@@ -42,6 +184,10 @@ namespace Joja.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -94,6 +240,9 @@ namespace Joja.Api.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("SelectedVariantsJson")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
@@ -127,6 +276,9 @@ namespace Joja.Api.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("VariantsJson")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("VideoUrl")
                         .HasColumnType("TEXT");
 
@@ -135,6 +287,265 @@ namespace Joja.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 3,
+                            Description = "زيت جوجوبا نقي 100% للبشرة والشعر",
+                            MainImageUrl = "/images/jojoba.jpg",
+                            Name = "زيت الجوجوبا العضوي",
+                            Price = 350m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Description = "زبدة شيا طبيعية للترطيب العميق",
+                            MainImageUrl = "/images/shea.jpg",
+                            Name = "زبدة الشيا الطبيعية",
+                            Price = 200m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 2,
+                            Description = "زيت أرجان أصلي من المغرب للشعر",
+                            MainImageUrl = "/images/argan.jpg",
+                            Name = "زيت الأرجان المغربي",
+                            Price = 450m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 1,
+                            Description = "كريم صبار طبيعي لترطيب البشرة",
+                            MainImageUrl = "/images/aloe.jpg",
+                            Name = "كريم الألوفيرا",
+                            Price = 150m
+                        });
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.ProductTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductTranslations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Pure 100% jojoba oil for skin and hair",
+                            Language = "en",
+                            Name = "Organic Jojoba Oil",
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Natural shea butter for deep moisturizing",
+                            Language = "en",
+                            Name = "Natural Shea Butter",
+                            ProductId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Authentic argan oil from Morocco for hair",
+                            Language = "en",
+                            Name = "Moroccan Argan Oil",
+                            ProductId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Natural aloe cream for skin moisturizing",
+                            Language = "en",
+                            Name = "Aloe Vera Cream",
+                            ProductId = 4
+                        });
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.UiTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UiTranslations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Key = "HeroTitle",
+                            Language = "ar",
+                            Value = "جمال طبيعي من أجلك"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Key = "HeroSubtitle",
+                            Language = "ar",
+                            Value = "اكتشفي مجموعتنا العضوية"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Key = "ShopNow",
+                            Language = "ar",
+                            Value = "تسوقي الآن"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Key = "JojaMoments",
+                            Language = "ar",
+                            Value = "لحظات جوجا"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Key = "BestSellers",
+                            Language = "ar",
+                            Value = "الأكثر مبيعاً"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Key = "FilterAll",
+                            Language = "ar",
+                            Value = "الكل"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Key = "AddToCart",
+                            Language = "ar",
+                            Value = "أضف للسلة"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Key = "HeroTitle",
+                            Language = "en",
+                            Value = "Natural Beauty for You"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Key = "HeroSubtitle",
+                            Language = "en",
+                            Value = "Discover our organic collection"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Key = "ShopNow",
+                            Language = "en",
+                            Value = "Shop Now"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Key = "JojaMoments",
+                            Language = "en",
+                            Value = "Joja Moments"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Key = "BestSellers",
+                            Language = "en",
+                            Value = "Best Sellers"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Key = "FilterAll",
+                            Language = "en",
+                            Value = "All"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Key = "AddToCart",
+                            Language = "en",
+                            Value = "Add to Cart"
+                        });
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.VideoBanner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VideoBanners");
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.CategoryTranslation", b =>
+                {
+                    b.HasOne("Joja.Api.Models.Category", "Category")
+                        .WithMany("Translations")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Joja.Api.Models.Order", b =>
@@ -176,9 +587,22 @@ namespace Joja.Api.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Joja.Api.Models.ProductTranslation", b =>
+                {
+                    b.HasOne("Joja.Api.Models.Product", "Product")
+                        .WithMany("Translations")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Joja.Api.Models.Category", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("Joja.Api.Models.Customer", b =>
@@ -189,6 +613,11 @@ namespace Joja.Api.Migrations
             modelBuilder.Entity("Joja.Api.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.Product", b =>
+                {
+                    b.Navigation("Translations");
                 });
 #pragma warning restore 612, 618
         }

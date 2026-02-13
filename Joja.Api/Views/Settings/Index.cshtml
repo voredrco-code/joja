@@ -1,0 +1,75 @@
+@model Joja.Api.Models.AppSettings
+
+@{
+    ViewData["Title"] = "إعدادات النظام";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <h1 class="brand-font">⚙️ إعدادات النظام</h1>
+    <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fab fa-whatsapp"></i> قالب رسالة الواتساب</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateWhatsAppTemplate" method="post">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">قالب الرسالة:</label>
+                            <textarea 
+                                name="whatsAppMessageTemplate" 
+                                class="form-control" 
+                                rows="20" 
+                                style="font-family: 'Courier New', monospace; direction: rtl;"
+                                required>@Model.WhatsAppMessageTemplate</textarea>
+                            <small class="text-muted">
+                                <strong>المتغيرات المتاحة:</strong><br>
+                                <code>{OrderId}</code> - رقم الطلب<br>
+                                <code>{CustomerName}</code> - اسم العميل<br>
+                                <code>{Phone}</code> - رقم الهاتف<br>
+                                <code>{Email}</code> - البريد الإلكتروني<br>
+                                <code>{Address}</code> - العنوان<br>
+                                <code>{OrderItems}</code> - قائمة المنتجات<br>
+                                <code>{TotalAmount}</code> - المجموع الكلي<br>
+                                <code>{OrderDate}</code> - تاريخ الطلب
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>ملاحظة:</strong> استخدم المتغيرات بين الأقواس المعقوفة كما هو موضح أعلاه. سيتم استبدالها تلقائياً ببيانات الطلب الفعلية.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> حفظ التغييرات
+                            </button>
+                            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> العودة للوحة التحكم
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-eye"></i> معاينة الرسالة</h5>
+                </div>
+                <div class="card-body" style="background: #f8f9fa;">
+                    <pre style="white-space: pre-wrap; direction: rtl; font-family: 'Cairo', sans-serif;">@Model.WhatsAppMessageTemplate</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

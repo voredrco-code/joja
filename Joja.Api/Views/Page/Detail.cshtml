@@ -1,0 +1,13 @@
+@model Joja.Api.Models.ContentPage
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container" style="margin-top: 50px; margin-bottom: 50px;">
+    <h1 class="brand-font mb-4">@Model.Title</h1>
+    
+    <div class="page-content">
+        @Html.Raw(Model.Content)
+    </div>
+</div>

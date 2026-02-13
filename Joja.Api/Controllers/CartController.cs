@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Joja.Api.Models;
 using Joja.Api.Services;
+using Joja.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Joja.Api.Controllers;
 
 public class CartController : Controller
 {
     private readonly CartService _cartService;
+    private readonly ApplicationDbContext _context;
 
-    public CartController(CartService cartService)
+    public CartController(CartService cartService, ApplicationDbContext context)
     {
         _cartService = cartService;
+        _context = context;
     }
 
     public IActionResult Index()
@@ -19,19 +23,23 @@ public class CartController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddToCart(int productId, int quantity)
+    public async Task<IActionResult> AddToCart(int productId, int quantity)
     {
-        // Mock lookup since DB isn't running
-        var products = new List<Product>
-        {
-            new Product { Id = 1, Name = "Jojoba Oil", Price = 350, MainImageUrl = "/images/logo.webp" },
-            new Product { Id = 2, Name = "Shea Butter", Price = 200, MainImageUrl = "/images/logo.webp" }
-        };
-
-        var product = products.FirstOrDefault(p => p.Id == productId);
+        var product = await _context.Products.FindAsync(productId);
         if (product != null)
         {
-            _cartService.AddItem(product, quantity);
+            // Collect variants from form
+            var selectedVariants = new Dictionary<string, string>();
+            foreach (var key in Request.Form.Keys)
+            {
+                if (key.StartsWith("selectedVariant_"))
+                {
+                    var variantName = key.Replace("selectedVariant_", "");
+                    selectedVariants.Add(variantName, Request.Form[key].ToString());
+                }
+            }
+
+            _cartService.AddItem(product, quantity, selectedVariants);
         }
 
         return RedirectToAction("Index");

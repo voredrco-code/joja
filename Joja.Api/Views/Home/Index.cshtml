@@ -4,18 +4,129 @@
 }
 
 <!-- Hero Section -->
-<section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/logo.webp');">
-    <div class="container hero-content">
-        <h1>Natural Beauty for You</h1>
-        <p>Discover our organic collection</p>
-        <a href="#" class="btn-primary">Shop Now</a>
+<!-- Hero Section -->
+@if (Model.Banners != null && Model.Banners.Any())
+{
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @for (int i = 0; i < Model.Banners.Count(); i++)
+            {
+                var banner = Model.Banners.ElementAt(i);
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    <section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('@banner.ImageUrl');">
+                        <div class="container hero-content">
+                            <h1>@banner.Title</h1>
+                            <p>@banner.Subtitle</p>
+                            <a href="@banner.LinkUrl" class="btn-primary">Shop Now</a>
+                        </div>
+                    </section>
+                </div>
+            }
+        </div>
+        @if (Model.Banners.Count() > 1)
+        {
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        }
     </div>
-</section>
+}
+else
+{
+    <section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/logo.webp');">
+        <div class="container hero-content">
+            <h1>@(ViewBag.HeroTitle ?? "Natural Beauty for You")</h1>
+            <p>@(ViewBag.HeroSubtitle ?? "Discover our organic collection")</p>
+            <a href="#" class="btn-primary">@(ViewBag.ShopNow ?? "Shop Now")</a>
+        </div>
+    </section>
+}
+
+<!-- Horizontal Video Banner Carousel -->
+@if (Model.VideoBanners != null && Model.VideoBanners.Any())
+{
+    <section class="video-carousel-section" style="padding: 40px 0; background: #f8f9fa; overflow: hidden;">
+        <div class="container">
+            <h2 class="brand-font mb-4 text-center">@(ViewBag.JojaMoments ?? "Joja Moments")</h2>
+            <div class="video-carousel-wrapper" style="position: relative; overflow: hidden;">
+                <div class="video-carousel" id="videoCarousel" style="display: flex; gap: 20px; transition: transform 0.5s ease;">
+                    @foreach (var video in Model.VideoBanners)
+                    {
+                        <div class="video-carousel-item" style="flex: 0 0 300px; height: 400px; border-radius: 12px; overflow: hidden; position: relative;">
+                            <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
+                                <source src="@video.VideoUrl" type="video/mp4">
+                            </video>
+                            @if (!string.IsNullOrEmpty(video.Title))
+                            {
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 20px; color: white;">
+                                    <h5 class="brand-font" style="margin: 0; color: white;">@video.Title</h5>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <!-- Duplicate items for seamless loop -->
+                    @foreach (var video in Model.VideoBanners)
+                    {
+                        <div class="video-carousel-item" style="flex: 0 0 300px; height: 400px; border-radius: 12px; overflow: hidden; position: relative;">
+                            <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
+                                <source src="@video.VideoUrl" type="video/mp4">
+                            </video>
+                            @if (!string.IsNullOrEmpty(video.Title))
+                            {
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 20px; color: white;">
+                                    <h5 class="brand-font" style="margin: 0; color: white;">@video.Title</h5>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Auto-scroll horizontal video carousel
+        const carousel = document.getElementById('videoCarousel');
+        let scrollPosition = 0;
+        const scrollSpeed = 1; // pixels per frame
+        const itemWidth = 320; // 300px + 20px gap
+        const totalItems = @Model.VideoBanners.Count();
+        const totalWidth = itemWidth * totalItems;
+
+        function autoScroll() {
+            scrollPosition += scrollSpeed;
+            
+            // Reset position when we've scrolled through all original items
+            if (scrollPosition >= totalWidth) {
+                scrollPosition = 0;
+            }
+            
+            carousel.style.transform = `translateX(-${scrollPosition}px)`;
+            requestAnimationFrame(autoScroll);
+        }
+
+        // Start auto-scrolling
+        autoScroll();
+
+        // Pause on hover
+        carousel.addEventListener('mouseenter', () => {
+            carousel.style.animationPlayState = 'paused';
+        });
+        carousel.addEventListener('mouseleave', () => {
+            carousel.style.animationPlayState = 'running';
+        });
+    </script>
+}
 
 <!-- Joja Moments (Video Stories) -->
 <section class="video-stories-section py-5" style="padding: 50px 0;">
     <div class="container text-center">
-        <h2 class="brand-font mb-4" style="text-align:center; margin-bottom:30px;">Joja Moments</h2>
+        <h2 class="brand-font mb-4" style="text-align:center; margin-bottom:30px;">@(ViewBag.BestSellers ?? "Best Sellers")</h2>
         <div class="d-flex justify-content-center flex-wrap gap-4" style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
             @foreach (var product in Model.Products.Where(p => !string.IsNullOrEmpty(p.VideoUrl)))
             {
@@ -32,9 +143,9 @@
 
 <!-- Filter Buttons -->
 <div class="container">
-    <h2 class="section-title">Best Sellers</h2>
+    <h2 class="section-title">@(ViewBag.BestSellers ?? "Best Sellers")</h2>
     <div class="filter-buttons text-center my-4" style="text-align: center; margin-bottom: 30px;">
-        <button class="btn-filter active" onclick="filter(null)">All</button>
+        <button class="btn-filter active" onclick="filter(null)">@(ViewBag.FilterAll ?? "All")</button>
         @foreach(var cat in Model.Categories) {
             <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>
         }
@@ -55,7 +166,7 @@
         </video>
         <div class="video-info text-center mt-3" style="text-align:center; margin-top:15px;">
             <h3 id="videoProductName" class="brand-font" style="margin-bottom:10px;"></h3>
-            <button class="btn-joja-dark px-4 py-2">Add to Cart</button>
+            <button class="btn-joja-dark px-4 py-2">@(ViewBag.AddToCart ?? "Add to Cart")</button>
         </div>
     </div>
 </div>

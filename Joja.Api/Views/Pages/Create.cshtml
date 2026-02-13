@@ -1,0 +1,41 @@
+@model Joja.Api.Models.ContentPage
+
+@{
+    ViewData["Title"] = "Create Page";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <h1 class="brand-font">Create New Page</h1>
+    <hr />
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Slug" class="control-label">Slug (URL Path)</label>
+            <input asp-for="Slug" class="form-control" placeholder="e.g. about-us" />
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Content" class="control-label">Content (HTML)</label>
+            <textarea asp-for="Content" class="form-control" rows="15" style="font-family: monospace;"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+            <small class="text-muted">You can write HTML here.</small>
+        </div>
+
+        <div class="form-group mt-4">
+            <input type="submit" value="Create" class="btn-joja-dark" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

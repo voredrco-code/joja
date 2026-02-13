@@ -1,44 +1,102 @@
 @model Joja.Api.Models.Product
 @{
     ViewData["Title"] = Model.Name;
+    var language = Context.Request.Cookies["UserLanguage"] ?? "ar";
+    var isAr = language == "ar";
 }
 
 <div class="container" style="margin-top: 50px; margin-bottom: 50px;">
     <div class="product-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
         <!-- Left: Image & Video -->
         <div class="details-media">
-            <img src="@Model.MainImageUrl" alt="@Model.Name" style="width: 100%; border-radius: 8px; margin-bottom: 20px;" />
+            <img src="@Model.MainImageUrl" alt="@Model.Name" style="width: 100%; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" />
             
             @if (!string.IsNullOrEmpty(Model.VideoUrl))
             {
-                <div class="video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    <iframe src="@Model.VideoUrl" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+                <div class="video-container" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 20px;">
+                    <video src="@Model.VideoUrl" controls style="width: 100%; display: block;" poster="@Model.MainImageUrl"></video>
                 </div>
             }
         </div>
 
         <!-- Right: Info -->
         <div class="details-info">
-            <h1 style="color: var(--primary-color); margin-top: 0;">@Model.Name</h1>
-            <p class="category" style="color: #666; font-style: italic;">@Model.Category</p>
-            <h2 class="price" style="color: var(--secondary-color); font-size: 2rem; margin: 20px 0;">@Model.Price.ToString("C")</h2>
+            <h1 style="color: #121212; margin-top: 0; font-family: 'Inter', sans-serif; font-weight: 700;">@Model.Name</h1>
+            <p class="category" style="color: #666; font-style: italic; margin-bottom: 15px;">@(Model.Category?.Name ?? "Natural Product")</p>
+            <h2 class="price" style="color: #B7477E; font-size: 2.2rem; margin: 20px 0; font-weight: bold;">@Model.Price.ToString("0.00") <span style="font-size: 1rem;">ج.م</span></h2>
             
-            <p class="description" style="line-height: 1.6; color: #444; margin-bottom: 30px;">
+            <p class="description" style="line-height: 1.8; color: #444; margin-bottom: 30px; font-size: 1.1rem;">
                 @Model.Description
             </p>
 
             <div class="actions">
-                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                <form asp-controller="Cart" asp-action="AddToCart" method="post" id="addToCartForm">
                     <input type="hidden" name="productId" value="@Model.Id" />
-                    <input type="number" name="quantity" value="1" min="1" style="padding: 10px; width: 60px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px;" />
-                    <button type="submit" class="btn-primary" style="width: auto; display: inline-block; border: none; cursor: pointer;">Add to Cart</button>
+                    
+                    @if (!string.IsNullOrEmpty(Model.VariantsJson))
+                    {
+                        var variants = System.Text.Json.JsonSerializer.Deserialize<List<dynamic>>(Model.VariantsJson);
+                        if (variants != null && variants.Count > 0)
+                        {
+                            foreach (var variant in variants)
+                            {
+                                var variantName = variant.GetProperty("Name").GetString();
+                                var options = variant.GetProperty("Options").EnumerateArray();
+                                
+                                <div class="form-group mb-4">
+                                    <label class="d-block mb-2 font-weight-bold">@variantName</label>
+                                    <select name="selectedVariant_@variantName" class="form-control" style="max-width: 300px; padding: 10px; border-radius: 6px;">
+                                        @foreach (var opt in options)
+                                        {
+                                            <option value="@opt.GetString()">@opt.GetString()</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        }
+                    }
+
+                    <div class="d-flex align-items-center mt-4">
+                        <div class="quantity-input me-3" style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 6px; padding: 5px;">
+                            <button type="button" onclick="this.nextElementSibling.stepDown()" style="background:none; border:none; padding: 5px 15px; cursor:pointer;">-</button>
+                            <input type="number" name="quantity" value="1" min="1" style="width: 50px; text-align: center; border: none; font-weight: bold;" />
+                            <button type="button" onclick="this.previousElementSibling.stepUp()" style="background:none; border:none; padding: 5px 15px; cursor:pointer;">+</button>
+                        </div>
+                        <button type="submit" class="btn-joja-dark" style="background: #121212; color: white; border: none; padding: 12px 40px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+                            @(isAr ? "أضف للسلة" : "Add to Cart")
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            <div class="trust-badges" style="margin-top: 40px; display: flex; gap: 20px; color: #888; font-size: 0.9rem;">
-                <span><i class="fas fa-leaf"></i> 100% Organic</span>
-                <span><i class="fas fa-shipping-fast"></i> Fast Delivery</span>
+            <div class="trust-badges" style="margin-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; color: #555;">
+                    <span style="font-size: 1.5rem;">🌿</span>
+                    <div>
+                        <strong style="display: block; font-size: 0.9rem;">100% Organic</strong>
+                        <span style="font-size: 0.8rem; color: #888;">Natural & Pure</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; color: #555;">
+                    <span style="font-size: 1.5rem;">🚚</span>
+                    <div>
+                        <strong style="display: block; font-size: 0.9rem;">Fast Shipping</strong>
+                        <span style="font-size: 0.8rem; color: #888;">Door to Door</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .btn-joja-dark:hover {
+        background: #B7477E !important;
+    }
+    @@media (max-width: 768px) {
+        .product-details-grid {
+            grid-template-columns: 1fr !important;
+            gap: 30px !important;
+        }
+    }
+</style>

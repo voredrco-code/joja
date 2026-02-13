@@ -1,5 +1,9 @@
+@{
+    var currentLang = ViewBag.CurrentLanguage ?? "ar";
+    var direction = currentLang == "ar" ? "rtl" : "ltr";
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@currentLang" dir="@direction">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +14,9 @@
     <meta name="theme-color" content="#F3E9E2" />
     
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @if (currentLang == "ar") {
+        <link rel="stylesheet" href="~/css/rtl.css" asp-append-version="true" />
+    }
     <link rel="icon" type="image/png" href="~/images/favicon.png" />
     <!-- Add FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -31,14 +38,22 @@
                 <!-- Nav Center -->
                 <ul class="nav-links" id="navLinks">
                     <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a href="#">Shop</a></li>
-                    <li><a href="#">Hair Care</a></li>
-                    <li><a href="#">Skin Care</a></li>
-                    <li><a href="#">About Us</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Shop</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="2">Hair Care</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="1">Skin Care</a></li>
+                    <li><a href="#about-us">About Us</a></li>
                 </ul>
 
                 <!-- Icons Right -->
                 <div class="nav-icons">
+                    <!-- Language Switcher -->
+                    <form asp-controller="Language" asp-action="SetLanguage" method="post" style="display:inline-block; margin:0;">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                        <button type="submit" name="lang" value="@(currentLang == "ar" ? "en" : "ar")" 
+                                class="lang-switch-btn" title="@(currentLang == "ar" ? "English" : "العربية")">
+                            <i class="fas fa-globe"></i> @(currentLang == "ar" ? "EN" : "ع")
+                        </button>
+                    </form>
                     <a href="#"><i class="fas fa-search"></i></a>
                     <a href="#"><i class="fas fa-user"></i></a>
                     <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-cart"></i></a>
@@ -87,6 +102,9 @@
                         <a href="#"><i class="fab fa-facebook"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
                         <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <a asp-controller="Admin" asp-action="Index" style="font-size: 0.8rem; opacity: 0.7;">Admin Access</a>
                     </div>
                 </div>
             </div>

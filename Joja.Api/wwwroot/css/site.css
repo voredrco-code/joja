@@ -1,15 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
 
 :root {
-    /* "Minimalist Luxury" Palette */
-    --joja-black: #000000;
-    --joja-white: #ffffff;
-    --joja-nude: #F3E9E2;
-    --joja-hover: #E5D1C5;
-    --joja-text: #333333;
+    /* User-specified Joja Color Palette */
+    --joja-background: #FBF1F6;
+    --joja-text: #121212;
+    --joja-button-bg: #B7477E;
+    --joja-button-text: #121212;
+    --joja-outline-btn: #121212;
 
-    /* Mappings */
-    --primary-color: var(--joja-black);
+    /* Legacy mappings */
+    --joja-black: #121212;
+    --joja-white: #ffffff;
+    --joja-nude: #FBF1F6;
+    --joja-hover: #a03968;
+
+    /* Functional mappings */
+    --primary-color: var(--joja-button-bg);
     --secondary-color: var(--joja-text);
     --accent-color: var(--joja-nude);
     --text-color: var(--joja-text);
@@ -23,7 +29,7 @@ body {
     color: var(--joja-text);
     margin: 0;
     padding: 0;
-    background-color: var(--joja-white);
+    background-color: var(--joja-background);
 }
 
 h1,
@@ -79,8 +85,8 @@ h3,
 /* Buttons */
 .btn-primary,
 .btn-joja-dark {
-    background-color: var(--joja-black);
-    color: var(--joja-white);
+    background-color: var(--joja-button-bg);
+    color: var(--joja-button-text);
     padding: 12px 30px;
     border: none;
     text-decoration: none;
@@ -95,7 +101,29 @@ h3,
 
 .btn-primary:hover,
 .btn-joja-dark:hover {
-    background-color: #333;
+    background-color: var(--joja-hover);
+}
+
+/* Language Switcher Button */
+.lang-switch-btn {
+    background: transparent;
+    border: 1px solid var(--joja-text);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+    color: var(--joja-text);
+    font-family: 'Montserrat', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.lang-switch-btn:hover {
+    background-color: var(--joja-button-bg);
+    color: var(--joja-white);
+    border-color: var(--joja-button-bg);
 }
 
 /* Product Cards */
