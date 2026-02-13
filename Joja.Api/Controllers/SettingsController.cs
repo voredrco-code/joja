@@ -53,4 +53,33 @@ public class SettingsController : Controller
         TempData["SuccessMessage"] = "تم حفظ قالب رسالة الواتساب بنجاح!";
         return RedirectToAction(nameof(Index));
     }
+
+    // POST: Settings/UpdateSocialLinks
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink)
+    {
+        var settings = await _context.AppSettings.FirstOrDefaultAsync();
+        
+        if (settings == null)
+        {
+            settings = new AppSettings 
+            { 
+                FacebookLink = facebookLink,
+                InstagramLink = instagramLink 
+            };
+            _context.AppSettings.Add(settings);
+        }
+        else
+        {
+            settings.FacebookLink = facebookLink;
+            settings.InstagramLink = instagramLink;
+            _context.Update(settings);
+        }
+        
+        await _context.SaveChangesAsync();
+        
+        TempData["SuccessMessage"] = "تم حفظ روابط السوشيال ميديا بنجاح!";
+        return RedirectToAction(nameof(Index));
+    }
 }

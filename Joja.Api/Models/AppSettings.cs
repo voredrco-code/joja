@@ -18,4 +18,6 @@ public class AppSettings
 _تم إرسال هذا الطلب في: {OrderDate}_
 
 أرجو تأكيد الطلب 🙏";
+    public string FacebookLink { get; set; } = "https://facebook.com";
+    public string InstagramLink { get; set; } = "https://instagram.com";
 }
