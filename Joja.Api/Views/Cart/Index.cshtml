@@ -63,7 +63,7 @@
 
         <div class="cart-summary" style="margin-top: 30px; text-align: right;">
             <h3>Total: @Model.Total.ToString("C")</h3>
-            <a href="#" class="btn-primary" style="margin-top: 20px; display: inline-block;">Proceed to Checkout</a>
+            <a asp-controller="Checkout" asp-action="Index" class="btn-primary" style="margin-top: 20px; display: inline-block;">Proceed to Checkout</a>
         </div>
     }
 </div>

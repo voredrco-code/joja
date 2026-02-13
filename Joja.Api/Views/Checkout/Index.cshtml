@@ -1,0 +1,119 @@
+@model Joja.Api.ViewModels.CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container" style="margin-top: 50px; max-width: 800px;">
+    <h1 class="section-title">Checkout</h1>
+
+    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+        <!-- Left Column: Form -->
+        <div style="flex: 1; min-width: 300px;">
+            <form asp-action="PlaceOrder" method="post" id="checkoutForm">
+                <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <h3 style="margin-bottom: 20px; color: #333;">Contact Information</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label asp-for="Name" style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name</label>
+                        <input asp-for="Name" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required />
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label asp-for="Phone" style="display: block; margin-bottom: 5px; font-weight: bold;">Phone Number</label>
+                        <input asp-for="Phone" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required />
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label asp-for="Email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email Address</label>
+                        <input asp-for="Email" type="email" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required />
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #333;">Shipping Address</h3>
+
+                    <div style="margin-bottom: 15px;">
+                        <label asp-for="City" style="display: block; margin-bottom: 5px; font-weight: bold;">City / Governorate</label>
+                        <select asp-for="City" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required>
+                            <option value="">Select City...</option>
+                            <option value="Cairo">Cairo</option>
+                            <option value="Giza">Giza</option>
+                            <option value="Alexandria">Alexandria</option>
+                            <option value="Mansoura">Mansoura</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label asp-for="Address" style="display: block; margin-bottom: 5px; font-weight: bold;">Detailed Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required></textarea>
+                    </div>
+
+                     <h3 style="margin-top: 30px; margin-bottom: 20px; color: #333;">Payment Method</h3>
+
+                    <div style="margin-bottom: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <input type="radio" asp-for="PaymentMethod" value="CashOnDelivery" id="pm_cod" checked onchange="togglePaymentInfo()" />
+                            <label for="pm_cod" style="font-weight: bold; margin-left: 8px;">Cash on Delivery (COD)</label>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <input type="radio" asp-for="PaymentMethod" value="InstaPay" id="pm_insta" onchange="togglePaymentInfo()" />
+                            <label for="pm_insta" style="font-weight: bold; margin-left: 8px; color: #622570;">InstaPay <i class="fas fa-mobile-alt"></i></label>
+                        </div>
+
+                        <div style="margin-bottom: 10px;">
+                            <input type="radio" asp-for="PaymentMethod" value="Wallet" id="pm_wallet" onchange="togglePaymentInfo()" />
+                            <label for="pm_wallet" style="font-weight: bold; margin-left: 8px; color: #D71920;">Vodafone Cash / E-Wallet <i class="fas fa-wallet"></i></label>
+                        </div>
+                    </div>
+
+                    <!-- Payment Instructions -->
+                    <div id="paymentInstructions" style="display: none; background: #f9f9f9; padding: 15px; border-left: 4px solid #B7477E; margin-bottom: 20px;">
+                        <p style="margin: 0; font-weight: bold;">Transfer Total Amount to:</p>
+                        <p style="font-size: 1.2rem; color: #333; margin: 5px 0;">01000000000</p>
+                        <p style="font-size: 0.9rem; color: #666;">Please transfer the total amount and write the transaction reference below once completed.</p>
+                        
+                        <label asp-for="Notes" style="display: block; margin-top: 10px; font-weight: bold;">Transaction Reference / Notes</label>
+                        <input asp-for="Notes" class="form-control" placeholder="e.g. Sent from 0123..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; background-color: #B7477E; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;">Place Order</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Column: Order Summary -->
+        <div style="flex: 0 0 300px;">
+            <div style="background: #f8f8f8; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
+                <h3 style="margin-bottom: 20px;">Order Summary</h3>
+                
+                @foreach (var item in Model.Cart.Items)
+                {
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
+                        <span>@item.Product.Name x @item.Quantity</span>
+                        <span>@((item.PriceAtPurchase * item.Quantity).ToString("C"))</span>
+                    </div>
+                }
+                
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
+                
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
+                    <span>Total</span>
+                    <span>@Model.Cart.Total.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePaymentInfo() {
+        var method = document.querySelector('input[name="PaymentMethod"]:checked').value;
+        var instructions = document.getElementById('paymentInstructions');
+        
+        if (method === 'InstaPay' || method === 'Wallet') {
+            instructions.style.display = 'block';
+        } else {
+            instructions.style.display = 'none';
+        }
+    }
+</script>
