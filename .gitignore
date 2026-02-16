@@ -40,3 +40,7 @@ x86/
 [Bb]uild/
 [Oo]bj/
 [Ll]og/
+publish/
+*.zip
+app_offline.htm
+*.ps1

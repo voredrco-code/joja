@@ -30,7 +30,7 @@
             </p>
 
             <div class="actions">
-                <form asp-controller="Cart" asp-action="AddToCart" method="post" id="addToCartForm">
+                <form asp-controller="Cart" asp-action="AddToCart" method="post" id="addToCartForm" data-product-name="@Model.Name">
                     <input type="hidden" name="productId" value="@Model.Id" />
                     
                     @if (!string.IsNullOrEmpty(Model.VariantsJson))

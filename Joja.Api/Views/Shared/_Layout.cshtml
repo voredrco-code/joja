@@ -137,8 +137,8 @@
     <script>
         // Modal Logic
         document.addEventListener("DOMContentLoaded", function() {
-            // Show modal after 3 seconds if not subscribed
-            if (!localStorage.getItem('joja_subscribed')) {
+            // Show modal after 3 seconds if not seen before (and not subscribed)
+            if (!localStorage.getItem('joja_popup_seen') && !localStorage.getItem('joja_subscribed')) {
                 setTimeout(function() {
                     document.getElementById('newsletterModal').style.display = 'flex';
                 }, 3000);
@@ -146,6 +146,8 @@
 
             document.querySelector('.close-modal').onclick = function() {
                 document.getElementById('newsletterModal').style.display = 'none';
+                // Mark as seen so it doesn't show again
+                localStorage.setItem('joja_popup_seen', 'true');
             }
         });
 
@@ -166,6 +168,41 @@
                     }
                 });
             }
+        }
+    </script>
+    <script>
+        // Analytics Logic
+        document.addEventListener("DOMContentLoaded", function() {
+            // Track Visit (Once per session)
+            if (!sessionStorage.getItem('joja_visit_logged')) {
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        logEvent('Visit', null, data.country_name, data.city);
+                        sessionStorage.setItem('joja_visit_logged', 'true');
+                    })
+                    .catch(() => {
+                        logEvent('Visit', null, 'Unknown', 'Unknown');
+                        sessionStorage.setItem('joja_visit_logged', 'true');
+                    });
+            }
+        });
+
+        function logEvent(eventType, product = null, country = null, city = null) {
+            fetch('/api/Analytics/LogEvent', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    eventType: eventType,
+                    page: window.location.pathname,
+                    product: product,
+                    country: country || 'Unknown',
+                    city: city || 'Unknown',
+                    device: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
+                })
+            }).catch(e => console.error("Analytics Error:", e));
         }
     </script>
     @await RenderSectionAsync("Scripts", required: false)

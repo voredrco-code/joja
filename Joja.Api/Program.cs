@@ -33,6 +33,19 @@ try
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.EnsureCreated();
+        
+        // Ensure AnalyticsLogs table exists (migration alternative)
+        dbContext.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""AnalyticsLogs"" (
+                ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_AnalyticsLogs"" PRIMARY KEY AUTOINCREMENT,
+                ""EventType"" TEXT NOT NULL,
+                ""Page"" TEXT NULL,
+                ""Product"" TEXT NULL,
+                ""Country"" TEXT NULL,
+                ""City"" TEXT NULL,
+                ""Device"" TEXT NULL,
+                ""Timestamp"" TEXT NOT NULL
+            );");
     }
 }
 catch (Exception ex)

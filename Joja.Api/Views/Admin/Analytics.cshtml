@@ -1,0 +1,109 @@
+@model IEnumerable<Joja.Api.Models.AnalyticsLog>
+@{
+    ViewData["Title"] = "Analytics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    // Helper function for growth color
+    string GetGrowthColor(double rate) => rate >= 0 ? "text-success" : "text-danger";
+    string GetGrowthIcon(double rate) => rate >= 0 ? "fa-arrow-up" : "fa-arrow-down";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📊 Analytics Dashboard</h2>
+        
+        <form method="get" class="d-flex gap-2 align-items-end">
+            <div>
+                <label class="form-label small text-muted">Start Date</label>
+                <input type="date" name="startDate" value="@ViewBag.StartDate" class="form-control form-control-sm" />
+            </div>
+            <div>
+                <label class="form-label small text-muted">End Date</label>
+                <input type="date" name="endDate" value="@ViewBag.EndDate" class="form-control form-control-sm" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm mb-1">Filter</button>
+        </form>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Visits Card -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Total Visits</h6>
+                    <h3 class="card-title mb-0">@ViewBag.TotalVisits</h3>
+                    <small class="@GetGrowthColor(ViewBag.VisitGrowth)">
+                        <i class="fas @GetGrowthIcon(ViewBag.VisitGrowth)"></i> @Math.Abs((double)ViewBag.VisitGrowth).ToString("0.0")%
+                        <span class="text-muted ms-1">vs previous period</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cart Card -->
+        <div class="col-md-3">
+             <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Add to Cart</h6>
+                    <h3 class="card-title mb-0">@ViewBag.TotalAddToCart</h3>
+                    <small class="@GetGrowthColor(ViewBag.CartGrowth)">
+                        <i class="fas @GetGrowthIcon(ViewBag.CartGrowth)"></i> @Math.Abs((double)ViewBag.CartGrowth).ToString("0.0")%
+                        <span class="text-muted ms-1">vs previous period</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+             <h4>🌍 Top Countries</h4>
+             <ul class="list-group mb-4">
+                 @foreach (dynamic country in ViewBag.TopCountries)
+                 {
+                     <li class="list-group-item d-flex justify-content-between align-items-center">
+                         @country.Country
+                         <span class="badge bg-primary rounded-pill">@country.Count</span>
+                     </li>
+                 }
+                 @if (((IEnumerable<dynamic>)ViewBag.TopCountries).Count() == 0)
+                 {
+                     <li class="list-group-item">No location data yet.</li>
+                 }
+             </ul>
+        </div>
+        <div class="col-md-6">
+            <h4>📜 Recent Activity</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Event</th>
+                            <th>Details</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model)
+                        {
+                            <tr>
+                                <td>@log.Timestamp.ToString("HH:mm:ss")</td>
+                                <td>
+                                    @if(log.EventType == "Visit") { <span class="badge bg-info">Visit</span> }
+                                    else if(log.EventType == "AddToCart") { <span class="badge bg-success">Cart</span> }
+                                    else { <span class="badge bg-secondary">@log.EventType</span> }
+                                </td>
+                                <td>
+                                    @if(!string.IsNullOrEmpty(log.Product)) { <small>Product: @log.Product</small> }
+                                    else { <small>Page: @log.Page</small> }
+                                </td>
+                                <td>@log.Country - @log.City</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

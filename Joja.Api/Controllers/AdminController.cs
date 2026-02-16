@@ -96,4 +96,61 @@ public class AdminController : Controller
         
         return View();
     }
+
+    // Analytics Dashboard
+    public async Task<IActionResult> Analytics(DateTime? startDate, DateTime? endDate)
+    {
+        // Default: Last 30 Days
+        var end = endDate ?? DateTime.Now;
+        var start = startDate ?? DateTime.Now.AddDays(-30);
+        
+        ViewBag.StartDate = start.ToString("yyyy-MM-dd");
+        ViewBag.EndDate = end.ToString("yyyy-MM-dd");
+
+        // Current Period Data
+        var currentPeriodLogs = _context.AnalyticsLogs
+            .Where(l => l.Timestamp >= start && l.Timestamp <= end);
+
+        var visitCount = await currentPeriodLogs.CountAsync(l => l.EventType == "Visit");
+        var cartCount = await currentPeriodLogs.CountAsync(l => l.EventType == "AddToCart");
+
+        // Previous Period Data (for Growth Rate)
+        var periodDuration = end - start;
+        var prevEnd = start;
+        var prevStart = start - periodDuration;
+
+        var prevPeriodLogs = _context.AnalyticsLogs
+            .Where(l => l.Timestamp >= prevStart && l.Timestamp < prevEnd);
+            
+        var prevVisitCount = await prevPeriodLogs.CountAsync(l => l.EventType == "Visit");
+        var prevCartCount = await prevPeriodLogs.CountAsync(l => l.EventType == "AddToCart");
+
+        // Calculate Growth Rates
+        double visitGrowth = 0;
+        if (prevVisitCount > 0) visitGrowth = ((double)(visitCount - prevVisitCount) / prevVisitCount) * 100;
+        else if (visitCount > 0) visitGrowth = 100; // 0 to something is 100% growth (effectively infinite but capped for UI)
+
+        double cartGrowth = 0;
+        if (prevCartCount > 0) cartGrowth = ((double)(cartCount - prevCartCount) / prevCartCount) * 100;
+        else if (cartCount > 0) cartGrowth = 100;
+
+        ViewBag.TotalVisits = visitCount;
+        ViewBag.TotalAddToCart = cartCount;
+        ViewBag.VisitGrowth = visitGrowth;
+        ViewBag.CartGrowth = cartGrowth;
+
+        // Group by Country (Current Period)
+        var countryStats = await currentPeriodLogs
+            .Where(l => l.Country != "Unknown")
+            .GroupBy(l => l.Country)
+            .Select(g => new { Country = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(5)
+            .ToListAsync();
+            
+        ViewBag.TopCountries = countryStats;
+
+        var logs = await currentPeriodLogs.OrderByDescending(l => l.Timestamp).Take(100).ToListAsync();
+        return View(logs);
+    }
 }
