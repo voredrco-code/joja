@@ -46,6 +46,11 @@ try
                 ""Device"" TEXT NULL,
                 ""Timestamp"" TEXT NOT NULL
             );");
+
+        // Add PixelId column to AppSettings if not exists
+        try {
+            dbContext.Database.ExecuteSqlRaw(@"ALTER TABLE ""AppSettings"" ADD COLUMN ""PixelId"" TEXT NULL;");
+        } catch { /* Column likely exists */ }
     }
 }
 catch (Exception ex)

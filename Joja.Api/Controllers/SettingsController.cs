@@ -57,7 +57,7 @@ public class SettingsController : Controller
     // POST: Settings/UpdateSocialLinks
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink)
+    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink, string pixelId)
     {
         var settings = await _context.AppSettings.FirstOrDefaultAsync();
         
@@ -66,7 +66,8 @@ public class SettingsController : Controller
             settings = new AppSettings 
             { 
                 FacebookLink = facebookLink,
-                InstagramLink = instagramLink 
+                InstagramLink = instagramLink,
+                PixelId = pixelId
             };
             _context.AppSettings.Add(settings);
         }
@@ -74,6 +75,7 @@ public class SettingsController : Controller
         {
             settings.FacebookLink = facebookLink;
             settings.InstagramLink = instagramLink;
+            settings.PixelId = pixelId;
             _context.Update(settings);
         }
         
