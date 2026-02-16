@@ -59,16 +59,23 @@
         <div class="col-md-6">
              <h4>🌍 Top Countries</h4>
              <ul class="list-group mb-4">
-                 @foreach (dynamic country in ViewBag.TopCountries)
+                 @if (ViewBag.TopCountries != null)
                  {
-                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                         @country.Country
-                         <span class="badge bg-primary rounded-pill">@country.Count</span>
-                     </li>
+                     foreach (dynamic country in ViewBag.TopCountries)
+                     {
+                         <li class="list-group-item d-flex justify-content-between align-items-center">
+                             @country.Country
+                             <span class="badge bg-primary rounded-pill">@country.Count</span>
+                         </li>
+                     }
+                     if (((IEnumerable<dynamic>)ViewBag.TopCountries).Count() == 0)
+                     {
+                         <li class="list-group-item">No location data yet.</li>
+                     }
                  }
-                 @if (((IEnumerable<dynamic>)ViewBag.TopCountries).Count() == 0)
+                 else
                  {
-                     <li class="list-group-item">No location data yet.</li>
+                     <li class="list-group-item">Loading data...</li>
                  }
              </ul>
         </div>
