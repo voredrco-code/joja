@@ -1,4 +1,4 @@
-# Build stage - compile and publish the application
+# 1. Build Stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
@@ -11,34 +11,38 @@ COPY . .
 WORKDIR "/src/Joja.Api"
 RUN dotnet build "Joja.Api.csproj" -c Release --no-restore
 
-# Publish stage - package the application
+# Publish stage
 FROM build AS publish
 RUN dotnet publish "Joja.Api.csproj" -c Release --no-build -o /app/publish
 
-# Runtime stage - create production image
+# 2. Final Stage (Production)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 
-# Set environment to production
+# (مهم جداً) تنزيل مكاتب Globalization و SQLite عشان تشتغل على Alpine
+RUN apk add --no-cache icu-libs sqlite-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
-# Copy published application
+# Copy the published app
 COPY --from=publish /app/publish .
 
-# Expose port for Render.com
-EXPOSE 5000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD dotnet Joja.Api.dll --version || exit 1
-
-# Set user to non-root for security
-RUN addgroup -g 1000 appuser && \
+# (الحل السحري) إنشاء فولدر للداتابيز وإعطاء صلاحيات الكتابة لليوزر
+RUN mkdir -p /app/data && \
+    addgroup -g 1000 appuser && \
     adduser -u 1000 -G appuser -s /bin/sh -D appuser && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app && \
+    chmod -R 777 /app/data
 
+# فتح البوت
+EXPOSE 5000
+ENV ASPNETCORE_URLS=http://+:5000
+
+# تبديل لليوزر العادي للأمان
 USER appuser
 
-# Run the application
+# تشغيل التطبيق
 ENTRYPOINT ["dotnet", "Joja.Api.dll"]
