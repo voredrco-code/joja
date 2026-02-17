@@ -29,8 +29,16 @@ public class ProductsController : Controller
     // GET: Products/Create
     public IActionResult Create()
     {
-        ViewBag.Categories = _context.Categories.ToList();
-        return View();
+        try
+        {
+            ViewBag.Categories = _context.Categories.ToList();
+            return View();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading Create Product page");
+            return Content($"Error loading page: {ex.Message}");
+        }
     }
 
     // POST: Products/Create
