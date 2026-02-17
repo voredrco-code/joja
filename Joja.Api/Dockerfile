@@ -32,10 +32,13 @@ COPY --from=publish /app/publish .
 
 # (الحل السحري) إنشاء فولدر للداتابيز وإعطاء صلاحيات الكتابة لليوزر
 RUN mkdir -p /app/data && \
+    mkdir -p /app/wwwroot/images/products && \
+    mkdir -p /app/wwwroot/videos && \
     addgroup -g 1000 appuser && \
     adduser -u 1000 -G appuser -s /bin/sh -D appuser && \
     chown -R appuser:appuser /app && \
-    chmod -R 777 /app/data
+    chmod -R 777 /app/data && \
+    chmod -R 777 /app/wwwroot
 
 # فتح البوت
 EXPOSE 5000

@@ -10,10 +10,13 @@ public class ProductsController : Controller
     private readonly ApplicationDbContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ProductsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+    private readonly ILogger<ProductsController> _logger;
+
+    public ProductsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<ProductsController> logger)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
+        _logger = logger;
     }
 
     // GET: Products
@@ -33,41 +36,50 @@ public class ProductsController : Controller
     // POST: Products/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(104857600)] // 100MB
     public async Task<IActionResult> Create(Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
     {
         if (ModelState.IsValid)
         {
-            // Handle Image Upload
-            if (MainImageFile != null && MainImageFile.Length > 0)
+            try
             {
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + MainImageFile.FileName;
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/products");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                // Handle Image Upload
+                if (MainImageFile != null && MainImageFile.Length > 0)
                 {
-                    await MainImageFile.CopyToAsync(fileStream);
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + MainImageFile.FileName;
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/products");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await MainImageFile.CopyToAsync(fileStream);
+                    }
+                    product.MainImageUrl = "/images/products/" + uniqueFileName;
                 }
-                product.MainImageUrl = "/images/products/" + uniqueFileName;
-            }
 
-            // Handle Video Upload
-            if (VideoFile != null && VideoFile.Length > 0)
+                // Handle Video Upload
+                if (VideoFile != null && VideoFile.Length > 0)
+                {
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + VideoFile.FileName;
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "videos");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await VideoFile.CopyToAsync(fileStream);
+                    }
+                    product.VideoUrl = "/videos/" + uniqueFileName;
+                }
+
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
             {
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + VideoFile.FileName;
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "videos");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await VideoFile.CopyToAsync(fileStream);
-                }
-                product.VideoUrl = "/videos/" + uniqueFileName;
+                _logger.LogError(ex, "Error creating product");
+                ModelState.AddModelError("", $"Failed to create product: {ex.Message}");
             }
-
-            _context.Add(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
         ViewBag.Categories = _context.Categories.ToList();
         return View(product);
@@ -88,6 +100,7 @@ public class ProductsController : Controller
     // POST: Products/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(104857600)] // 100MB
     public async Task<IActionResult> Edit(int id, Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
     {
         if (id != product.Id) return NotFound();
@@ -138,13 +151,18 @@ public class ProductsController : Controller
 
                 _context.Update(product);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ProductExists(product.Id)) return NotFound();
                 else throw;
             }
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product");
+                ModelState.AddModelError("", $"Failed to update product: {ex.Message}");
+            }
         }
         ViewBag.Categories = _context.Categories.ToList();
         return View(product);

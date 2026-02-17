@@ -1,7 +1,14 @@
 using Joja.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure File Upload Limit (Global)
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100MB
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
