@@ -1,3 +1,4 @@
+using CloudinaryDotNet;
 using Joja.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
@@ -37,6 +38,18 @@ builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Serv
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// إعدادات Cloudinary
+var cloudConfig = builder.Configuration.GetSection("Cloudinary");
+if (cloudConfig.Exists())
+{
+    Account account = new Account(
+        cloudConfig["CloudName"],
+        cloudConfig["ApiKey"],
+        cloudConfig["ApiSecret"]
+    );
+    Cloudinary cloudinary = new Cloudinary(account);
+    builder.Services.AddSingleton(cloudinary);
+}
 var app = builder.Build();
 
 // Ensure database is created (for production/Railway)

@@ -1,197 +1,190 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Joja.Api.Data;
 using Joja.Api.Models;
+// مكتبات Cloudinary
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 
-namespace Joja.Api.Controllers;
-
-public class ProductsController : Controller
+namespace Joja.Api.Controllers
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-
-    private readonly ILogger<ProductsController> _logger;
-
-    public ProductsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<ProductsController> logger)
+    public class ProductsController : Controller
     {
-        _context = context;
-        _webHostEnvironment = webHostEnvironment;
-        _logger = logger;
-    }
+        private readonly ApplicationDbContext _context;
+        private readonly Cloudinary _cloudinary;
+        private readonly ILogger<ProductsController> _logger;
 
-    // GET: Products
-    public async Task<IActionResult> Index()
-    {
-        var products = await _context.Products.Include(p => p.Category).ToListAsync();
-        return View(products);
-    }
-
-    // GET: Products/Create
-    public IActionResult Create()
-    {
-        try
+        // Constructor: تم إزالة IWebHostEnvironment لأننا هنستخدم Cloudinary
+        public ProductsController(ApplicationDbContext context, Cloudinary cloudinary, ILogger<ProductsController> logger)
         {
-            ViewBag.Categories = _context.Categories.ToList();
+            _context = context;
+            _cloudinary = cloudinary;
+            _logger = logger;
+        }
+
+        // GET: Products
+        public async Task<IActionResult> Index()
+        {
+            var products = await _context.Products.Include(p => p.Category).ToListAsync();
+            return View(products);
+        }
+
+        // GET: Products/Create
+        public IActionResult Create()
+        {
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
             return View();
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error loading Create Product page");
-            return Content($"Error loading page: {ex.Message}");
-        }
-    }
 
-    // POST: Products/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [RequestSizeLimit(104857600)] // 100MB
-    public async Task<IActionResult> Create(Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
-    {
-        if (ModelState.IsValid)
+        // POST: Products/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // Handle Image Upload
-                if (MainImageFile != null && MainImageFile.Length > 0)
+                try
                 {
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + MainImageFile.FileName;
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/products");
-                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    // 1. رفع الصورة (Cloudinary)
+                    if (MainImageFile != null && MainImageFile.Length > 0)
                     {
-                        await MainImageFile.CopyToAsync(fileStream);
+                        using (var stream = MainImageFile.OpenReadStream())
+                        {
+                            var uploadParams = new ImageUploadParams()
+                            {
+                                File = new FileDescription(MainImageFile.FileName, stream),
+                                Transformation = new Transformation().Width(800).Crop("limit")
+                            };
+                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                            product.MainImageUrl = uploadResult.SecureUrl.ToString();
+                        }
                     }
-                    product.MainImageUrl = "/images/products/" + uniqueFileName;
-                }
 
-                // Handle Video Upload
-                if (VideoFile != null && VideoFile.Length > 0)
+                    // 2. رفع الفيديو (Cloudinary)
+                    if (VideoFile != null && VideoFile.Length > 0)
+                    {
+                        using (var stream = VideoFile.OpenReadStream())
+                        {
+                            var uploadParams = new VideoUploadParams()
+                            {
+                                File = new FileDescription(VideoFile.FileName, stream)
+                            };
+                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                            product.VideoUrl = uploadResult.SecureUrl.ToString();
+                        }
+                    }
+
+                    _context.Add(product);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
                 {
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + VideoFile.FileName;
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "videos");
-                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await VideoFile.CopyToAsync(fileStream);
-                    }
-                    product.VideoUrl = "/videos/" + uniqueFileName;
+                    _logger.LogError(ex, "Error creating product");
+                    ModelState.AddModelError("", $"Upload Failed: {ex.Message}");
                 }
+            }
+            
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            return View(product);
+        }
 
-                _context.Add(product);
+        // GET: Products/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            return View(product);
+        }
+
+        // POST: Products/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
+        {
+            if (id != product.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // هنجيب البيانات القديمة عشان لو مرفعش صورة جديدة نحتفظ بالقديمة
+                    var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                    
+                    // 1. تحديث الصورة
+                    if (MainImageFile != null && MainImageFile.Length > 0)
+                    {
+                        using (var stream = MainImageFile.OpenReadStream())
+                        {
+                            var uploadParams = new ImageUploadParams()
+                            {
+                                File = new FileDescription(MainImageFile.FileName, stream),
+                                Transformation = new Transformation().Width(800).Crop("limit")
+                            };
+                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                            product.MainImageUrl = uploadResult.SecureUrl.ToString();
+                        }
+                    }
+                    else if (existingProduct != null)
+                    {
+                        // احتفظ بالصورة القديمة
+                        product.MainImageUrl = existingProduct.MainImageUrl;
+                    }
+
+                    // 2. تحديث الفيديو
+                    if (VideoFile != null && VideoFile.Length > 0)
+                    {
+                        using (var stream = VideoFile.OpenReadStream())
+                        {
+                            var uploadParams = new VideoUploadParams()
+                            {
+                                File = new FileDescription(VideoFile.FileName, stream)
+                            };
+                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                            product.VideoUrl = uploadResult.SecureUrl.ToString();
+                        }
+                    }
+                    else if (existingProduct != null)
+                    {
+                         // احتفظ بالفيديو القديم
+                        product.VideoUrl = existingProduct.VideoUrl;
+                    }
+
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error updating product");
+                    ModelState.AddModelError("", $"Failed to update: {ex.Message}");
+                }
+            }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            return View(product);
+        }
+
+        // POST: Products/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product != null)
+            {
+                _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating product");
-                ModelState.AddModelError("", $"Failed to create product: {ex.Message}");
-            }
+            return RedirectToAction(nameof(Index));
         }
-        ViewBag.Categories = _context.Categories.ToList();
-        return View(product);
-    }
-
-    // GET: Products/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null) return NotFound();
-
-        var product = await _context.Products.FindAsync(id);
-        if (product == null) return NotFound();
-
-        ViewBag.Categories = _context.Categories.ToList();
-        return View(product);
-    }
-
-    // POST: Products/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [RequestSizeLimit(104857600)] // 100MB
-    public async Task<IActionResult> Edit(int id, Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
-    {
-        if (id != product.Id) return NotFound();
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                // Handle Image Upload
-                if (MainImageFile != null && MainImageFile.Length > 0)
-                {
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + MainImageFile.FileName;
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images/products");
-                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await MainImageFile.CopyToAsync(fileStream);
-                    }
-                    product.MainImageUrl = "/images/products/" + uniqueFileName;
-                }
-                else
-                {
-                    // Keep existing image if not uploaded
-                     var existing = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-                     if (existing != null) product.MainImageUrl = existing.MainImageUrl;
-                }
-
-                // Handle Video Upload (Drag & Drop or File Input)
-                if (VideoFile != null && VideoFile.Length > 0)
-                {
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + VideoFile.FileName;
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "videos");
-                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await VideoFile.CopyToAsync(fileStream);
-                    }
-                    product.VideoUrl = "/videos/" + uniqueFileName;
-                }
-                else
-                {
-                     // Keep existing video if not uploaded
-                     var existing = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-                     if (existing != null && product.VideoUrl == null) product.VideoUrl = existing.VideoUrl;
-                }
-
-                _context.Update(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(product.Id)) return NotFound();
-                else throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating product");
-                ModelState.AddModelError("", $"Failed to update product: {ex.Message}");
-            }
-        }
-        ViewBag.Categories = _context.Categories.ToList();
-        return View(product);
-    }
-
-    // POST: Products/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product != null)
-        {
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-        }
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool ProductExists(int id)
-    {
-        return _context.Products.Any(e => e.Id == id);
     }
 }
