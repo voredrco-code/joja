@@ -73,12 +73,17 @@ catch (Exception ex)
 }
 
 // Configure the HTTP request pipeline.
-// Swagger removed for MVC simplicity
-// if (app.Environment.IsDevelopment())
-// {
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-// }
+// Configure Exception Handling pipeline
+if (app.Environment.IsDevelopment() || true) // Forced for debugging
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
 // Enable Response Compression
 app.UseResponseCompression();
