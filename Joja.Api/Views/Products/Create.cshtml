@@ -1,11 +1,59 @@
 @model Joja.Api.Models.Product
+
 @{
-    ViewData["Title"] = "Create Product Test";
+    ViewData["Title"] = "إضافة منتج جديد";
 }
 
-<div class="container text-center" style="margin-top: 50px;">
-    <h2>Test Page Loaded Successfully</h2>
-    <p class="lead">If you see this, the View rendering engine is working, and the previous error was likely in the Razor code (e.g., null loop).</p>
+<div class="container mt-4">
+    <h2>إضافة منتج لـ Joja Organic</h2>
     <hr />
-    <p>Please report this to the developer.</p>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label">اسم المنتج</label>
+            <input asp-for="Name" class="form-control" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Price" class="control-label">السعر</label>
+            <input asp-for="Price" type="number" step="0.01" class="form-control" required />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="CategoryId" class="control-label">التصنيف</label>
+            <select asp-for="CategoryId" class="form-control" required>
+                <option value="">-- اختر التصنيف --</option>
+                @if (ViewBag.Categories != null)
+                {
+                    foreach (var item in ViewBag.Categories)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                }
+            </select>
+            @if (ViewBag.Categories == null)
+            {
+                <small class="text-danger">تنبيه: لا توجد تصنيفات مسجلة في قاعدة البيانات!</small>
+            }
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="control-label">صورة المنتج</label>
+            <input type="file" name="MainImageFile" class="form-control" accept="image/*" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="control-label">وصف المنتج</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">حفظ المنتج</button>
+        <a asp-action="Index" class="btn btn-secondary">عودة للقائمة</a>
+    </form>
 </div>
