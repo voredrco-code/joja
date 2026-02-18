@@ -1,0 +1,135 @@
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+    var dailyVisits = ViewBag.DailyVisits as dynamic;
+    var topProducts = ViewBag.TopProducts as dynamic;
+    var topCities = ViewBag.TopCities as dynamic;
+}
+
+<div class="container" style="margin-top: 50px; margin-bottom: 50px;">
+    <h1 class="brand-font mb-4">📊 Analytics Dashboard</h1>
+    
+    <div class="row">
+        <!-- Visits Chart -->
+        <div class="col-md-12 mb-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Daily Visits (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="visitsChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Products -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Top Viewed Products</h5>
+                </div>
+                <div class="card-body">
+                    @if (topProducts != null)
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var p in topProducts)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @p.Product
+                                    <span class="badge bg-primary rounded-pill">@p.Count</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No data available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Cities -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Top Locations</h5>
+                </div>
+                <div class="card-body">
+                     @if (topCities != null)
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var c in topCities)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @c.City
+                                    <span class="badge bg-success rounded-pill">@c.Count</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                         <p class="text-muted">No data available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="ManageOrders" class="btn btn-secondary">Back to Admin</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var ctx = document.getElementById('visitsChart').getContext('2d');
+        
+        // Prepare Data
+        var dates = [];
+        var counts = [];
+        
+        @if (dailyVisits != null)
+        {
+            foreach(var item in dailyVisits)
+            {
+                <text>
+                dates.push('@item.Date.ToString("MM-dd")');
+                counts.push(@item.Count);
+                </text>
+            }
+        }
+        
+        // Reverse arrays to show oldest to newest if needed, or keep valid order
+        // Current order is descending, so let's reverse for chart (ASC)
+        dates.reverse();
+        counts.reverse();
+
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Daily Visits',
+                    data: counts,
+                    backgroundColor: 'rgba(183, 71, 126, 0.2)',
+                    borderColor: 'rgba(183, 71, 126, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
