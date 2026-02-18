@@ -69,7 +69,7 @@
                     <!-- Payment Instructions -->
                     <div id="paymentInstructions" style="display: none; background: #f9f9f9; padding: 15px; border-left: 4px solid #B7477E; margin-bottom: 20px;">
                         <p style="margin: 0; font-weight: bold;">Transfer Total Amount to:</p>
-                        <p style="font-size: 1.2rem; color: #333; margin: 5px 0;">01000000000</p>
+                        <p style="font-size: 1.2rem; color: #333; margin: 5px 0;">01090428764</p>
                         <p style="font-size: 0.9rem; color: #666;">Please transfer the total amount and write the transaction reference below once completed.</p>
                         
                         <label asp-for="Notes" style="display: block; margin-top: 10px; font-weight: bold;">Transaction Reference / Notes</label>
@@ -95,10 +95,21 @@
                 }
                 
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
+                    <span>Subtotal</span>
+                    <span>@Model.Cart.Total.ToString("C")</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
+                    <span>Shipping</span>
+                    <span>@Model.ShippingCost.ToString("C")</span>
+                </div>
+                
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
                 
                 <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
                     <span>Total</span>
-                    <span>@Model.Cart.Total.ToString("C")</span>
+                    <span>@Model.TotalWithShipping.ToString("C")</span>
                 </div>
             </div>
         </div>

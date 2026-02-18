@@ -23,7 +23,7 @@ public class CartController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToCart(int productId, int quantity)
+    public async Task<IActionResult> AddToCart(int productId, int quantity, string? redirect = null)
     {
         var product = await _context.Products.FindAsync(productId);
         if (product != null)
@@ -40,6 +40,11 @@ public class CartController : Controller
             }
 
             _cartService.AddItem(product, quantity, selectedVariants);
+        }
+
+        if (redirect == "checkout")
+        {
+             return RedirectToAction("Index", "Checkout");
         }
 
         return RedirectToAction("Index");

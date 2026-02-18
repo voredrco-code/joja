@@ -62,8 +62,11 @@
                             <input type="number" name="quantity" value="1" min="1" style="width: 50px; text-align: center; border: none; font-weight: bold;" />
                             <button type="button" onclick="this.previousElementSibling.stepUp()" style="background:none; border:none; padding: 5px 15px; cursor:pointer;">+</button>
                         </div>
-                        <button type="submit" class="btn-joja-dark" style="background: #121212; color: white; border: none; padding: 12px 40px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+                        <button type="submit" class="btn-joja-dark" style="background: #121212; color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; margin-right: 10px;">
                             @(isAr ? "أضف للسلة" : "Add to Cart")
+                        </button>
+                        <button type="submit" name="redirect" value="checkout" class="btn-joja-buy-now" style="background: #B7477E; color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+                            @(isAr ? "شراء الآن" : "Buy Now")
                         </button>
                     </div>
                 </form>

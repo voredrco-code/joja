@@ -74,7 +74,7 @@ public class CheckoutController : Controller
             {
                 CustomerId = customer.Id,
                 OrderDate = DateTime.Now,
-                TotalAmount = _cartService.Total,
+                TotalAmount = _cartService.Total + 85m, // Add Shipping Cost
                 Status = "Pending",
                 PaymentMethod = model.PaymentMethod,
                 ShippingAddress = $"{model.Address}, {model.City}",
