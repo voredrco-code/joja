@@ -57,7 +57,7 @@ public class SettingsController : Controller
     // POST: Settings/UpdateSocialLinks
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink, string pixelId)
+    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink, string pixelId, string topBarText)
     {
         var settings = await _context.AppSettings.FirstOrDefaultAsync();
         
@@ -67,7 +67,8 @@ public class SettingsController : Controller
             { 
                 FacebookLink = facebookLink,
                 InstagramLink = instagramLink,
-                PixelId = pixelId
+                PixelId = pixelId,
+                TopBarText = topBarText
             };
             _context.AppSettings.Add(settings);
         }
@@ -76,12 +77,13 @@ public class SettingsController : Controller
             settings.FacebookLink = facebookLink;
             settings.InstagramLink = instagramLink;
             settings.PixelId = pixelId;
+            settings.TopBarText = topBarText;
             _context.Update(settings);
         }
         
         await _context.SaveChangesAsync();
         
-        TempData["SuccessMessage"] = "تم حفظ روابط السوشيال ميديا بنجاح!";
+        TempData["SuccessMessage"] = "تم حفظ الإعدادات العامة وروابط السوشيال ميديا بنجاح!";
         return RedirectToAction(nameof(Index));
     }
 }

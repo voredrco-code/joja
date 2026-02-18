@@ -77,6 +77,11 @@ try
         try {
             dbContext.Database.ExecuteSqlRaw(@"ALTER TABLE ""AppSettings"" ADD COLUMN ""PixelId"" TEXT NULL;");
         } catch { /* Column likely exists */ }
+
+        // Add TopBarText column to AppSettings if not exists
+        try {
+            dbContext.Database.ExecuteSqlRaw(@"ALTER TABLE ""AppSettings"" ADD COLUMN ""TopBarText"" TEXT DEFAULT '' NULL;");
+        } catch { /* Column likely exists */ }
     }
 }
 catch (Exception ex)

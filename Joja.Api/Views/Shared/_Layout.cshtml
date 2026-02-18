@@ -55,6 +55,16 @@
 </head>
 <body>
     <header>
+        <!-- Top Bar -->
+        @if (!string.IsNullOrEmpty(appSettings?.TopBarText))
+        {
+             <div class="top-bar" style="background-color: #B7477E; color: white; text-align: center; padding: 8px 0; font-size: 0.9rem; font-weight: 500;">
+                 <div class="container">
+                     @appSettings.TopBarText
+                 </div>
+             </div>
+        }
+
         <nav class="navbar">
             <div class="container nav-container">
                 <!-- Logo Left -->

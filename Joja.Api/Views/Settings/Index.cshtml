@@ -65,10 +65,17 @@
             <!-- Social Media Settings -->
             <div class="card shadow-sm mt-4">
                 <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"><i class="fas fa-share-alt"></i> روابط السوشيال ميديا</h4>
+                    <h4 class="mb-0"><i class="fas fa-cog"></i> الإعدادات العامة والروابط</h4>
                 </div>
                 <div class="card-body">
                     <form asp-action="UpdateSocialLinks" method="post">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-bullhorn"></i> نص الشريط العلوي (Top Bar):</label>
+                            <input type="text" name="topBarText" class="form-control" value="@Model.TopBarText" placeholder="مثال: شحن مجاني للطلبات فوق 500 جنيه" />
+                        </div>
+
+                        <hr />
+
                         <div class="form-group mb-3">
                             <label class="form-label fw-bold"><i class="fab fa-facebook"></i> رابط فيسبوك:</label>
                             <input type="url" name="facebookLink" class="form-control" value="@Model.FacebookLink" required />
