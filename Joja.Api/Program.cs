@@ -1,5 +1,6 @@
 using CloudinaryDotNet;
 using Joja.Api.Data;
+using Joja.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -125,15 +126,18 @@ app.MapControllerRoute(
 // Seed default AppSettings if not exists
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<Joja.Api.Data.ApplicationDbContext>();
+
     if (!context.AppSettings.Any())
     {
-        context.AppSettings.Add(new AppSettings { 
-            WhatsAppMessageTemplate = "طلب جديد من Joja",
-            FacebookLink = "#", 
+        context.AppSettings.Add(new Joja.Api.Models.AppSettings 
+        { 
+            WhatsAppMessageTemplate = "🛍️ *طلب جديد من Joja*",
+            FacebookLink = "#",
             InstagramLink = "#",
-            TopBarText = "مرحباً بك في Joja Organic",
-            PixelId = null
+            PixelId = "",
+            TopBarText = "مرحباً بك في Joja Organic"
         });
         context.SaveChanges();
     }
