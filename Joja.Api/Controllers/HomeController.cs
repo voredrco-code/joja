@@ -244,18 +244,25 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     // Admin: Manage Orders
     public async Task<IActionResult> ManageOrders()
     {
-        // Stats for Dashboard Summary
-        ViewBag.TotalSales = await _context.Orders.SumAsync(o => o.TotalAmount);
+        // 1. حل مشكلة الـ Total Sales
+        // بنجيب الأرقام كـ List الأول وبعدين نجمعها
+        var salesList = await _context.Orders.Select(o => (double)o.TotalAmount).ToListAsync();
+        ViewBag.TotalSales = (decimal)salesList.Sum();
+
+        // 2. حل مشكلة الـ Pending Orders
         ViewBag.PendingOrders = await _context.Orders.CountAsync(o => o.Status == "Pending");
+
+        // 3. حل مشكلة الـ Subscribers
         ViewBag.EmailCount = await _context.Customers.CountAsync();
-        
-        // Products list for Video Upload Dropdown
+
+        // 4. تحميل المنتجات والأوردرات
         ViewBag.Products = await _context.Products.ToListAsync();
 
         var orders = await _context.Orders
             .Include(o => o.Customer)
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
+
         return View(orders);
     }
 

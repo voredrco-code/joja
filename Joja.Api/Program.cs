@@ -122,5 +122,22 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// Seed default AppSettings if not exists
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    if (!context.AppSettings.Any())
+    {
+        context.AppSettings.Add(new AppSettings { 
+            WhatsAppMessageTemplate = "طلب جديد من Joja",
+            FacebookLink = "#", 
+            InstagramLink = "#",
+            TopBarText = "مرحباً بك في Joja Organic",
+            PixelId = null
+        });
+        context.SaveChanges();
+    }
+}
+
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Run($"http://0.0.0.0:{port}");

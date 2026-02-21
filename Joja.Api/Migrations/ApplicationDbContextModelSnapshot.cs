@@ -17,11 +17,59 @@ namespace Joja.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
 
+            modelBuilder.Entity("Joja.Api.Models.AnalyticsLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Device")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Page")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Product")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnalyticsLogs");
+                });
+
             modelBuilder.Entity("Joja.Api.Models.AppSettings", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("FacebookLink")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InstagramLink")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PixelId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TopBarText")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("WhatsAppMessageTemplate")
                         .IsRequired()
@@ -180,6 +228,14 @@ namespace Joja.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
@@ -188,6 +244,10 @@ namespace Joja.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -205,7 +265,21 @@ namespace Joja.Api.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("OrderDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PaymentNotes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")

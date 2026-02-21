@@ -98,18 +98,18 @@
 
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                     <span>Subtotal</span>
-                    <span>@Model.Cart.Total.ToString("C")</span>
+                    <span>@(Model?.Cart?.Total.ToString("C") ?? "0")</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                     <span>Shipping</span>
-                    <span>@Model.ShippingCost.ToString("C")</span>
+                    <span>@(Model?.ShippingCost.ToString("C") ?? "0")</span>
                 </div>
                 
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
                 
                 <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
                     <span>Total</span>
-                    <span>@Model.TotalWithShipping.ToString("C")</span>
+                    <span>@(Model?.TotalWithShipping.ToString("C") ?? "0")</span>
                 </div>
             </div>
         </div>
