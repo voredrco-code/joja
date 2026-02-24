@@ -1,21 +1,22 @@
 # Stage 1: Build
-FROM dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore
-COPY ["Joja.Api.csproj", "./"]
-RUN dotnet restore "./Joja.Api.csproj"
+COPY ["Joja.Api/Joja.Api.csproj", "Joja.Api/"]
+RUN dotnet restore "Joja.Api/Joja.Api.csproj"
 
 # Copy everything else and build
 COPY . .
+WORKDIR "/src/Joja.Api"
 RUN dotnet build "Joja.Api.csproj" -c Release -o /app/build
 
 # Stage 2: Publish
 FROM build AS publish
-RUN dotnet publish "Joja.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Joja.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Stage 3: Final Runtime
-FROM dotnet/aspnet:8.0 AS final
+# Stage 3: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Joja.Api.dll"]
