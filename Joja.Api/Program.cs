@@ -137,7 +137,7 @@ using (var scope = app.Services.CreateScope())
             FacebookLink = "#",
             InstagramLink = "#",
             PixelId = "",
-            TopBarText = "مرحباً بك في Joja Organic"
+            TopBarText = "مرحباً بك في Joja"
         });
         context.SaveChanges();
     }

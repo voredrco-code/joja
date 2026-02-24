@@ -87,7 +87,7 @@ public class ApplicationDbContext : DbContext
             
             // English
             new UiTranslation { Id = 8, Key = "HeroTitle", Language = "en", Value = "Natural Beauty for You" },
-            new UiTranslation { Id = 9, Key = "HeroSubtitle", Language = "en", Value = "Discover our organic collection" },
+            new UiTranslation { Id = 9, Key = "HeroSubtitle", Language = "en", Value = "Discover our natural collection" },
             new UiTranslation { Id = 10, Key = "ShopNow", Language = "en", Value = "Shop Now" },
             new UiTranslation { Id = 11, Key = "JojaMoments", Language = "en", Value = "Joja Moments" },
             new UiTranslation { Id = 12, Key = "BestSellers", Language = "en", Value = "Best Sellers" },
