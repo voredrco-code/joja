@@ -44,14 +44,19 @@ namespace Joja.Api.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, [FromForm] IFormFile? MainImageFile, [FromForm] IFormFile? VideoFile)
+        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile)
         {
-            if (ModelState.IsValid)
+            // تأمين الـ Object نفسه قبل أي تعامل
+            if (product == null) product = new Product();
+            
+            // أمن الـ Properties الأساسية
+            product.Name = product.Name ?? " ";
+            product.Description = product.Description ?? " ";
+
+            try
             {
-                try
-                {
-                    // 1. رفع الصورة (Cloudinary)
-                    if (MainImageFile != null && MainImageFile.Length > 0)
+                // 1. رفع الصورة (Cloudinary)
+                if (MainImageFile != null && MainImageFile.Length > 0)
                     {
                         using (var stream = MainImageFile.OpenReadStream())
                         {
@@ -78,15 +83,15 @@ namespace Joja.Api.Controllers
                         }
                     }
 
-                    _context.Add(product);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error creating product");
-                    ModelState.AddModelError("", $"Upload Failed: {ex.Message}");
-                }
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating product");
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                ModelState.AddModelError("", $"Upload Failed: {ex.Message}. Inner: {innerMsg}");
             }
             
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
@@ -108,16 +113,21 @@ namespace Joja.Api.Controllers
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product, [FromForm] IFormFile? MainImageFile, [FromForm] IFormFile? VideoFile)
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile MainImageFile, IFormFile VideoFile)
         {
+            // تأمين الـ Object نفسه قبل أي تعامل
+            if (product == null) product = new Product();
+            
             if (id != product.Id) return NotFound();
 
-            if (ModelState.IsValid)
+            // أمن الـ Properties الأساسية
+            product.Name = product.Name ?? " ";
+            product.Description = product.Description ?? " ";
+
+            try
             {
-                try
-                {
-                    // هنجيب البيانات القديمة عشان لو مرفعش صورة جديدة نحتفظ بالقديمة
-                    var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                // هنجيب البيانات القديمة عشان لو مرفعش صورة جديدة نحتفظ بالقديمة
+                var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
                     
                     // 1. تحديث الصورة
                     if (MainImageFile != null && MainImageFile.Length > 0)
@@ -157,15 +167,15 @@ namespace Joja.Api.Controllers
                         product.VideoUrl = existingProduct.VideoUrl;
                     }
 
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error updating product");
-                    ModelState.AddModelError("", $"Failed to update: {ex.Message}");
-                }
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product");
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                ModelState.AddModelError("", $"Update Failed: {ex.Message}. Inner: {innerMsg}");
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
             return View(product);

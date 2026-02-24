@@ -93,6 +93,10 @@ public class AdminController : Controller
         ViewBag.TotalProducts = await _context.Products.CountAsync();
         ViewBag.TotalCategories = await _context.Categories.CountAsync();
         ViewBag.HasTranslations = await _context.UiTranslations.AnyAsync();
+        ViewBag.HeroBanner = await _context.Banners
+            .OrderBy(b => b.DisplayOrder).ThenBy(b => b.Id)
+            .FirstOrDefaultAsync();
+        ViewBag.TotalBanners = await _context.Banners.CountAsync();
         
         return View();
     }

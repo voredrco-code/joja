@@ -39,53 +39,54 @@ namespace Joja.Api.Controllers
         // POST: Banners/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Banner banner, [FromForm] IFormFile? ImageFile, [FromForm] IFormFile? VideoFile)
+        public async Task<IActionResult> Create(Banner banner, IFormFile ImageFile, IFormFile VideoFile)
         {
-            // 1. حل مشكلة الـ Subtitle (لو فاضي حط مكانه مسافة عشان الداتابيز ماتضربش)
-            if (string.IsNullOrEmpty(banner.Subtitle)) banner.Subtitle = " ";
+            // تأمين الـ Object نفسه قبل أي تعامل
+            if (banner == null) banner = new Banner();
+            
+            // حل مشكلة الـ Subtitle فوراً
+            banner.Subtitle = banner.Subtitle ?? " ";
+            banner.Title = banner.Title ?? " ";
 
-            if (ModelState.IsValid)
+            try 
             {
-                try 
+                // استخدام المعامل الثابت مباشرة (بدون الاعتماد على الترتيب)
+                if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    // 2. رفع الصورة لـ Cloudinary
-                    if (ImageFile != null && ImageFile.Length > 0)
+                    using (var stream = ImageFile.OpenReadStream())
                     {
-                        using (var stream = ImageFile.OpenReadStream())
+                        var uploadParams = new ImageUploadParams()
                         {
-                            var uploadParams = new ImageUploadParams()
-                            {
-                                File = new FileDescription(ImageFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            banner.ImageUrl = uploadResult.SecureUrl.ToString();
-                        }
+                            File = new FileDescription(ImageFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        banner.ImageUrl = uploadResult.SecureUrl.ToString();
                     }
-
-                    // 3. رفع الفيديو لـ Cloudinary (لو وجد)
-                    if (VideoFile != null && VideoFile.Length > 0)
-                    {
-                        using (var stream = VideoFile.OpenReadStream())
-                        {
-                            var uploadParams = new VideoUploadParams()
-                            {
-                                File = new FileDescription(VideoFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            banner.VideoUrl = uploadResult.SecureUrl.ToString();
-                        }
-                    }
-
-                    _context.Add(banner);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
                 }
-                catch (Exception ex)
+
+                // 3. رفع الفيديو لـ Cloudinary (لو وجد)
+                if (VideoFile != null && VideoFile.Length > 0)
                 {
-                    // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
-                    var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
-                    ModelState.AddModelError("", $"Upload Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
+                    using (var stream = VideoFile.OpenReadStream())
+                    {
+                        var uploadParams = new VideoUploadParams()
+                        {
+                            File = new FileDescription(VideoFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
+                    }
                 }
+
+                _context.Add(banner);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
+                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                ModelState.AddModelError("", $"Upload Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
             }
             return View(banner);
         }
@@ -103,18 +104,20 @@ namespace Joja.Api.Controllers
         // POST: Banners/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Banner banner, [FromForm] IFormFile? ImageFile, [FromForm] IFormFile? VideoFile)
+        public async Task<IActionResult> Edit(int id, Banner banner, IFormFile ImageFile, IFormFile VideoFile)
         {
+            // تأمين الـ Object نفسه قبل أي تعامل
+            if (banner == null) banner = new Banner();
+            
             if (id != banner.Id) return NotFound();
 
-            // حل مشكلة Subtitle في التعديل كمان
-            if (string.IsNullOrEmpty(banner.Subtitle)) banner.Subtitle = " ";
+            // حل مشكلة الـ Properties فوراً
+            banner.Subtitle = banner.Subtitle ?? " ";
+            banner.Title = banner.Title ?? " ";
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    var existingBanner = await _context.Banners.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
+                var existingBanner = await _context.Banners.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
 
                     // تحديث الصورة
                     if (ImageFile != null && ImageFile.Length > 0)
@@ -154,15 +157,14 @@ namespace Joja.Api.Controllers
 
                     _context.Update(banner);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
                     // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
                     var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
                     ModelState.AddModelError("", $"Update Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
-                    if (ex is DbUpdateConcurrencyException) return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(banner);
         }

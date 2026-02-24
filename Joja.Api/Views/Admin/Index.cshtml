@@ -35,6 +35,90 @@
         </div>
     }
 
+    @* ── Hero Banner Preview ── *@
+    @{
+        var heroBanner = ViewBag.HeroBanner as Joja.Api.Models.Banner;
+    }
+    <div style="background: white; border: 2px solid #B7477E; border-radius: 12px; padding: 24px; margin-bottom: 40px; box-shadow: 0 4px 16px rgba(183,71,126,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <h2 style="margin: 0; color: #121212; font-size: 1.2rem;">🖼️ البانر الرئيسي (Hero Banner)</h2>
+            <div style="display: flex; gap: 10px;">
+                @if (heroBanner != null)
+                {
+                    <a asp-controller="Banners" asp-action="Edit" asp-route-id="@heroBanner.Id"
+                       style="background:#B7477E; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600;">
+                        ✏️ تعديل البانر
+                    </a>
+                }
+                <a asp-controller="Banners" asp-action="Index"
+                   style="background:#121212; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600;">
+                    إدارة كل البانرات (@ViewBag.TotalBanners)
+                </a>
+                <a asp-controller="Banners" asp-action="Create"
+                   style="background:#22a06b; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600;">
+                    + إضافة بانر
+                </a>
+            </div>
+        </div>
+        @if (heroBanner != null)
+        {
+            <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+                <div style="flex: 0 0 auto;">
+                    @if (!string.IsNullOrEmpty(heroBanner.ImageUrl))
+                    {
+                        <img src="@heroBanner.ImageUrl" alt="@heroBanner.Title"
+                             style="width: 320px; height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                    }
+                    else if (!string.IsNullOrEmpty(heroBanner.VideoUrl))
+                    {
+                        <video src="@heroBanner.VideoUrl" muted
+                               style="width: 320px; height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid #eee;"></video>
+                    }
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <table style="font-size: 0.95rem; border-collapse: collapse; width: 100%;">
+                        <tr>
+                            <td style="color:#888; padding: 6px 12px 6px 0; white-space:nowrap;">العنوان</td>
+                            <td style="font-weight:600;">@(heroBanner.Title ?? "—")</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#888; padding: 6px 12px 6px 0;">الوصف</td>
+                            <td>@(heroBanner.Subtitle?.Trim() is { Length: > 0 } s ? s : "—")</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#888; padding: 6px 12px 6px 0;">الترتيب</td>
+                            <td><span style="background:#FBF1F6; padding:2px 10px; border-radius:12px; font-weight:700; color:#B7477E;">@heroBanner.DisplayOrder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color:#888; padding: 6px 12px 6px 0;">النوع</td>
+                            <td>@heroBanner.BannerType</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#888; padding: 6px 12px 6px 0;">الرابط</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(heroBanner.LinkUrl) && heroBanner.LinkUrl != "#")
+                                {
+                                    <a href="@heroBanner.LinkUrl" target="_blank" style="color:#B7477E;">@heroBanner.LinkUrl</a>
+                                }
+                                else { <span style="color:#ccc;">—</span> }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="text-align:center; padding: 30px; color:#999; border: 2px dashed #eee; border-radius: 8px;">
+                <p style="font-size:1.1rem; margin-bottom: 12px;">لا يوجد بانر حتى الآن</p>
+                <a asp-controller="Banners" asp-action="Create" class="btn-joja-dark" style="background:#B7477E;">
+                    + أضف أول بانر
+                </a>
+            </div>
+        }
+    </div>
+
+
     <!-- Main Actions -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
         
