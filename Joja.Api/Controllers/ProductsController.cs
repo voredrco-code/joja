@@ -106,6 +106,7 @@ namespace Joja.Api.Controllers
                 ModelState.AddModelError("", $"Database Error: {detailedError}");
                 
                 // رجع الموديل عشان الداتا اللي كتبتها ما تضيعش
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
                 return View(product);
             }
         }
@@ -195,6 +196,7 @@ namespace Joja.Api.Controllers
                 ModelState.AddModelError("", $"Database Error: {detailedError}");
                 
                 // رجع الموديل عشان الداتا اللي كتبتها ما تضيعش
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
                 return View(product);
             }
         }
