@@ -36,7 +36,7 @@ public class AdminController : Controller
             new UiTranslation { Key = "AddToCart", Language = "ar", Value = "أضف للسلة" },
             
             new UiTranslation { Key = "HeroTitle", Language = "en", Value = "Natural Beauty for You" },
-            new UiTranslation { Key = "HeroSubtitle", Language = "en", Value = "Discover our organic collection" },
+            new UiTranslation { Key = "HeroSubtitle", Language = "en", Value = "Discover our natural collection" },
             new UiTranslation { Key = "ShopNow", Language = "en", Value = "Shop Now" },
             new UiTranslation { Key = "JojaMoments", Language = "en", Value = "Joja Moments" },
             new UiTranslation { Key = "BestSellers", Language = "en", Value = "Best Sellers" },
