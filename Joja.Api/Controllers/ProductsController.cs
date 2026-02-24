@@ -98,6 +98,12 @@ namespace Joja.Api.Controllers
                     }
                 }
 
+                // تأكد إن القيمة مش null مهما حصل قبل ما تروح للداتابيز
+                if (string.IsNullOrEmpty(product.MainImageUrl))
+                {
+                    product.MainImageUrl = " "; // مسافة واحدة كافية لكسر الـ NOT NULL
+                }
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

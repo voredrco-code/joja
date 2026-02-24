@@ -7,7 +7,7 @@ public class Product
     public string Description { get; set; } = string.Empty;
     public string? DescriptionEn { get; set; }
     public decimal Price { get; set; }
-    public string MainImageUrl { get; set; } = string.Empty;
+    public string? MainImageUrl { get; set; } = "";
     
     
     // Video
