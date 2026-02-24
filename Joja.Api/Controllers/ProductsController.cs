@@ -99,12 +99,13 @@ namespace Joja.Api.Controllers
             }
             catch (Exception ex)
             {
-                var msg = ex.Message;
-                if (ex.InnerException != null) 
-                {
-                    msg += " | Inner: " + ex.InnerException.Message;
-                }
-                ModelState.AddModelError("", $"Database Error: {msg}");
+                // ده هيجيب لنا السبب الحقيقي اللي الداتابيز مخبياه
+                var detailedError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                
+                // لو فيه إيرور من الـ Entity Framework نفسه (زي الـ Validation)
+                ModelState.AddModelError("", $"Database Error: {detailedError}");
+                
+                // رجع الموديل عشان الداتا اللي كتبتها ما تضيعش
                 return View(product);
             }
         }
@@ -187,12 +188,15 @@ namespace Joja.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating product");
-                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
-                ModelState.AddModelError("", $"Update Failed: {ex.Message}. Inner: {innerMsg}");
+                // ده هيجيب لنا السبب الحقيقي اللي الداتابيز مخبياه
+                var detailedError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                
+                // لو فيه إيرور من الـ Entity Framework نفسه (زي الـ Validation)
+                ModelState.AddModelError("", $"Database Error: {detailedError}");
+                
+                // رجع الموديل عشان الداتا اللي كتبتها ما تضيعش
+                return View(product);
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
         }
 
         // POST: Products/Delete/5
