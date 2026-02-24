@@ -50,7 +50,7 @@ namespace Joja.Api.Controllers
             if (product == null) product = new Product();
             product.Name = product.Name ?? " ";
             product.Description = product.Description ?? " ";
-            product.EnglishDescription = product.EnglishDescription ?? " ";
+            product.DescriptionEn = product.DescriptionEn ?? " ";
 
             try
             {
@@ -118,6 +118,7 @@ namespace Joja.Api.Controllers
             // أمن الـ Properties الأساسية
             product.Name = product.Name ?? " ";
             product.Description = product.Description ?? " ";
+            product.DescriptionEn = product.DescriptionEn ?? " ";
 
             try
             {
