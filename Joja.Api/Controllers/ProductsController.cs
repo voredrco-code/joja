@@ -76,6 +76,11 @@ namespace Joja.Api.Controllers
                         product.MainImageUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
+                else
+                {
+                    // لو مفيش صورة، حط قيمة فارغة عشان الـ NOT NULL constraint
+                    product.MainImageUrl = "";
+                }
 
                 // رفع الفيديو (اختياري)
                 if (VideoFile != null && VideoFile.Length > 0)
