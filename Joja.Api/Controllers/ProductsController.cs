@@ -57,8 +57,7 @@ namespace Joja.Api.Controllers
                         {
                             var uploadParams = new ImageUploadParams()
                             {
-                                File = new FileDescription(MainImageFile.FileName, stream),
-                                Transformation = new Transformation().Width(800).Crop("limit")
+                                File = new FileDescription(MainImageFile.FileName, stream)
                             };
                             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
                             product.MainImageUrl = uploadResult.SecureUrl.ToString();
@@ -127,8 +126,7 @@ namespace Joja.Api.Controllers
                         {
                             var uploadParams = new ImageUploadParams()
                             {
-                                File = new FileDescription(MainImageFile.FileName, stream),
-                                Transformation = new Transformation().Width(800).Crop("limit")
+                                File = new FileDescription(MainImageFile.FileName, stream)
                             };
                             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
                             product.MainImageUrl = uploadResult.SecureUrl.ToString();
