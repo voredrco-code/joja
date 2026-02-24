@@ -24,7 +24,7 @@
             @foreach (var item in Model) {
                 <tr>
                     <td>
-                        <img src="@item.MainImageUrl" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                        <img src="@item.MainImageUrl" alt="@item.Name" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
                     </td>
                     <td>@item.Name</td>
                     <td>@item.Price EGP</td>

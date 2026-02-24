@@ -31,7 +31,7 @@
                     <div style="display: table-row; border-bottom: 1px solid #eee;">
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
                             <div style="display: flex; align-items: center;">
-                                <img src="@item.Product.MainImageUrl" style="width: 50px; border-radius: 4px; margin-right: 15px;" />
+                                <img src="@item.Product.MainImageUrl" alt="@item.Product.Name" class="img-fluid" style="width: 50px; border-radius: 4px; margin-right: 15px;" />
                                 <div>
                                     <div style="font-weight: bold;">@item.Product.Name</div>
                                     @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))

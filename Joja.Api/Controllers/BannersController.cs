@@ -80,7 +80,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(VideoFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.VideoUrl = uploadResult.SecureUrl?.ToString();
+                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
                     }
                 }
 
@@ -141,7 +141,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(ImageFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.ImageUrl = uploadResult.SecureUrl?.ToString();
+                        banner.ImageUrl = uploadResult.SecureUrl.ToString();
                     }
                 }
                 else if (existingBanner != null)
@@ -160,7 +160,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(VideoFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.VideoUrl = uploadResult.SecureUrl?.ToString();
+                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
                     }
                 }
                 else if (existingBanner != null)
