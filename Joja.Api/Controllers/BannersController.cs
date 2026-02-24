@@ -84,6 +84,11 @@ namespace Joja.Api.Controllers
                     }
                 }
 
+                if (string.IsNullOrEmpty(banner.ImageUrl))
+                {
+                    banner.ImageUrl = " "; // مسافة واحدة تهزم الـ NOT NULL
+                }
+
                 _context.Add(banner);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -161,6 +166,11 @@ namespace Joja.Api.Controllers
                 else if (existingBanner != null)
                 {
                     banner.VideoUrl = existingBanner.VideoUrl;
+                }
+
+                if (string.IsNullOrEmpty(banner.ImageUrl))
+                {
+                    banner.ImageUrl = " "; // مسافة واحدة تهزم الـ NOT NULL
                 }
 
                 _context.Update(banner);
