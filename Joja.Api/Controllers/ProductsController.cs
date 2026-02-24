@@ -46,42 +46,41 @@ namespace Joja.Api.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile)
         {
-            // تأمين الـ Object نفسه قبل أي تعامل
+            // تأمين الـ Object والـ Strings
             if (product == null) product = new Product();
-            
-            // أمن الـ Properties الأساسية
             product.Name = product.Name ?? " ";
             product.Description = product.Description ?? " ";
+            product.EnglishDescription = product.EnglishDescription ?? " ";
 
             try
             {
-                // 1. رفع الصورة (Cloudinary)
+                // رفع الصورة الرئيسية
                 if (MainImageFile != null && MainImageFile.Length > 0)
+                {
+                    using (var stream = MainImageFile.OpenReadStream())
                     {
-                        using (var stream = MainImageFile.OpenReadStream())
+                        var uploadParams = new ImageUploadParams()
                         {
-                            var uploadParams = new ImageUploadParams()
-                            {
-                                File = new FileDescription(MainImageFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            product.MainImageUrl = uploadResult.SecureUrl.ToString();
-                        }
+                            File = new FileDescription(MainImageFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        product.MainImageUrl = uploadResult.SecureUrl.ToString();
                     }
+                }
 
-                    // 2. رفع الفيديو (Cloudinary)
-                    if (VideoFile != null && VideoFile.Length > 0)
+                // رفع الفيديو (اختياري)
+                if (VideoFile != null && VideoFile.Length > 0)
+                {
+                    using (var stream = VideoFile.OpenReadStream())
                     {
-                        using (var stream = VideoFile.OpenReadStream())
+                        var uploadParams = new VideoUploadParams()
                         {
-                            var uploadParams = new VideoUploadParams()
-                            {
-                                File = new FileDescription(VideoFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            product.VideoUrl = uploadResult.SecureUrl.ToString();
-                        }
+                            File = new FileDescription(VideoFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        product.VideoUrl = uploadResult.SecureUrl.ToString();
                     }
+                }
 
                 _context.Add(product);
                 await _context.SaveChangesAsync();
@@ -89,13 +88,9 @@ namespace Joja.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating product");
-                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
-                ModelState.AddModelError("", $"Upload Failed: {ex.Message}. Inner: {innerMsg}");
+                ModelState.AddModelError("", $"Upload Error: {ex.Message}");
+                return View(product);
             }
-            
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
         }
 
         // GET: Products/Edit/5
