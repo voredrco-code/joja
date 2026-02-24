@@ -44,7 +44,7 @@ namespace Joja.Api.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
+        public async Task<IActionResult> Create(Product product, [FromForm] IFormFile? MainImageFile, [FromForm] IFormFile? VideoFile)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +108,7 @@ namespace Joja.Api.Controllers
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product, IFormFile? MainImageFile, IFormFile? VideoFile)
+        public async Task<IActionResult> Edit(int id, Product product, [FromForm] IFormFile? MainImageFile, [FromForm] IFormFile? VideoFile)
         {
             if (id != product.Id) return NotFound();
 

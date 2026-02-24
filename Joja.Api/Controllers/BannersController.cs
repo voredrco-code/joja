@@ -39,7 +39,7 @@ namespace Joja.Api.Controllers
         // POST: Banners/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Banner banner, IFormFile? ImageFile, IFormFile? VideoFile)
+        public async Task<IActionResult> Create(Banner banner, [FromForm] IFormFile? ImageFile, [FromForm] IFormFile? VideoFile)
         {
             // 1. حل مشكلة الـ Subtitle (لو فاضي حط مكانه مسافة عشان الداتابيز ماتضربش)
             if (string.IsNullOrEmpty(banner.Subtitle)) banner.Subtitle = " ";
@@ -103,7 +103,7 @@ namespace Joja.Api.Controllers
         // POST: Banners/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Banner banner, IFormFile? ImageFile, IFormFile? VideoFile)
+        public async Task<IActionResult> Edit(int id, Banner banner, [FromForm] IFormFile? ImageFile, [FromForm] IFormFile? VideoFile)
         {
             if (id != banner.Id) return NotFound();
 
