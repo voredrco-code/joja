@@ -16,12 +16,19 @@ namespace Joja.Api.Controllers
     public class BannersController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly Cloudinary _cloudinary; // إضافة Cloudinary
+        private readonly Cloudinary _cloudinary;
 
-        public BannersController(ApplicationDbContext context, Cloudinary cloudinary)
+        // تعديل الـ Constructor عشان نضمن القراءة من الـ Config
+        public BannersController(ApplicationDbContext context, IConfiguration config)
         {
             _context = context;
-            _cloudinary = cloudinary;
+            // إنشاء الكائن مباشرة لضمان عدم وجود Null
+            var cloudName = config["Cloudinary:CloudName"] ?? config["Cloudinary__CloudName"];
+            var apiKey = config["Cloudinary:ApiKey"] ?? config["Cloudinary__ApiKey"];
+            var apiSecret = config["Cloudinary:ApiSecret"] ?? config["Cloudinary__ApiSecret"];
+            
+            var account = new Account(cloudName, apiKey, apiSecret);
+            _cloudinary = new Cloudinary(account);
         }
 
         // GET: Banners
@@ -41,18 +48,16 @@ namespace Joja.Api.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Banner banner, IFormFile ImageFile, IFormFile VideoFile)
         {
-            // تأمين الـ Object نفسه قبل أي تعامل
             if (banner == null) banner = new Banner();
-            
-            // حل مشكلة الـ Subtitle فوراً
             banner.Subtitle = banner.Subtitle ?? " ";
             banner.Title = banner.Title ?? " ";
 
             try 
             {
-                // استخدام المعامل الثابت مباشرة (بدون الاعتماد على الترتيب)
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
                     using (var stream = ImageFile.OpenReadStream())
                     {
                         var uploadParams = new ImageUploadParams()
@@ -60,13 +65,14 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(ImageFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.ImageUrl = uploadResult.SecureUrl.ToString();
+                        banner.ImageUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
 
-                // 3. رفع الفيديو لـ Cloudinary (لو وجد)
                 if (VideoFile != null && VideoFile.Length > 0)
                 {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
                     using (var stream = VideoFile.OpenReadStream())
                     {
                         var uploadParams = new VideoUploadParams()
@@ -74,7 +80,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(VideoFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
+                        banner.VideoUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
 
@@ -84,9 +90,7 @@ namespace Joja.Api.Controllers
             }
             catch (Exception ex)
             {
-                // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
-                var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
-                ModelState.AddModelError("", $"Upload Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
+                ModelState.AddModelError("", $"Upload Error: {ex.Message}");
             }
             return View(banner);
         }
@@ -118,6 +122,8 @@ namespace Joja.Api.Controllers
 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
                     using (var stream = ImageFile.OpenReadStream())
                     {
                         var uploadParams = new ImageUploadParams()
@@ -125,7 +131,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(ImageFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.ImageUrl = uploadResult.SecureUrl.ToString();
+                        banner.ImageUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
                 else if (existingBanner != null)
@@ -135,6 +141,8 @@ namespace Joja.Api.Controllers
 
                 if (VideoFile != null && VideoFile.Length > 0)
                 {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
                     using (var stream = VideoFile.OpenReadStream())
                     {
                         var uploadParams = new VideoUploadParams()
@@ -142,7 +150,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(VideoFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
+                        banner.VideoUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
                 else if (existingBanner != null)

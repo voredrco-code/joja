@@ -19,12 +19,19 @@ namespace Joja.Api.Controllers
         private readonly Cloudinary _cloudinary;
         private readonly ILogger<ProductsController> _logger;
 
-        // Constructor: تم إزالة IWebHostEnvironment لأننا هنستخدم Cloudinary
-        public ProductsController(ApplicationDbContext context, Cloudinary cloudinary, ILogger<ProductsController> logger)
+        // Constructor: تعديل ليقرأ من IConfiguration مباشرة
+        public ProductsController(ApplicationDbContext context, IConfiguration config, ILogger<ProductsController> logger)
         {
             _context = context;
-            _cloudinary = cloudinary;
             _logger = logger;
+            
+            // إنشاء الكائن مباشرة لضمان عدم وجود Null
+            var cloudName = config["Cloudinary:CloudName"] ?? config["Cloudinary__CloudName"];
+            var apiKey = config["Cloudinary:ApiKey"] ?? config["Cloudinary__ApiKey"];
+            var apiSecret = config["Cloudinary:ApiSecret"] ?? config["Cloudinary__ApiSecret"];
+            
+            var account = new Account(cloudName, apiKey, apiSecret);
+            _cloudinary = new Cloudinary(account);
         }
 
         // GET: Products
@@ -57,6 +64,8 @@ namespace Joja.Api.Controllers
                 // رفع الصورة الرئيسية
                 if (MainImageFile != null && MainImageFile.Length > 0)
                 {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
                     using (var stream = MainImageFile.OpenReadStream())
                     {
                         var uploadParams = new ImageUploadParams()
@@ -64,13 +73,15 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(MainImageFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        product.MainImageUrl = uploadResult.SecureUrl.ToString();
+                        product.MainImageUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
 
                 // رفع الفيديو (اختياري)
                 if (VideoFile != null && VideoFile.Length > 0)
                 {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
                     using (var stream = VideoFile.OpenReadStream())
                     {
                         var uploadParams = new VideoUploadParams()
@@ -78,7 +89,7 @@ namespace Joja.Api.Controllers
                             File = new FileDescription(VideoFile.FileName, stream)
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        product.VideoUrl = uploadResult.SecureUrl.ToString();
+                        product.VideoUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
 
@@ -125,43 +136,45 @@ namespace Joja.Api.Controllers
                 // هنجيب البيانات القديمة عشان لو مرفعش صورة جديدة نحتفظ بالقديمة
                 var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
                     
-                    // 1. تحديث الصورة
-                    if (MainImageFile != null && MainImageFile.Length > 0)
+                // تحديث الصورة
+                if (MainImageFile != null && MainImageFile.Length > 0)
+                {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
+                    using (var stream = MainImageFile.OpenReadStream())
                     {
-                        using (var stream = MainImageFile.OpenReadStream())
+                        var uploadParams = new ImageUploadParams()
                         {
-                            var uploadParams = new ImageUploadParams()
-                            {
-                                File = new FileDescription(MainImageFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            product.MainImageUrl = uploadResult.SecureUrl.ToString();
-                        }
+                            File = new FileDescription(MainImageFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        product.MainImageUrl = uploadResult.SecureUrl?.ToString();
                     }
-                    else if (existingProduct != null)
-                    {
-                        // احتفظ بالصورة القديمة
-                        product.MainImageUrl = existingProduct.MainImageUrl;
-                    }
+                }
+                else if (existingProduct != null)
+                {
+                    product.MainImageUrl = existingProduct.MainImageUrl;
+                }
 
-                    // 2. تحديث الفيديو
-                    if (VideoFile != null && VideoFile.Length > 0)
+                // تحديث الفيديو
+                if (VideoFile != null && VideoFile.Length > 0)
+                {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
+                    using (var stream = VideoFile.OpenReadStream())
                     {
-                        using (var stream = VideoFile.OpenReadStream())
+                        var uploadParams = new VideoUploadParams()
                         {
-                            var uploadParams = new VideoUploadParams()
-                            {
-                                File = new FileDescription(VideoFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            product.VideoUrl = uploadResult.SecureUrl.ToString();
-                        }
+                            File = new FileDescription(VideoFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        product.VideoUrl = uploadResult.SecureUrl?.ToString();
                     }
-                    else if (existingProduct != null)
-                    {
-                         // احتفظ بالفيديو القديم
-                        product.VideoUrl = existingProduct.VideoUrl;
-                    }
+                }
+                else if (existingProduct != null)
+                {
+                    product.VideoUrl = existingProduct.VideoUrl;
+                }
 
                 _context.Update(product);
                 await _context.SaveChangesAsync();
