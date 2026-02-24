@@ -83,7 +83,9 @@ namespace Joja.Api.Controllers
                 }
                 catch (Exception ex)
                 {
-                     ModelState.AddModelError("", $"Upload Error: {ex.Message}");
+                    // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
+                    var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                    ModelState.AddModelError("", $"Upload Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
                 }
             }
             return View(banner);
@@ -155,10 +157,12 @@ namespace Joja.Api.Controllers
                     _context.Update(banner);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!_context.Banners.Any(e => e.Id == banner.Id)) return NotFound();
-                    else throw;
+                    // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
+                    var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
+                    ModelState.AddModelError("", $"Update Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
+                    if (ex is DbUpdateConcurrencyException) return NotFound();
                 }
                 return RedirectToAction(nameof(Index));
             }

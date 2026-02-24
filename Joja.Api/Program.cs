@@ -40,14 +40,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // إعدادات Cloudinary
-var cloudConfig = builder.Configuration.GetSection("Cloudinary");
-if (cloudConfig.Exists())
+var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary:CloudName");
+var apiKey = builder.Configuration["Cloudinary:ApiKey"] ?? Environment.GetEnvironmentVariable("Cloudinary:ApiKey");
+var apiSecret = builder.Configuration["Cloudinary:ApiSecret"] ?? Environment.GetEnvironmentVariable("Cloudinary:ApiSecret");
+
+if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(apiSecret))
 {
-    Account account = new Account(
-        cloudConfig["CloudName"],
-        cloudConfig["ApiKey"],
-        cloudConfig["ApiSecret"]
-    );
+    Account account = new Account(cloudName, apiKey, apiSecret);
     Cloudinary cloudinary = new Cloudinary(account);
     builder.Services.AddSingleton(cloudinary);
 }
