@@ -106,12 +106,9 @@ namespace Joja.Api.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Banner banner, IFormFile ImageFile, IFormFile VideoFile)
         {
-            // تأمين الـ Object نفسه قبل أي تعامل
             if (banner == null) banner = new Banner();
-            
             if (id != banner.Id) return NotFound();
-
-            // حل مشكلة الـ Properties فوراً
+            
             banner.Subtitle = banner.Subtitle ?? " ";
             banner.Title = banner.Title ?? " ";
 
@@ -119,54 +116,49 @@ namespace Joja.Api.Controllers
             {
                 var existingBanner = await _context.Banners.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
 
-                    // تحديث الصورة
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        using (var stream = ImageFile.OpenReadStream())
-                        {
-                            var uploadParams = new ImageUploadParams()
-                            {
-                                File = new FileDescription(ImageFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            banner.ImageUrl = uploadResult.SecureUrl.ToString();
-                        }
-                    }
-                    else if (existingBanner != null)
-                    {
-                        banner.ImageUrl = existingBanner.ImageUrl; // احتفظ بالقديم
-                    }
-
-                    // تحديث الفيديو
-                    if (VideoFile != null && VideoFile.Length > 0)
-                    {
-                        using (var stream = VideoFile.OpenReadStream())
-                        {
-                            var uploadParams = new VideoUploadParams()
-                            {
-                                File = new FileDescription(VideoFile.FileName, stream)
-                            };
-                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                            banner.VideoUrl = uploadResult.SecureUrl.ToString();
-                        }
-                    }
-                    else if (existingBanner != null)
-                    {
-                        banner.VideoUrl = existingBanner.VideoUrl; // احتفظ بالقديم
-                    }
-
-                    _context.Update(banner);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
+                if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    // ده هيقولنا السطر والسبب بالظبط في الـ Dashboard
-                    var innerMsg = ex.InnerException != null ? ex.InnerException.Message : "";
-                    ModelState.AddModelError("", $"Update Error: {ex.Message}. Inner: {innerMsg}. Stack: {ex.StackTrace}");
+                    using (var stream = ImageFile.OpenReadStream())
+                    {
+                        var uploadParams = new ImageUploadParams()
+                        {
+                            File = new FileDescription(ImageFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        banner.ImageUrl = uploadResult.SecureUrl.ToString();
+                    }
                 }
+                else if (existingBanner != null)
+                {
+                    banner.ImageUrl = existingBanner.ImageUrl;
+                }
+
+                if (VideoFile != null && VideoFile.Length > 0)
+                {
+                    using (var stream = VideoFile.OpenReadStream())
+                    {
+                        var uploadParams = new VideoUploadParams()
+                        {
+                            File = new FileDescription(VideoFile.FileName, stream)
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
+                    }
+                }
+                else if (existingBanner != null)
+                {
+                    banner.VideoUrl = existingBanner.VideoUrl;
+                }
+
+                _context.Update(banner);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            return View(banner);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Update Error: {ex.Message}");
+                return View(banner);
+            }
         }
 
         // POST: Banners/Delete/5
