@@ -90,9 +90,14 @@ namespace Joja.Api.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Upload Error: {ex.Message}");
+                var msg = ex.Message;
+                if (ex.InnerException != null) 
+                {
+                    msg += " | Inner: " + ex.InnerException.Message;
+                }
+                ModelState.AddModelError("", $"Database Error: {msg}");
+                return View(banner);
             }
-            return View(banner);
         }
 
         // GET: Banners/Edit/5
