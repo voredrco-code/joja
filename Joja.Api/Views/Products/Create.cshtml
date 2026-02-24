@@ -4,13 +4,20 @@
     ViewData["Title"] = "إضافة منتج جديد";
 }
 
+<style>
+    .desc-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+</style>
+
 <div class="container mt-4">
-    <h2>إضافة منتج لـ Joja Organic</h2>
+    <h2>إضافة منتج لـ Joja</h2>
     <hr />
 
     <form asp-action="Create" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
-        
+
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-group mb-3">
@@ -26,21 +33,10 @@
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="CategoryId" class="control-label">التصنيف</label>
-            <select asp-for="CategoryId" class="form-control" required>
-                <option value="">-- اختر التصنيف --</option>
-                @if (ViewBag.Categories != null)
-                {
-                    foreach (var item in ViewBag.Categories)
-                    {
-                        <option value="@item.Id">@item.Name</option>
-                    }
-                }
+            <label asp-for="CategoryId" class="control-label">التصنيف (اختياري)</label>
+            <select asp-for="CategoryId" class="form-control" asp-items="@(ViewData["CategoryId"] as SelectList)">
+                <option value="">-- بدون تصنيف --</option>
             </select>
-            @if (ViewBag.Categories == null)
-            {
-                <small class="text-danger">تنبيه: لا توجد تصنيفات مسجلة في قاعدة البيانات!</small>
-            }
         </div>
 
         <div class="form-group mb-3">
@@ -49,11 +45,20 @@
         </div>
 
         <div class="form-group mb-3">
-            <label asp-for="Description" class="control-label">وصف المنتج</label>
-            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <label asp-for="Description" class="control-label">وصف المنتج (عربي)</label>
+            <textarea asp-for="Description" class="form-control desc-textarea" rows="5"></textarea>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="DescriptionEn" class="control-label">Product Description (English)</label>
+            <textarea asp-for="DescriptionEn" class="form-control desc-textarea" rows="5" placeholder="Enter English description here..."></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">حفظ المنتج</button>
         <a asp-action="Index" class="btn btn-secondary">عودة للقائمة</a>
     </form>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

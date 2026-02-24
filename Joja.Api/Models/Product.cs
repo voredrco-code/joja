@@ -5,6 +5,7 @@ public class Product
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public string? DescriptionEn { get; set; }
     public decimal Price { get; set; }
     public string MainImageUrl { get; set; } = string.Empty;
     
@@ -17,7 +18,7 @@ public class Product
     public string? VariantsJson { get; set; } 
     
     // Relation
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
     public Category? Category { get; set; }
     
     // Translations

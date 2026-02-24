@@ -178,5 +178,81 @@ namespace Joja.Api.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        // POST: Banners/MoveUp/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MoveUp(int id)
+        {
+            var allBanners = await _context.Banners.OrderBy(b => b.DisplayOrder).ThenBy(b => b.Id).ToListAsync();
+            var current = allBanners.FirstOrDefault(b => b.Id == id);
+            if (current == null) return NotFound();
+
+            var index = allBanners.IndexOf(current);
+            if (index > 0)
+            {
+                var above = allBanners[index - 1];
+                // Swap DisplayOrder values
+                int temp = current.DisplayOrder;
+                current.DisplayOrder = above.DisplayOrder;
+                above.DisplayOrder = temp;
+                // If orders are equal, force a difference
+                if (current.DisplayOrder == above.DisplayOrder)
+                {
+                    above.DisplayOrder = current.DisplayOrder - 1;
+                }
+                _context.Update(current);
+                _context.Update(above);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Banners/MoveDown/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MoveDown(int id)
+        {
+            var allBanners = await _context.Banners.OrderBy(b => b.DisplayOrder).ThenBy(b => b.Id).ToListAsync();
+            var current = allBanners.FirstOrDefault(b => b.Id == id);
+            if (current == null) return NotFound();
+
+            var index = allBanners.IndexOf(current);
+            if (index < allBanners.Count - 1)
+            {
+                var below = allBanners[index + 1];
+                // Swap DisplayOrder values
+                int temp = current.DisplayOrder;
+                current.DisplayOrder = below.DisplayOrder;
+                below.DisplayOrder = temp;
+                // If orders are equal, force a difference
+                if (current.DisplayOrder == below.DisplayOrder)
+                {
+                    below.DisplayOrder = current.DisplayOrder + 1;
+                }
+                _context.Update(current);
+                _context.Update(below);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Banners/UpdateOrder (JSON endpoint for compatibility)
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrder([FromBody] List<int> ids)
+        {
+            if (ids == null || ids.Count == 0)
+                return Json(new { success = false });
+
+            var banners = await _context.Banners.ToListAsync();
+            for (int i = 0; i < ids.Count; i++)
+            {
+                var banner = banners.FirstOrDefault(b => b.Id == ids[i]);
+                if (banner != null)
+                    banner.DisplayOrder = i + 1;
+            }
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
     }
 }
