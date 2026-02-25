@@ -63,41 +63,29 @@ if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string
 var app = builder.Build();
 
 // Ensure database is created (for production/Railway)
-try
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    var services = scope.ServiceProvider;
+    try
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        dbContext.Database.EnsureCreated();
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        Console.WriteLine("Testing Database Connection...");
         
-        // Ensure AnalyticsLogs table exists (migration alternative)
-        dbContext.Database.ExecuteSqlRaw(@"
-            CREATE TABLE IF NOT EXISTS ""AnalyticsLogs"" (
-                ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_AnalyticsLogs"" PRIMARY KEY AUTOINCREMENT,
-                ""EventType"" TEXT NOT NULL,
-                ""Page"" TEXT NULL,
-                ""Product"" TEXT NULL,
-                ""Country"" TEXT NULL,
-                ""City"" TEXT NULL,
-                ""Device"" TEXT NULL,
-                ""Timestamp"" TEXT NOT NULL
-            );");
-
-        // Add PixelId column to AppSettings if not exists
-        try {
-            dbContext.Database.ExecuteSqlRaw(@"ALTER TABLE ""AppSettings"" ADD COLUMN ""PixelId"" TEXT NULL;");
-        } catch { /* Column likely exists */ }
-
-        // Add TopBarText column to AppSettings if not exists
-        try {
-            dbContext.Database.ExecuteSqlRaw(@"ALTER TABLE ""AppSettings"" ADD COLUMN ""TopBarText"" TEXT DEFAULT '' NULL;");
-        } catch { /* Column likely exists */ }
+        // محاولة فتح الاتصال يدوياً لاختبار الـ Connection String
+        context.Database.OpenConnection();
+        Console.WriteLine("Connection Opened Successfully!");
+        
+        context.Database.Migrate();
+        Console.WriteLine("Migrations Applied Successfully!");
     }
-}
-catch (Exception ex)
-{
-    // Log error but don't crash the app
-    Console.WriteLine($"Database initialization error: {ex.Message}");
+    catch (Exception ex)
+    {
+        Console.WriteLine("======== DATABASE ERROR ========");
+        Console.WriteLine($"Message: {ex.Message}");
+        Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+        Console.WriteLine("================================");
+    }
 }
 
 // Configure the HTTP request pipeline.
