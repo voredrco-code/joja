@@ -11,6 +11,19 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. هات الـ Connection String الأول
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// 2. ابني الـ DataSource (ده لازم يكون قبل AddDbContext)
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+var dataSource = dataSourceBuilder.Build();
+
+// 3. ضيف الـ DbContext
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseNpgsql(dataSource, o => o.EnableRetryOnFailure());
+});
+
 // Configure File Upload Limit (Global)
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -40,20 +53,6 @@ builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 // Register LocalizationService
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// دي أهم حتة: بناء مصدر البيانات مع إجبار قبول الشهادات
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-// السطر اللي جاي ده هو اللي بيحل مشكلة الـ EndOfStream
-dataSourceBuilder.UseNetTopologySuite(); 
-
-var dataSource = dataSourceBuilder.Build();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseNpgsql(dataSource, o => o.EnableRetryOnFailure());
-});
-
 // إعدادات Cloudinary
 var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary:CloudName");
 var apiKey = builder.Configuration["Cloudinary:ApiKey"] ?? Environment.GetEnvironmentVariable("Cloudinary:ApiKey");
@@ -67,29 +66,17 @@ if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string
 }
 var app = builder.Build();
 
-// Ensure database is created (for production/Railway)
+// 4. بلوك الـ Migrate (تأكد إنه جوه try-catch)
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    try
+    try 
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        Console.WriteLine("Testing Database Connection...");
-        
-        // محاولة فتح الاتصال يدوياً لاختبار الـ Connection String
-        context.Database.OpenConnection();
-        Console.WriteLine("Connection Opened Successfully!");
-        
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         context.Database.Migrate();
-        Console.WriteLine("Migrations Applied Successfully!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine("======== DATABASE ERROR ========");
-        Console.WriteLine($"Message: {ex.Message}");
-        Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
-        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-        Console.WriteLine("================================");
+        Console.WriteLine($"Migration Error: {ex.Message}");
     }
 }
 
