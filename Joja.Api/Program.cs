@@ -2,6 +2,7 @@ using CloudinaryDotNet;
 using Joja.Api.Data;
 using Joja.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -39,14 +40,18 @@ builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 // Register LocalizationService
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
 
-// Configure EF Core with Npgsql and retry policy
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// دي أهم حتة: بناء مصدر البيانات مع إجبار قبول الشهادات
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+// السطر اللي جاي ده هو اللي بيحل مشكلة الـ EndOfStream
+dataSourceBuilder.UseNetTopologySuite(); 
+
+var dataSource = dataSourceBuilder.Build();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseNpgsql(connectionString, npgsqlOptions =>
-    {
-        npgsqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-    });
+    options.UseNpgsql(dataSource, o => o.EnableRetryOnFailure());
 });
 
 // إعدادات Cloudinary
