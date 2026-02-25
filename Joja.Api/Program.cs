@@ -2,6 +2,7 @@ using CloudinaryDotNet;
 using Joja.Api.Data;
 using Joja.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -43,12 +44,19 @@ builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Serv
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseNpgsql(connectionString, npgsqlOptions =>
-    {
-        // ده بيحل مشاكل الـ Timeouts والـ Handshake في السيرفرات السحابية
-        npgsqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+
+    // السطر ده بيخلي Npgsql يثق في أي شهادة SSL جاية من ريندر
+    var npgsqlBuilder = new NpgsqlDataSourceBuilder(connectionString);
+    npgsqlBuilder.UseNetTopologySuite(); // لو بتستخدم لوكيشن، لو لأ مش هتضر
+    
+    // إجبار التوافق مع SSL
+    options.UseNpgsql(connectionString, o => {
+        o.EnableRetryOnFailure();
     });
 });
+
+// ضيف السطور دي تحت الـ builder وقبل الـ Build()
+AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 // إعدادات Cloudinary
 var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary:CloudName");
