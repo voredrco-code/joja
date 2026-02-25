@@ -13,6 +13,10 @@ services:
         value: Production
       - key: ASPNETCORE_URLS
         value: http://0.0.0.0:5000
+      # Example PostgreSQL connection string with SSL enforced.
+      # Replace placeholders with real credentials in your deployment.
+      - key: ConnectionStrings__DefaultConnection
+        value: "Host=<HOST>;Port=5432;Database=<DB_NAME>;Username=<USER>;Password=<PASSWORD>;Ssl Mode=Require;Trust Server Certificate=true;"
 
     # Auto-deploy on push to main branch
     autoDeploy: true

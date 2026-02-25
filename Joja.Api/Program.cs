@@ -124,23 +124,35 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Seed default AppSettings if not exists
+// Seed default AppSettings if not exists (wrapped to avoid exceptions when DB empty)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<Joja.Api.Data.ApplicationDbContext>();
-
-    if (!context.AppSettings.Any())
+    try
     {
-        context.AppSettings.Add(new Joja.Api.Models.AppSettings 
-        { 
-            WhatsAppMessageTemplate = "🛍️ *طلب جديد من Joja*",
-            FacebookLink = "#",
-            InstagramLink = "#",
-            PixelId = "",
-            TopBarText = "مرحباً بك في Joja"
-        });
-        context.SaveChanges();
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        // التأكد من عمل الميغريشن أولاً
+        context.Database.Migrate();
+
+        // لو عندك سطر بيقرا إعدادات زي AppSettings، خليه جوه الـ try
+        // var settings = context.AppSettings.First(); 
+
+        if (!context.AppSettings.Any())
+        {
+            context.AppSettings.Add(new Joja.Api.Models.AppSettings 
+            { 
+                WhatsAppMessageTemplate = "🛍️ *طلب جديد من Joja*",
+                FacebookLink = "#",
+                InstagramLink = "#",
+                PixelId = "",
+                TopBarText = "مرحباً بك في Joja"
+            });
+            context.SaveChanges();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database Initialization Error: {ex.Message}");
     }
 }
 
