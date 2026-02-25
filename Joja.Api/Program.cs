@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.AspNetCore.Http.Features;
 
+// Allow legacy timestamp behavior for Npgsql (enables encrypted/handshake compatibility)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure File Upload Limit (Global)
@@ -36,10 +39,16 @@ builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 // Register LocalizationService
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
 
-// Configure EF Core
-// تحويل من UseSqlite لـ UseNpgsql
+// Configure EF Core with Npgsql and retry policy
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        // ده بيحل مشاكل الـ Timeouts والـ Handshake في السيرفرات السحابية
+        npgsqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+    });
+});
 
 // إعدادات Cloudinary
 var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary:CloudName");
