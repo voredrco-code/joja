@@ -5,17 +5,18 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.AspNetCore.Http.Features;
 using System.Net.Security;
-
 // السماح بالتعامل مع التوقيتات القديمة وتوافق الـ SSL المشفر
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. جلب الـ Connection String من الإعدادات
+// 1. جلب الرابط من الإعدادات
+// 1. رابط وهمي صريح (عشان نضحك على الأداة وتكريت الفولدر بس)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// 2. بناء الـ DataSource 
+// (هنرجع السطر ده تاني بعد دقيقة واحدة)
+// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// 3. بناء الـ DataSource (سطر واحد فقط)
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
 // السطر الذهبي: إجبار الكود على قبول شهادة SSL الخاصة بـ Render
@@ -23,7 +24,7 @@ dataSourceBuilder.UseUserCertificateValidationCallback((sender, certificate, cha
 
 var dataSource = dataSourceBuilder.Build();
 
-// 3. إعداد الـ DbContext باستخدام الـ DataSource الجديد
+// 4. إعداد الـ DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(dataSource, o => o.EnableRetryOnFailure(
@@ -31,7 +32,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         maxRetryDelay: TimeSpan.FromSeconds(30),
         errorCodesToAdd: null));
 });
-
 // إعدادات رفع الملفات (100 ميجا)
 builder.Services.Configure<FormOptions>(options =>
 {

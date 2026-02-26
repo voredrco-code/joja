@@ -1,0 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Npgsql;
+using Joja.Api.Data;
+
+namespace Joja.Api
+{
+    public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+    {
+        public ApplicationDbContext CreateDbContext(string[] args)
+        {
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            
+            // رابط وهمي 100% عشان نخدع الأداة وتكريت الملفات بس
+            var connectionString = "Host=localhost;Port=5432;Database=dummy;Username=postgres;Password=postgres";
+            
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.UseUserCertificateValidationCallback((_, _, _, _) => true);
+            var dataSource = dataSourceBuilder.Build();
+
+            builder.UseNpgsql(dataSource);
+
+            return new ApplicationDbContext(builder.Options);
+        }
+    }
+}
