@@ -5,17 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.AspNetCore.Http.Features;
 
-// 1. إعدادات التوقيت لـ PostgreSQL
+// 1. إعدادات PostgreSQL
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. جلب رابط الاتصال (مع رابط احتياطي للميجريشن)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Host=localhost;Database=dummy;Username=postgres;Password=pass";
+// 2. جلب رابط الاتصال
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// 3. إعداد الداتابيز (طريقة مباشرة وسهلة للـ EF)
+// 3. إعداد الداتابيز
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(connectionString, npgsqlOptions =>
@@ -24,7 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     });
 });
 
-// 4. إعدادات رفع الملفات والخدمات
+// 4. الخدمات الأساسية
 builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 104857600; });
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
@@ -33,9 +32,9 @@ builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
 
 // 5. إعدادات Cloudinary
-var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary:CloudName");
-var apiKey = builder.Configuration["Cloudinary:ApiKey"] ?? Environment.GetEnvironmentVariable("Cloudinary:ApiKey");
-var apiSecret = builder.Configuration["Cloudinary:ApiSecret"] ?? Environment.GetEnvironmentVariable("Cloudinary:ApiSecret");
+var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary__CloudName");
+var apiKey = builder.Configuration["Cloudinary:ApiKey"] ?? Environment.GetEnvironmentVariable("Cloudinary__ApiKey");
+var apiSecret = builder.Configuration["Cloudinary:ApiSecret"] ?? Environment.GetEnvironmentVariable("Cloudinary__ApiSecret");
 
 if (!string.IsNullOrEmpty(cloudName))
 {
@@ -45,28 +44,7 @@ if (!string.IsNullOrEmpty(cloudName))
 
 var app = builder.Build();
 
-// 6. منطقة الـ Database Reset (النووي)
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try 
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        Console.WriteLine("⚠️ NUKE: Cleaning database...");
-        // السطر ده هينضف ريندر من العك القديم
-        context.Database.ExecuteSqlRaw("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
-        
-        Console.WriteLine("🔨 Building fresh tables...");
-        context.Database.Migrate();
-        Console.WriteLine("✅ Done!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Database Error: {ex.Message}");
-    }
-}
-
-// 7. إعدادات البيئة والتشغيل
+// 6. إعدادات التشغيل (بدون مسح داتابيز)
 app.UseDeveloperExceptionPage();
 app.UseResponseCompression();
 app.UseStaticFiles();
