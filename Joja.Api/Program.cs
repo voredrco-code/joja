@@ -10,12 +10,8 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 1. جلب الرابط من الإعدادات
 // 1. رابط وهمي صريح (عشان نضحك على الأداة وتكريت الفولدر بس)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// (هنرجع السطر ده تاني بعد دقيقة واحدة)
-// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 // 3. بناء الـ DataSource (سطر واحد فقط)
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
