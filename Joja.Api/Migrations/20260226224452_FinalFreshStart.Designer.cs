@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Joja.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260226033749_AddMissingTables")]
-    partial class AddMissingTables
+    [Migration("20260226224452_FinalFreshStart")]
+    partial class FinalFreshStart
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -188,29 +188,6 @@ namespace Joja.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("CategoryTranslations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Language = "en",
-                            Name = "Skin Care"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 2,
-                            Language = "en",
-                            Name = "Hair Care"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 3,
-                            Language = "en",
-                            Name = "Natural Oils"
-                        });
                 });
 
             modelBuilder.Entity("Joja.Api.Models.ContentPage", b =>
@@ -458,40 +435,6 @@ namespace Joja.Api.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductTranslations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Pure 100% jojoba oil for skin and hair",
-                            Language = "en",
-                            Name = "Organic Jojoba Oil",
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Natural shea butter for deep moisturizing",
-                            Language = "en",
-                            Name = "Natural Shea Butter",
-                            ProductId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Authentic argan oil from Morocco for hair",
-                            Language = "en",
-                            Name = "Moroccan Argan Oil",
-                            ProductId = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Natural aloe cream for skin moisturizing",
-                            Language = "en",
-                            Name = "Aloe Vera Cream",
-                            ProductId = 4
-                        });
                 });
 
             modelBuilder.Entity("Joja.Api.Models.UiTranslation", b =>
@@ -517,106 +460,6 @@ namespace Joja.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UiTranslations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Key = "HeroTitle",
-                            Language = "ar",
-                            Value = "جمال طبيعي من أجلك"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Key = "HeroSubtitle",
-                            Language = "ar",
-                            Value = "اكتشفي مجموعتنا العضوية"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Key = "ShopNow",
-                            Language = "ar",
-                            Value = "تسوقي الآن"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Key = "JojaMoments",
-                            Language = "ar",
-                            Value = "لحظات جوجا"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Key = "BestSellers",
-                            Language = "ar",
-                            Value = "الأكثر مبيعاً"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Key = "FilterAll",
-                            Language = "ar",
-                            Value = "الكل"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Key = "AddToCart",
-                            Language = "ar",
-                            Value = "أضف للسلة"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Key = "HeroTitle",
-                            Language = "en",
-                            Value = "Natural Beauty for You"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Key = "HeroSubtitle",
-                            Language = "en",
-                            Value = "Discover our natural collection"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Key = "ShopNow",
-                            Language = "en",
-                            Value = "Shop Now"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Key = "JojaMoments",
-                            Language = "en",
-                            Value = "Joja Moments"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Key = "BestSellers",
-                            Language = "en",
-                            Value = "Best Sellers"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Key = "FilterAll",
-                            Language = "en",
-                            Value = "All"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Key = "AddToCart",
-                            Language = "en",
-                            Value = "Add to Cart"
-                        });
                 });
 
             modelBuilder.Entity("Joja.Api.Models.VideoBanner", b =>
