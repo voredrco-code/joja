@@ -18,9 +18,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // 2. بناء الـ DataSource 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
-// دعم الخرائط والـ Locations (مهم لو مستخدمها في الجداول)
-dataSourceBuilder.UseNetTopologySuite();
-
 // السطر الذهبي: إجبار الكود على قبول شهادة SSL الخاصة بـ Render
 dataSourceBuilder.UseUserCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) => true);
 
