@@ -74,6 +74,12 @@ using (var scope = app.Services.CreateScope())
     try 
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        
+        // 👇👇 السطر السحري اللي هيمسح الداتابيز القديمة ويبدأ على نضافة 👇👇
+        Console.WriteLine("Dropping old database...");
+        context.Database.EnsureDeleted(); 
+        // 👆👆 (هنمسح السطر ده بعدين لما الموقع يشتغل) 👆👆
+
         Console.WriteLine("Applying Migrations...");
         context.Database.Migrate();
 
