@@ -67,7 +67,7 @@ if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string
 
 var app = builder.Build();
 
-// 4. تنفيذ الـ Migrations والـ Seed عند التشغيل (مدمجة في بلوك واحد عشان النضافة والسرعة)
+// 4. تنفيذ الـ Migrations والـ Seed عند التشغيل 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -75,10 +75,10 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         
-        // 👇👇 السطر السحري اللي هيمسح الداتابيز القديمة ويبدأ على نضافة 👇👇
-        Console.WriteLine("Dropping old database...");
-        context.Database.EnsureDeleted(); 
-        // 👆👆 (هنمسح السطر ده بعدين لما الموقع يشتغل) 👆👆
+        // 👇👇 السلاح النووي: هيمسح كل الجداول بالقوة من غير ما يمسح الداتابيز نفسها 👇👇
+        Console.WriteLine("Nuking old tables...");
+        context.Database.ExecuteSqlRaw("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+        // 👆👆 (هنمسح السطر ده فوراً أول ما الموقع يفتح عشان الداتا متطيرش) 👆👆
 
         Console.WriteLine("Applying Migrations...");
         context.Database.Migrate();
