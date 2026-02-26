@@ -5,17 +5,26 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.AspNetCore.Http.Features;
 using System.Net.Security;
+
 // السماح بالتعامل مع التوقيتات القديمة وتوافق الـ SSL المشفر
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
-// 1. رابط وهمي صريح (عشان نضحك على الأداة وتكريت الفولدر بس)
+
+// 1. جلب الرابط من الإعدادات
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// 3. بناء الـ DataSource (سطر واحد فقط)
+
+// 2. تأمين الرابط: لو فاضي (أثناء عمل الميجريشن على جهازك)، استخدم رابط وهمي
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    connectionString = "Host=localhost;Database=dummy_db;Username=postgres;Password=pass";
+}
+
+// 3. بناء الـ DataSource
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 
-// السطر الذهبي: إجبار الكود على قبول شهادة SSL الخاصة بـ Render
+// إجبار الكود على قبول شهادة SSL الخاصة بـ Render
 dataSourceBuilder.UseUserCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) => true);
 
 var dataSource = dataSourceBuilder.Build();
@@ -24,32 +33,19 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(dataSource, o => o.EnableRetryOnFailure(
-        maxRetryCount: 10,
-        maxRetryDelay: TimeSpan.FromSeconds(30),
+        maxRetryCount: 10, 
+        maxRetryDelay: TimeSpan.FromSeconds(30), 
         errorCodesToAdd: null));
 });
+
 // إعدادات رفع الملفات (100 ميجا)
-builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = 104857600; 
-});
+builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 104857600; });
+builder.WebHost.ConfigureKestrel(serverOptions => { serverOptions.Limits.MaxRequestBodySize = 104857600; });
 
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.Limits.MaxRequestBodySize = 104857600; 
-});
-
-// إضافة الخدمات الأساسية
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
 
-// ضغط الاستجابة لسرعة الموقع
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-});
-
-// تسجيل الخدمات الخاصة بالمشروع
 builder.Services.AddSingleton<Joja.Api.Services.CartService>();
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
 
@@ -67,23 +63,24 @@ if (!string.IsNullOrEmpty(cloudName) && !string.IsNullOrEmpty(apiKey) && !string
 
 var app = builder.Build();
 
-// 4. تنفيذ الـ Migrations والـ Seed عند التشغيل 
+// =========================================================================
+// منطقة تشغيل الداتابيز (هنا التعديل المهم جداً)
+// =========================================================================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try 
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        
-        // 👇👇 السلاح النووي: هيمسح كل الجداول بالقوة من غير ما يمسح الداتابيز نفسها 👇👇
-        Console.WriteLine("Nuking old tables...");
-        context.Database.ExecuteSqlRaw("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
-        // 👆👆 (هنمسح السطر ده فوراً أول ما الموقع يفتح عشان الداتا متطيرش) 👆👆
 
-        Console.WriteLine("Applying Migrations...");
+        // 👇👇 السطر ده هيمسح الجداول القديمة البايظة ويبدأ على نضافة 👇👇
+        // (بعد ما الموقع يشتغل، لازم نمسح السطر ده في التحديث الجاي)
+        Console.WriteLine("⚠️ NUKE: Dropping Schema...");
+        context.Database.ExecuteSqlRaw("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+        
+        Console.WriteLine("🔨 Applying Migrations...");
         context.Database.Migrate();
 
-        // إضافة إعدادات الموقع الافتراضية لو مش موجودة
         if (!context.AppSettings.Any())
         {
             context.AppSettings.Add(new Joja.Api.Models.AppSettings 
@@ -95,17 +92,17 @@ using (var scope = app.Services.CreateScope())
                 TopBarText = "مرحباً بك في Joja"
             });
             context.SaveChanges();
-            Console.WriteLine("Seed data applied successfully!");
+            Console.WriteLine("✅ Seed data applied successfully!");
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Database Error: {ex.Message}");
+        Console.WriteLine($"❌ Database Error: {ex.Message}");
     }
 }
+// =========================================================================
 
-// إعدادات البيئة
-if (app.Environment.IsDevelopment() || true) // Forced for debugging on Render
+if (app.Environment.IsDevelopment() || true) 
 {
     app.UseDeveloperExceptionPage();
 }
@@ -125,11 +122,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseAuthorization();
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// تشغيل الموقع على البورت المحدد من Render
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Run($"http://0.0.0.0:{port}");
