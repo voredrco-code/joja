@@ -1,0 +1,33 @@
+@model Joja.Api.Models.Category
+@{
+    ViewData["Title"] = "تعديل القسم";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">✏️ تعديل القسم: @Model.Name</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">@ViewBag.Error</div>
+                    }
+                    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group mb-3">
+                            <label>اسم القسم الجديد</label>
+                            <input type="text" name="name" class="form-control" required value="@Model.Name" />
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning">💾 حفظ التعديل</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">الرجوع للأقسام</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

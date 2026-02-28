@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "إضافة قسم جديد";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">➕ إضافة قسم جديد</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger">@ViewBag.Error</div>
+                    }
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group mb-3">
+                            <label>اسم القسم</label>
+                            <input type="text" name="name" class="form-control" required placeholder="مثال: عروض أو Bundles" />
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">💾 حفظ</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">الرجوع للأقسام</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
