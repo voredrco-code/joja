@@ -200,7 +200,11 @@ _تم إرسال هذا الطلب في: {OrderDate}_
 
     public async Task<IActionResult> Details(int id)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .FirstOrDefaultAsync(m => m.Id == id);
+            
         if (product == null) return NotFound();
 
         return View(product);
