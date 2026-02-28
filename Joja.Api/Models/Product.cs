@@ -23,4 +23,7 @@ public class Product
     
     // Translations
     public List<ProductTranslation> Translations { get; set; } = new();
+
+    // Images
+    public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 }

@@ -44,6 +44,13 @@ if (!string.IsNullOrEmpty(cloudName))
 
 var app = builder.Build();
 
+// Migrate Database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate(); // ده هيحدث الجداول بس من غير ما يمسح حاجة
+}
+
 // 6. إعدادات التشغيل (بدون مسح داتابيز)
 app.UseDeveloperExceptionPage();
 app.UseResponseCompression();

@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
     
     public DbSet<ProductTranslation> ProductTranslations { get; set; }
     public DbSet<CategoryTranslation> CategoryTranslations { get; set; }

@@ -48,7 +48,7 @@ namespace Joja.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile)
+        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> AdditionalImages)
         {
             if (product == null) product = new Product();
             product.Name = product.Name ?? " ";
@@ -81,6 +81,28 @@ namespace Joja.Api.Controllers
                 }
 
                 if (string.IsNullOrEmpty(product.MainImageUrl)) { product.MainImageUrl = " "; }
+
+                if (AdditionalImages != null && AdditionalImages.Count > 0)
+                {
+                    if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
+                    
+                    foreach (var img in AdditionalImages)
+                    {
+                        if (img.Length > 0)
+                        {
+                            using (var stream = img.OpenReadStream())
+                            {
+                                var uploadParams = new ImageUploadParams() { File = new FileDescription(img.FileName, stream) };
+                                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                                
+                                product.ProductImages.Add(new ProductImage 
+                                { 
+                                    ImageUrl = uploadResult.SecureUrl.ToString() 
+                                });
+                            }
+                        }
+                    }
+                }
 
                 _context.Add(product);
                 await _context.SaveChangesAsync();
