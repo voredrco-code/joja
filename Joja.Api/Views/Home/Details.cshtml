@@ -10,7 +10,7 @@
         <!-- Left: Image & Video -->
         <div class="details-media">
             <div class="product-gallery">
-                <img src="@Model.MainImageUrl" alt="@Model.Name" style="width: 100%; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" />
+                <img src="@Model.MainImageUrl?.Replace("/upload/", "/upload/w_900,q_auto,f_auto/")" alt="@Model.Name" style="width: 100%; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" />
 
                 @if(Model.ProductImages != null && Model.ProductImages.Any())
                 {

@@ -50,8 +50,9 @@
         <link rel="stylesheet" href="~/css/rtl.css" asp-append-version="true" />
     }
     <link rel="icon" type="image/png" href="~/images/favicon.png" />
-    <!-- Add FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Add FontAwesome for icons (non-blocking) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 </head>
 <body>
     <header>
