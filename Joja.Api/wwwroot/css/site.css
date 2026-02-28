@@ -367,7 +367,7 @@ footer {
     height: 100vh;
     position: relative;
     overflow: hidden;
-    background: #000;
+    background: var(--joja-nude);
 }
 
 .joja-video-slide {
@@ -388,11 +388,13 @@ footer {
     z-index: 1;
 }
 
-/* الـ overlay الداكن */
+/* الـ overlay بألوان الـ Brand */
 .joja-video-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background: linear-gradient(to bottom,
+            rgba(183, 71, 126, 0.15) 0%,
+            rgba(183, 71, 126, 0.45) 100%);
     z-index: 2;
 }
 
@@ -422,18 +424,18 @@ footer {
 .joja-swiper-next {
     z-index: 10;
     color: #fff !important;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(183, 71, 126, 0.3);
     backdrop-filter: blur(6px);
     width: 55px !important;
     height: 55px !important;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(251, 241, 246, 0.5);
     transition: background 0.3s;
 }
 
 .joja-swiper-prev:hover,
 .joja-swiper-next:hover {
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(183, 71, 126, 0.6);
 }
 
 .joja-swiper-prev::after,
@@ -444,14 +446,14 @@ footer {
 
 /* نقط التنقل (pagination dots) */
 .joja-swiper-pagination .swiper-pagination-bullet {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(251, 241, 246, 0.6);
     width: 10px;
     height: 10px;
     opacity: 1;
 }
 
 .joja-swiper-pagination .swiper-pagination-bullet-active {
-    background: #fff;
+    background: var(--joja-nude);
     transform: scale(1.3);
 }
 
