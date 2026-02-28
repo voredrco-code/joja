@@ -6,6 +6,7 @@ using Joja.Api.Models;
 namespace Joja.Api.Controllers
 {
     // شيلنا [Route] من هنا عشان الصفحة تفتح عادي على /Analytics
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class AnalyticsController : Controller // غيرنا دي من ControllerBase لـ Controller عشان الـ View تشتغل
     {
         private readonly ApplicationDbContext _context;
@@ -19,6 +20,7 @@ namespace Joja.Api.Controllers
         // الرابط هيكون: /api/Analytics/LogEvent
         [HttpPost]
         [Route("api/Analytics/LogEvent")] 
+        [Microsoft.AspNetCore.Authorization.AllowAnonymous]
         public async Task<IActionResult> LogEvent([FromBody] AnalyticsLog log)
         {
             try 

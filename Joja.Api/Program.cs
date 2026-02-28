@@ -42,6 +42,14 @@ if (!string.IsNullOrEmpty(cloudName))
     builder.Services.AddSingleton(new Cloudinary(account));
 }
 
+// تفعيل الكوكيز للحماية
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login"; // لو حد حاول يدخل هيتحول هنا
+        options.AccessDeniedPath = "/Auth/Login";
+    });
+
 var app = builder.Build();
 
 // Migrate Database on startup
@@ -55,6 +63,8 @@ using (var scope = app.Services.CreateScope())
 app.UseDeveloperExceptionPage();
 app.UseResponseCompression();
 app.UseStaticFiles();
+
+app.UseAuthentication(); // 👈 ده الجديد
 app.UseAuthorization();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 

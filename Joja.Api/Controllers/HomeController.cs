@@ -225,6 +225,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return Json(new { success = true, message = "Welcome to Joja family!" });
     }
 
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public IActionResult AdminSubscribers()
     {
         return View(_context);
@@ -246,6 +247,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     }
 
     // Admin: Manage Orders
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> ManageOrders()
     {
         // 1. حل مشكلة الـ Total Sales
@@ -272,6 +274,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
 
     // Admin: Update Status (AJAX)
     [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> UpdateOrderStatus(int orderId, string newStatus)
     {
         var order = await _context.Orders.FindAsync(orderId);
@@ -285,6 +288,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
 
     // Admin: Upload Video
     [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> UploadProductVideo(int productId, IFormFile videoFile)
     {
         if (videoFile != null && videoFile.Length > 0)
@@ -313,6 +317,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     }
 
     // New: Admin Dashboard
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public IActionResult AdminDashboard()
     {
         // Redirect to new unified ManageOrders

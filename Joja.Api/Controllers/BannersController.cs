@@ -13,6 +13,7 @@ using CloudinaryDotNet.Actions;
 
 namespace Joja.Api.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class BannersController : Controller
     {
         private readonly ApplicationDbContext _context;

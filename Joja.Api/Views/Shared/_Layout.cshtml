@@ -99,6 +99,21 @@
                     <a href="#"><i class="fas fa-search"></i></a>
                     <a href="#"><i class="fas fa-user"></i></a>
                     <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-cart"></i></a>
+                    
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row; list-style: none; margin: 0; padding: 0; align-items: center; gap: 15px;">
+                            <li class="nav-item">
+                                <span class="nav-link text-success" style="font-weight: bold;">مرحباً يا أدمن 👑</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" asp-controller="Auth" asp-action="ChangePassword" style="font-weight: bold;">تغيير الباسورد</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout" style="font-weight: bold;">تسجيل الخروج</a>
+                            </li>
+                        </ul>
+                    }
                 </div>
             </div>
         </nav>

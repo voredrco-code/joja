@@ -22,6 +22,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<VideoBanner> VideoBanners { get; set; }
     public DbSet<AppSettings> AppSettings { get; set; }
     public DbSet<AnalyticsLog> AnalyticsLogs { get; set; }
+    public DbSet<AdminUser> AdminUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
