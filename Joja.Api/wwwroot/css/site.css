@@ -359,6 +359,84 @@ footer {
     color: white;
 }
 
+/* ========================================
+   VIDEO BANNER CAROUSEL
+   ======================================== */
+#videoBannerCarousel {
+    position: relative;
+    overflow: hidden;
+    background: #000;
+}
+
+#videoBannerCarousel .carousel-item {
+    position: relative;
+}
+
+/* السحر: object-fit cover بيخلي الفيديو يملا الشاشة بشكل مظبوط */
+.banner-video {
+    width: 100%;
+    height: 75vh;
+    object-fit: cover;
+    display: block;
+}
+
+/* الـ overlay: لمسة داكنة تحت الكتابة تخلي النص يقرأ */
+#videoBannerCarousel .carousel-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%);
+    pointer-events: none;
+}
+
+/* Caption (العنوان) فوق الـ overlay */
+#videoBannerCarousel .carousel-caption {
+    z-index: 10;
+    bottom: 60px;
+    text-align: center;
+}
+
+#videoBannerCarousel .carousel-caption h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    color: #fff;
+    letter-spacing: 2px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* زراير السلايدر */
+#videoBannerCarousel .carousel-control-prev,
+#videoBannerCarousel .carousel-control-next {
+    width: 60px;
+    height: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.4);
+    transition: background 0.3s;
+}
+
+#videoBannerCarousel .carousel-control-prev:hover,
+#videoBannerCarousel .carousel-control-next:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+@media (max-width: 768px) {
+    .banner-video {
+        height: 50vh;
+    }
+    #videoBannerCarousel .carousel-caption h2 {
+        font-size: 1.5rem;
+    }
+    #videoBannerCarousel .carousel-caption {
+        bottom: 30px;
+    }
+}
+
+
 .hero-content h1 {
     font-size: 3rem;
     margin-bottom: 20px;
