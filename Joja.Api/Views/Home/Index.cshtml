@@ -47,78 +47,67 @@ else
     </section>
 }
 
-<!-- Video Banner (Swiper.js - Fullscreen) -->
+<!-- Video Reels Section -->
 @if (Model.VideoBanners != null && Model.VideoBanners.Any())
 {
-    <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-    <div class="swiper joja-video-swiper">
-        <div class="swiper-wrapper">
-            @foreach (var (vid, index) in Model.VideoBanners.Select((v, i) => (v, i)))
-            {
-                <div class="swiper-slide joja-video-slide">
-                    <video class="joja-banner-video" 
-                           @(index == 0 ? "autoplay" : "")
-                           loop muted playsinline 
-                           preload="metadata">
-                        <source src="@vid.VideoUrl" type="video/mp4">
-                    </video>
-                    <div class="joja-video-overlay"></div>
-                    @if (!string.IsNullOrEmpty(vid.Title))
-                    {
-                        <div class="joja-video-caption">
-                            <h2>@vid.Title</h2>
-                        </div>
-                    }
-                </div>
-            }
+    <section class="joja-reels-section">
+        <div class="container">
+            <h2 class="section-title" style="text-align:center; margin-bottom:30px;">🎬 Joja Reels</h2>
         </div>
 
-        @if (Model.VideoBanners.Count() > 1)
-        {
+        <div class="swiper joja-reels-swiper">
+            <div class="swiper-wrapper">
+                @foreach (var vid in Model.VideoBanners)
+                {
+                    <div class="swiper-slide joja-reel-slide">
+                        <div class="joja-reel-card">
+                            <video class="joja-reel-video" 
+                                   loop muted playsinline 
+                                   preload="metadata"
+                                   onmouseenter="this.play()"
+                                   onmouseleave="this.pause()">
+                                <source src="@vid.VideoUrl" type="video/mp4">
+                            </video>
+                            @if (!string.IsNullOrEmpty(vid.Title))
+                            {
+                                <div class="joja-reel-caption">@vid.Title</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
             <div class="swiper-button-prev joja-swiper-prev"></div>
             <div class="swiper-button-next joja-swiper-next"></div>
-            <div class="swiper-pagination joja-swiper-pagination"></div>
-        }
-    </div>
+        </div>
+    </section>
 
-    <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var swiper = new Swiper(".joja-video-swiper", {
-                loop: @(Model.VideoBanners.Count() > 1 ? "true" : "false"),
-                allowTouchMove: true,
-                speed: 800,
-                @if (Model.VideoBanners.Count() > 1)
-                {
-                    <text>
-                    pagination: {
-                        el: ".joja-swiper-pagination",
-                        clickable: true,
-                    },
-                    navigation: {
-                        nextEl: ".joja-swiper-next",
-                        prevEl: ".joja-swiper-prev",
-                    },
-                    </text>
-                }
-                on: {
-                    slideChange: function () {
-                        // وقف كل الفيديوهات
-                        document.querySelectorAll('.joja-banner-video').forEach(function(v) {
-                            v.pause();
-                        });
-                        // شغل الفيديو النشط بس
-                        var activeVideo = swiper.slides[swiper.activeIndex]?.querySelector('video');
-                        if (activeVideo) activeVideo.play();
-                    }
+            new Swiper(".joja-reels-swiper", {
+                loop: true,
+                speed: 500,
+                slidesPerView: 1.3,
+                spaceBetween: 15,
+                centeredSlides: false,
+                grabCursor: true,
+                navigation: {
+                    nextEl: ".joja-swiper-next",
+                    prevEl: ".joja-swiper-prev",
+                },
+                breakpoints: {
+                    576: { slidesPerView: 2.3, spaceBetween: 20 },
+                    768: { slidesPerView: 3.3, spaceBetween: 25 },
+                    1024: { slidesPerView: 4.3, spaceBetween: 25 },
                 }
             });
         });
     </script>
 }
+
 
 
 

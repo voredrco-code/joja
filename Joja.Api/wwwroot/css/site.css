@@ -360,117 +360,66 @@ footer {
 }
 
 /* ========================================
-   SWIPER VIDEO BANNER - FULLSCREEN
+   JOJA REELS - Instagram Style
    ======================================== */
-.joja-video-swiper {
-    width: 100%;
-    height: 100vh;
-    position: relative;
+.joja-reels-section {
+    padding: 40px 0;
+    background: var(--joja-background);
     overflow: hidden;
+}
+
+.joja-reels-swiper {
+    padding: 10px 20px 40px 20px !important;
+    overflow: visible !important;
+}
+
+/* كارد الريل - شكل بورتريه 9:16 */
+.joja-reel-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
     background: var(--joja-nude);
+    box-shadow: 0 4px 20px rgba(183, 71, 126, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
-.joja-video-slide {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+.joja-reel-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(183, 71, 126, 0.3);
+    outline: 2px solid var(--joja-button-bg);
 }
 
-/* السحر: object-fit cover يملا الشاشة بالكامل بدون تشويه */
-.joja-banner-video {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* الفيديو يملا الكارد */
+.joja-reel-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 1;
+    display: block;
 }
 
-/* الـ overlay بألوان الـ Brand */
-.joja-video-overlay {
+/* اسم الريل في الأسفل */
+.joja-reel-caption {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom,
-            rgba(183, 71, 126, 0.15) 0%,
-            rgba(183, 71, 126, 0.45) 100%);
-    z-index: 2;
-}
-
-/* العنوان فوق الـ overlay */
-.joja-video-caption {
-    position: absolute;
-    bottom: 80px;
+    bottom: 0;
     left: 0;
     right: 0;
-    z-index: 3;
-    text-align: center;
-    padding: 0 20px;
-}
-
-.joja-video-caption h2 {
+    padding: 30px 15px 15px;
+    background: linear-gradient(to top, rgba(183, 71, 126, 0.7) 0%, transparent 100%);
     color: #fff;
-    font-family: 'Playfair Display', serif;
-    font-size: 3rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.7);
-    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
 }
 
-/* زراير السلايدر */
-.joja-swiper-prev,
-.joja-swiper-next {
-    z-index: 10;
-    color: #fff !important;
-    background: rgba(183, 71, 126, 0.3);
-    backdrop-filter: blur(6px);
-    width: 55px !important;
-    height: 55px !important;
-    border-radius: 50%;
-    border: 1px solid rgba(251, 241, 246, 0.5);
-    transition: background 0.3s;
-}
-
-.joja-swiper-prev:hover,
-.joja-swiper-next:hover {
-    background: rgba(183, 71, 126, 0.6);
-}
-
-.joja-swiper-prev::after,
-.joja-swiper-next::after {
-    font-size: 1.2rem !important;
-    font-weight: bold;
-}
-
-/* نقط التنقل (pagination dots) */
-.joja-swiper-pagination .swiper-pagination-bullet {
-    background: rgba(251, 241, 246, 0.6);
-    width: 10px;
-    height: 10px;
-    opacity: 1;
-}
-
-.joja-swiper-pagination .swiper-pagination-bullet-active {
-    background: var(--joja-nude);
-    transform: scale(1.3);
-}
-
-/* موبايل */
-@media (max-width: 768px) {
-    .joja-video-swiper {
-        height: 60vh;
-    }
-
-    .joja-video-caption h2 {
-        font-size: 1.8rem;
-    }
-
-    .joja-video-caption {
-        bottom: 50px;
+@media (max-width: 576px) {
+    .joja-reels-swiper {
+        padding: 10px 15px 30px 15px !important;
     }
 }
+
 
 
 
