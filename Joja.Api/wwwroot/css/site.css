@@ -360,81 +360,116 @@ footer {
 }
 
 /* ========================================
-   VIDEO BANNER CAROUSEL
+   SWIPER VIDEO BANNER - FULLSCREEN
    ======================================== */
-#videoBannerCarousel {
+.joja-video-swiper {
+    width: 100%;
+    height: 100vh;
     position: relative;
     overflow: hidden;
     background: #000;
 }
 
-#videoBannerCarousel .carousel-item {
+.joja-video-slide {
     position: relative;
-}
-
-/* السحر: object-fit cover بيخلي الفيديو يملا الشاشة بشكل مظبوط */
-.banner-video {
     width: 100%;
-    height: 75vh;
-    object-fit: cover;
-    display: block;
+    height: 100%;
+    overflow: hidden;
 }
 
-/* الـ overlay: لمسة داكنة تحت الكتابة تخلي النص يقرأ */
-#videoBannerCarousel .carousel-item::after {
-    content: '';
+/* السحر: object-fit cover يملا الشاشة بالكامل بدون تشويه */
+.joja-banner-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* الـ overlay الداكن */
+.joja-video-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%);
-    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+    z-index: 2;
 }
 
-/* Caption (العنوان) فوق الـ overlay */
-#videoBannerCarousel .carousel-caption {
-    z-index: 10;
-    bottom: 60px;
+/* العنوان فوق الـ overlay */
+.joja-video-caption {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    z-index: 3;
     text-align: center;
+    padding: 0 20px;
 }
 
-#videoBannerCarousel .carousel-caption h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+.joja-video-caption h2 {
     color: #fff;
-    letter-spacing: 2px;
     font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.7);
+    margin: 0;
 }
 
 /* زراير السلايدر */
-#videoBannerCarousel .carousel-control-prev,
-#videoBannerCarousel .carousel-control-next {
-    width: 60px;
-    height: 60px;
-    top: 50%;
-    transform: translateY(-50%);
+.joja-swiper-prev,
+.joja-swiper-next {
+    z-index: 10;
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    width: 55px !important;
+    height: 55px !important;
     border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: background 0.3s;
 }
 
-#videoBannerCarousel .carousel-control-prev:hover,
-#videoBannerCarousel .carousel-control-next:hover {
-    background: rgba(255,255,255,0.4);
+.joja-swiper-prev:hover,
+.joja-swiper-next:hover {
+    background: rgba(255, 255, 255, 0.35);
 }
 
+.joja-swiper-prev::after,
+.joja-swiper-next::after {
+    font-size: 1.2rem !important;
+    font-weight: bold;
+}
+
+/* نقط التنقل (pagination dots) */
+.joja-swiper-pagination .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.6);
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+}
+
+.joja-swiper-pagination .swiper-pagination-bullet-active {
+    background: #fff;
+    transform: scale(1.3);
+}
+
+/* موبايل */
 @media (max-width: 768px) {
-    .banner-video {
-        height: 50vh;
+    .joja-video-swiper {
+        height: 60vh;
     }
-    #videoBannerCarousel .carousel-caption h2 {
-        font-size: 1.5rem;
+
+    .joja-video-caption h2 {
+        font-size: 1.8rem;
     }
-    #videoBannerCarousel .carousel-caption {
-        bottom: 30px;
+
+    .joja-video-caption {
+        bottom: 50px;
     }
 }
+
 
 
 .hero-content h1 {

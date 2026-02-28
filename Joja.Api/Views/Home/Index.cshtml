@@ -47,65 +47,79 @@ else
     </section>
 }
 
-<!-- Video Banner Carousel -->
+<!-- Video Banner (Swiper.js - Fullscreen) -->
 @if (Model.VideoBanners != null && Model.VideoBanners.Any())
 {
-    <div id="videoBannerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-pause="false">
-        <div class="carousel-inner">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <div class="swiper joja-video-swiper">
+        <div class="swiper-wrapper">
             @foreach (var (vid, index) in Model.VideoBanners.Select((v, i) => (v, i)))
             {
-                <div class="carousel-item @(index == 0 ? "active" : "")">
-                    <video class="d-block w-100 banner-video"
+                <div class="swiper-slide joja-video-slide">
+                    <video class="joja-banner-video" 
                            @(index == 0 ? "autoplay" : "")
                            loop muted playsinline 
                            preload="metadata">
                         <source src="@vid.VideoUrl" type="video/mp4">
-                        متصفحك لا يدعم تشغيل الفيديو.
                     </video>
-                    
+                    <div class="joja-video-overlay"></div>
                     @if (!string.IsNullOrEmpty(vid.Title))
                     {
-                        <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.5); border-radius: 10px; padding: 10px;">
-                            <h2 class="text-white">@vid.Title</h2>
+                        <div class="joja-video-caption">
+                            <h2>@vid.Title</h2>
                         </div>
                     }
                 </div>
             }
         </div>
-        
+
         @if (Model.VideoBanners.Count() > 1)
         {
-            <button class="carousel-control-prev" type="button" data-bs-target="#videoBannerCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">السابق</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#videoBannerCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">التالي</span>
-            </button>
+            <div class="swiper-button-prev joja-swiper-prev"></div>
+            <div class="swiper-button-next joja-swiper-next"></div>
+            <div class="swiper-pagination joja-swiper-pagination"></div>
         }
     </div>
 
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var myCarousel = document.getElementById('videoBannerCarousel');
-            
-            myCarousel.addEventListener('slide.bs.carousel', function (e) {
-                // 1. وقف كل الفيديوهات اللي شغالة عشان نوفر مساحة ورامات
-                var videos = document.querySelectorAll('.banner-video');
-                videos.forEach(function(vid) {
-                    vid.pause();
-                });
-                
-                // 2. شغل الفيديو بتاع السلايد اللي ظهرت بس
-                var nextVideo = e.relatedTarget.querySelector('video');
-                if (nextVideo) {
-                    nextVideo.play();
+            var swiper = new Swiper(".joja-video-swiper", {
+                loop: @(Model.VideoBanners.Count() > 1 ? "true" : "false"),
+                allowTouchMove: true,
+                speed: 800,
+                @if (Model.VideoBanners.Count() > 1)
+                {
+                    <text>
+                    pagination: {
+                        el: ".joja-swiper-pagination",
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: ".joja-swiper-next",
+                        prevEl: ".joja-swiper-prev",
+                    },
+                    </text>
+                }
+                on: {
+                    slideChange: function () {
+                        // وقف كل الفيديوهات
+                        document.querySelectorAll('.joja-banner-video').forEach(function(v) {
+                            v.pause();
+                        });
+                        // شغل الفيديو النشط بس
+                        var activeVideo = swiper.slides[swiper.activeIndex]?.querySelector('video');
+                        if (activeVideo) activeVideo.play();
+                    }
                 }
             });
         });
     </script>
 }
+
 
 
 <!-- Joja Moments (Video Stories) -->
