@@ -655,72 +655,129 @@ footer {
         width: 80px;
         height: 80px;
     }
-}/ *   1 .   'D.DAJ)  'D(J6'!  H*H-J/  DHF  'DAH*1  H'DGJ/1  * / 
- b o d y   { 
-         b a c k g r o u n d - c o l o r :   # f f f f f f   ! i m p o r t a n t ; 
- } 
- f o o t e r   { 
-         b a c k g r o u n d - c o l o r :   # 2 D 5 A 2 7   ! i m p o r t a n t ; 
-         c o l o r :   # f f f f f f ; 
- } 
- 
- / *   2 .   *5EJE  'D.5E  ( B a d g e )   * / 
- . d i s c o u n t - b a d g e   { 
-         p o s i t i o n :   a b s o l u t e ; 
-         t o p :   1 0 p x ; 
-         r i g h t :   1 0 p x ; 
-         b a c k g r o u n d - c o l o r :   # C 5 A 0 5 9 ; 
-         c o l o r :   w h i t e ; 
-         p a d d i n g :   5 p x   1 2 p x ; 
-         b o r d e r - r a d i u s :   2 0 p x ; 
-         f o n t - w e i g h t :   b o l d ; 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         z - i n d e x :   1 0 ; 
- } 
- 
- / *   3 .   *5EJE  'D#39'1  * / 
- . o l d - p r i c e   { 
-         t e x t - d e c o r a t i o n :   l i n e - t h r o u g h ; 
-         c o l o r :   # 9 9 9 ; 
-         m a r g i n - l e f t :   8 p x ; 
-         f o n t - s i z e :   0 . 9 5 r e m ; 
- } 
- . n e w - p r i c e   { 
-         c o l o r :   # 2 D 5 A 2 7 ; 
-         f o n t - w e i g h t :   8 0 0 ; 
-         f o n t - s i z e :   1 . 2 r e m ; 
- } 
- 
- / *   4 .   *5EJE  'D#CH1/JHF  ( 'DECHF'*  H'D'3*./'E)   * / 
- d e t a i l s   { 
-         b a c k g r o u n d - c o l o r :   # f 9 f 9 f 9 ; 
-         p a d d i n g :   1 2 p x   1 5 p x ; 
-         m a r g i n - b o t t o m :   1 0 p x ; 
-         b o r d e r - r a d i u s :   8 p x ; 
-         b o r d e r :   1 p x   s o l i d   # e e e ; 
-         c u r s o r :   p o i n t e r ; 
-         t r a n s i t i o n :   a l l   0 . 3 s   e a s e ; 
- } 
- d e t a i l s   s u m m a r y   { 
-         f o n t - w e i g h t :   b o l d ; 
-         c o l o r :   # 2 D 5 A 2 7 ; 
-         o u t l i n e :   n o n e ; 
-         l i s t - s t y l e :   n o n e ; 
- } 
- d e t a i l s   s u m m a r y : : - w e b k i t - d e t a i l s - m a r k e r   { 
-         d i s p l a y :   n o n e ; 
- } 
- d e t a i l s   s u m m a r y : : a f t e r   { 
-         c o n t e n t :   ' + ' ; 
-         f l o a t :   l e f t ; 
-         f o n t - s i z e :   1 . 2 r e m ; 
- } 
- d e t a i l s [ o p e n ]   s u m m a r y : : a f t e r   { 
-         c o n t e n t :   ' - ' ; 
- } 
- d e t a i l s   p   { 
-         m a r g i n - t o p :   1 0 p x ; 
-         c o l o r :   # 5 5 5 ; 
-         f o n t - s i z e :   0 . 9 5 r e m ; 
- }  
- 
+}
+
+/* 1. استدعاء خط عربي فخم جداً للبراند */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+/* 2. فرض الخلفية البيضاء الناصعة وتطبيق الخط */
+body,
+html {
+    background-color: #ffffff !important;
+    font-family: 'Tajawal', sans-serif !important;
+}
+
+/* 3. تظبيط مقاس وشكل كارت المنتج (The Premium Look) */
+.product-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+    /* بيدي مساحة للمنتج يتنفس ويكبر */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    /* ظل خفيف جداً يبرز المنتج من الخلفية البيضاء */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border: 1px solid #f9f9f9;
+    /* تحديد ناعم جداً */
+}
+
+/* تأثير الشياكة لما الماوس ييجي على المنتج */
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* 4. تظبيط مقاس الصورة عشان متبقاش صغيرة */
+.product-card img {
+    width: 100%;
+    height: 280px;
+    /* بيوحد طول كل الصور عشان العرض يبقى متناسق */
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* 5. تظبيط لون وفونت اسم المنتج (أخضر جوجا الأنيق) */
+.product-title {
+    color: #2D5A27 !important;
+    /* لون البراند */
+    font-weight: 700;
+    font-size: 1.3rem;
+    /* كبرنا الخط شوية */
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* 6. تظبيط الأسعار */
+.new-price {
+    color: #C5A059 !important;
+    /* اللون الذهبي للسعر بيدي إحساس بالغلو والقيمة */
+    font-weight: 800;
+    font-size: 1.3rem;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #a0a0a0;
+    margin-left: 8px;
+    font-size: 1rem;
+}
+
+/* 4. تصميم الأكورديون (المكونات والاستخدام) */
+details {
+    background-color: #f9f9f9;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+details summary {
+    font-weight: bold;
+    color: #2D5A27;
+    outline: none;
+    list-style: none;
+    /* بيشيل السهم الافتراضي في بعض المتصفحات */
+}
+
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+details summary::after {
+    content: '+';
+    float: left;
+    /* عشان السهم ييجي على الشمال في العربي */
+    font-size: 1.2rem;
+}
+
+details[open] summary::after {
+    content: '-';
+}
+
+details p {
+    margin-top: 10px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* توحيد لون الفوتر والهيدر */
+footer {
+    background-color: #2D5A27 !important;
+    color: #ffffff;
+}
+
+/* 2. تصميم الخصم (Badge) */
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #C5A059;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    z-index: 10;
+}
