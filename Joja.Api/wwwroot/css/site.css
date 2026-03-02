@@ -899,3 +899,26 @@ footer {
     background-color: #923864;
     color: white;
 }
+
+/* نظام CSS Grid لإجبار ظهور 4 منتجات في الديسك توب */
+.custom-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 25px !important;
+    margin-top: 20px;
+}
+
+/* 3 منتجات للشاشات المتوسطة (التابلت) */
+@media (max-width: 991px) {
+    .custom-products-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* منتجين لشاشات الموبايل */
+@media (max-width: 768px) {
+    .custom-products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+    }
+}

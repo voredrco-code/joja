@@ -1,29 +1,24 @@
 @model Joja.Api.Models.Product 
-<div class="col-lg-3 col-md-4 col-6 mb-5">
-    <div class="product-item text-center">
-        
-        <a href="/Products/Details/@Model.Id" class="image-box d-block position-relative" style="background-color: #f9f9f9; border-radius: 12px; overflow: hidden; height: 320px;">
+<div class="product-item text-center">
+    
+    <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.Id" class="image-box d-block position-relative" style="background-color: #f9f9f9; border-radius: 12px; overflow: hidden; height: 320px;">
+        @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+        {
+            var discount = Math.Round((decimal)((Model.OriginalPrice.Value - Model.Price) / Model.OriginalPrice.Value * 100));
+            <span class="discount-badge position-absolute" style="top: 10px; right: 10px; background-color: #C5A059; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; z-index: 10;">خصم @discount%</span>
+        }
+        <img src="@Model.MainImageUrl" alt="@Model.Name" class="product-img" style="width: 100%; height: 100%; object-fit: cover;" />
+    </a>
+    
+    <div class="product-info mt-3">
+        <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.Id" style="text-decoration: none;">
+            <h5 class="product-title" style="color: #B7477E; font-size: 1.15rem; font-weight: 700; margin-bottom: 5px;">@Model.Name</h5>
+        </a>
+        <div class="product-price mb-2">
             @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
             {
-                var discount = Math.Round((decimal)((Model.OriginalPrice.Value - Model.Price) / Model.OriginalPrice.Value * 100));
-                <span class="discount-badge position-absolute" style="top: 10px; right: 10px; background-color: #C5A059; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; z-index: 10;">خصم @discount%</span>
+                <span class="old-price" style="text-decoration: line-through; color: #999; font-size: 0.95rem; margin-left: 8px;">@Model.OriginalPrice.Value</span>
             }
-            <img src="@Model.MainImageUrl" alt="@Model.Name" class="product-img" style="width: 100%; height: 100%; object-fit: cover;" />
-        </a>
-        
-        <div class="product-info mt-3">
-            <a href="/Products/Details/@Model.Id" style="text-decoration: none;">
-                <h5 class="product-title" style="color: #B7477E; font-size: 1.15rem; font-weight: 700; margin-bottom: 5px;">@Model.Name</h5>
-            </a>
-            <div class="product-price mb-2">
-                @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
-                {
-                    <span class="old-price" style="text-decoration: line-through; color: #999; font-size: 0.95rem; margin-left: 8px;">@Model.OriginalPrice.Value</span>
-                }
-                <span class="new-price" style="color: #6f42c1; font-weight: bold; font-size: 1.25rem;">@Model.Price جنيه</span>
-            </div>
-            
-            <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn w-100" style="background-color: #B7477E; color: white; border-radius: 25px; padding: 8px 0; font-weight: bold;">أضف للسلة</button>
-        </div>
-    </div>
+            <span class="new-price" style="color: #6f42c1; font-weight: bold; font-size: 1.25rem;">@Model.Price جنيه</span>
+</div>
 </div>
