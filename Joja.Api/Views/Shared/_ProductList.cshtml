@@ -1,0 +1,6 @@
+@model IEnumerable<Joja.Api.Models.Product>
+
+@foreach (var product in Model)
+{
+    <partial name="_ProductGrid" model="product" />
+}

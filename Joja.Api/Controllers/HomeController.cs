@@ -197,7 +197,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         // Localize products
         _localizationService.GetLocalizedProducts(products, language);
         
-        return PartialView("_ProductGrid", products);
+        return PartialView("_ProductList", products);
     }
 
     public async Task<IActionResult> Details(int id)
