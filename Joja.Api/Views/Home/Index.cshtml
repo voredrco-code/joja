@@ -137,7 +137,7 @@ else
 <!-- Filter Buttons -->
 <div class="container">
     <h2 class="section-title">@(ViewBag.BestSellers ?? "Best Sellers")</h2>
-    <div class="filter-buttons text-center my-4" style="text-align: center; margin-bottom: 30px;">
+    <div class="filter-buttons filter-list my-4">
         <button class="btn-filter active" onclick="filter(null)">@(ViewBag.FilterAll ?? "All")</button>
         @foreach(var cat in Model.Categories) {
             <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>

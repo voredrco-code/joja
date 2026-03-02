@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ContentPage> ContentPages { get; set; }
     public DbSet<VideoBanner> VideoBanners { get; set; }
     public DbSet<AppSettings> AppSettings { get; set; }
+    public DbSet<SiteSetting> SiteSettings { get; set; }
     public DbSet<AnalyticsLog> AnalyticsLogs { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
 

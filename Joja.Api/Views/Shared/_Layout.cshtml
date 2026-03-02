@@ -183,15 +183,23 @@
         </div>
     </div>
 
+    @{
+        var siteSetting = _context.SiteSettings.FirstOrDefault();
+        var whatsappNum = siteSetting?.WhatsAppNumber ?? "201000000000"; 
+    }
+    <a href="https://wa.me/@whatsappNum" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         // Modal Logic
         document.addEventListener("DOMContentLoaded", function() {
-            // Show modal after 3 seconds if not seen before (and not subscribed)
+            // Show modal after 5 seconds if not seen before (and not subscribed)
             if (!localStorage.getItem('joja_popup_seen') && !localStorage.getItem('joja_subscribed')) {
                 setTimeout(function() {
                     document.getElementById('newsletterModal').style.display = 'flex';
-                }, 3000);
+                }, 5000);
             }
 
             document.querySelector('.close-modal').onclick = function() {

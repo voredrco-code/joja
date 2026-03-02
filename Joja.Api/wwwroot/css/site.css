@@ -752,7 +752,7 @@ details summary::after {
     font-size: 1.2rem;
 }
 
-details[open] summary::after {
+details [open] summary::after {
     content: '-';
 }
 
@@ -780,4 +780,40 @@ footer {
     font-weight: bold;
     font-size: 0.85rem;
     z-index: 10;
+}
+
+.filter-list {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+    gap: 10px;
+}
+
+.filter-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* تنسيق زر الواتساب العائم */
+.whatsapp-float {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #25d366;
+    color: #FFF;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 35px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    color: white;
 }
