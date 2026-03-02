@@ -826,38 +826,32 @@ footer {
     color: white;
 }
 
-/* صندوق الصورة */
+/* إجبار صندوق الصورة على أبعاد ثابتة للديسك توب */
 .image-box {
+    display: block;
     width: 100%;
-    height: 280px;
-    /* مقاس مثالي للديسك توب */
-    overflow: hidden;
+    height: 320px !important;
+    /* طول مميز للديسك توب */
     border-radius: 12px;
+    overflow: hidden;
     background-color: #f9f9f9;
     position: relative;
-    display: block;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-    transition: transform 0.3s ease;
 }
 
-.image-box:hover {
-    transform: translateY(-5px);
-    /* تأثير ارتفاع بسيط عند الوقوف بالماوس */
-}
-
-/* صورة المنتج داخل الصندوق */
+/* إجبار الصورة على ملء الصندوق بدون تمطيط (أهم سطر) */
 .product-img {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover !important;
-    /* الأهم لمنع التمطيط */
+    object-position: center !important;
+    display: block;
 }
 
-/* التعديل للموبايل (ارتفاع مناسب للصورة) */
-@media (max-width: 768px) {
+/* تعديل الطول للموبايل فقط ليكون متناسق */
+@media (max-width: 991px) {
     .image-box {
-        height: 200px;
-        /* مقاس مثالي للموبايل */
+        height: 220px !important;
     }
 }
 

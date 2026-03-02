@@ -2,9 +2,10 @@
 
 @foreach (var product in Model)
 {
-    <div class="col-6 col-md-4 col-lg-3 mb-4">
-        <div class="product-item text-center">
-            <a href="/Home/Details/@product.Id" class="d-block position-relative image-box">
+    <div class="col-lg-3 col-md-4 col-6 mb-5">
+        <div class="product-item">
+            
+            <a href="/Home/Details/@product.Id" class="image-box">
                 @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
                 {
                     var discount = Math.Round((decimal)((product.OriginalPrice.Value - product.Price) / product.OriginalPrice.Value * 100));
@@ -13,22 +14,19 @@
                 <img src="@product.MainImageUrl?.Replace("/upload/", "/upload/w_400,q_auto,f_auto/")" alt="@product.Name" class="product-img" />
             </a>
             
-            <div class="product-info mt-3">
-                <a href="/Home/Details/@product.Id">
-                    <h5 class="product-title">@product.Name</h5>
+            <div class="product-info mt-3 text-center">
+                <a href="/Home/Details/@product.Id" style="text-decoration: none;">
+                    <h5 class="product-title" style="color: #B7477E; font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">@product.Name</h5>
                 </a>
                 <div class="product-price">
                     @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
                     {
-                        <span class="old-price">@product.OriginalPrice.Value EGP</span>
-                        <span class="new-price">@product.Price EGP</span>
+                        <span class="old-price" style="text-decoration: line-through; color: #999; font-size: 0.9rem; margin-left: 5px;">@product.OriginalPrice.Value</span>
                     }
-                    else
-                    {
-                        <span class="new-price">@product.Price.ToString("0.00") EGP</span>
-                    }
+                    <span class="new-price" style="color: #6f42c1; font-weight: bold; font-size: 1.2rem;">@product.Price جنيه</span>
                 </div>
             </div>
+            
         </div>
     </div>
 }
