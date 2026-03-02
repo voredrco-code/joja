@@ -667,6 +667,13 @@ html {
     font-family: 'Tajawal', sans-serif !important;
 }
 
+/* 2. إزالة الخط السفلي من جميع المنتجات والروابط */
+a.text-dark,
+.product-card a,
+a {
+    text-decoration: none !important;
+}
+
 /* 3. تظبيط مقاس وشكل كارت المنتج (The Premium Look) */
 .product-card {
     background-color: #ffffff;
@@ -687,39 +694,40 @@ html {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* 4. تظبيط مقاس الصورة عشان متبقاش صغيرة */
+/* 3. إصلاح صور المنتجات لعدم التشوه على الديسك توب */
 .product-card img {
     width: 100%;
-    height: 280px;
-    /* بيوحد طول كل الصور عشان العرض يبقى متناسق */
+    height: 260px;
+    /* توحيد الطول ليناسب الديسك توب والموبايل */
     object-fit: cover;
+    /* يمنع تمطيط الصورة */
     border-radius: 8px;
 }
 
-/* 5. تظبيط لون وفونت اسم المنتج (أخضر جوجا الأنيق) */
+/* 4. تغيير لون اسم المنتج إلى البينك (نفس لون الهيدر) */
 .product-title {
-    color: #2D5A27 !important;
-    /* لون البراند */
+    color: #B7477E !important;
+    /* لون بينك */
     font-weight: 700;
-    font-size: 1.3rem;
-    /* كبرنا الخط شوية */
+    font-size: 1.2rem;
     margin-top: 15px;
     margin-bottom: 10px;
 }
 
-/* 6. تظبيط الأسعار */
+/* 5. تغيير لون السعر الجديد إلى الموف (Purple) */
 .new-price {
-    color: #C5A059 !important;
-    /* اللون الذهبي للسعر بيدي إحساس بالغلو والقيمة */
+    color: #6f42c1 !important;
+    /* لون موف أنيق يليق مع البراند */
     font-weight: 800;
     font-size: 1.3rem;
 }
 
+/* لون السعر القديم المشطوب */
 .old-price {
+    color: #999 !important;
     text-decoration: line-through;
-    color: #a0a0a0;
-    margin-left: 8px;
     font-size: 1rem;
+    margin-left: 8px;
 }
 
 /* 4. تصميم الأكورديون (المكونات والاستخدام) */
@@ -762,9 +770,9 @@ details p {
     font-size: 0.95rem;
 }
 
-/* توحيد لون الفوتر والهيدر */
+/* 1. توحيد الفوتر مع الهيدر باللون البينك */
 footer {
-    background-color: #2D5A27 !important;
+    background-color: #B7477E !important;
     color: #ffffff;
 }
 
