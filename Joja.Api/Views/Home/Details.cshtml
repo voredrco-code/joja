@@ -94,14 +94,11 @@
                     <div class="d-flex align-items-center mt-4">
                         <div class="quantity-input me-3" style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 6px; padding: 5px;">
                             <button type="button" onclick="this.nextElementSibling.stepDown()" style="background:none; border:none; padding: 5px 15px; cursor:pointer;">-</button>
-                            <input type="number" name="quantity" value="1" min="1" style="width: 50px; text-align: center; border: none; font-weight: bold;" />
+                            <input type="number" id="qtyInput" name="quantity" value="1" min="1" style="width: 50px; text-align: center; border: none; font-weight: bold;" />
                             <button type="button" onclick="this.previousElementSibling.stepUp()" style="background:none; border:none; padding: 5px 15px; cursor:pointer;">+</button>
                         </div>
-                        <button type="submit" class="btn-joja-dark" style="background: #121212; color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; margin-right: 10px;">
-                            @(isAr ? "أضف للسلة" : "Add to Cart")
-                        </button>
-                        <button type="submit" name="redirect" value="checkout" class="btn-joja-buy-now" style="background: #B7477E; color: white; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
-                            @(isAr ? "شراء الآن" : "Buy Now")
+                        <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn w-100 mt-3" style="background-color: #B7477E; color: white; border-radius: 25px; font-weight: bold; padding: 10px;">
+                            إضافة إلى السلة 🛒
                         </button>
                     </div>
                 </form>

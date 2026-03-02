@@ -145,7 +145,7 @@ else
     </div>
 
     <!-- Product Grid Container -->
-    <div id="product-container" class="row">
+    <div id="product-container" class="row flex-wrap">
         @await Html.PartialAsync("_ProductGrid", Model.Products)
     </div>
 </div>

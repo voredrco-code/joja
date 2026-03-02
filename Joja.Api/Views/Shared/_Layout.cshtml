@@ -270,16 +270,22 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function addToCart(productId) {
+        function addToCartAjax(productId) {
+            let qty = 1;
+            let qtyInput = document.getElementById('qtyInput');
+            if(qtyInput) { qty = qtyInput.value; }
+            
             fetch('/Cart/AddToCartAjax', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'productId=' + productId + '&quantity=1'
+                body: 'productId=' + productId + '&quantity=' + qty
             })
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
-                    document.getElementById('cart-badge').innerText = data.cartCount;
+                    let badge = document.getElementById('cart-badge');
+                    if(badge) badge.innerText = data.cartCount;
+                    
                     Swal.fire({
                         toast: true, position: 'bottom-end', showConfirmButton: false,
                         timer: 3000, timerProgressBar: true, icon: 'success',
