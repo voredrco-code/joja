@@ -50,6 +50,23 @@ public class CartController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> AddToCartAjax(int productId, int quantity = 1)
+    {
+        var product = await _context.Products.FindAsync(productId);
+        if (product != null)
+        {
+            var selectedVariants = new Dictionary<string, string>();
+            _cartService.AddItem(product, quantity, selectedVariants);
+            
+            return Json(new { success = true, cartCount = CartService.Items.Sum(i => i.Quantity) });
+        }
+        
+        return Json(new { success = false, message = "Product not found" });
+    }
+
+
+
     public IActionResult Remove(int productId)
     {
         _cartService.RemoveItem(productId);

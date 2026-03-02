@@ -99,7 +99,12 @@
                     </form>
                     <a href="#"><i class="fas fa-search"></i></a>
                     <a href="#"><i class="fas fa-user"></i></a>
-                    <a asp-controller="Cart" asp-action="Index"><i class="fas fa-shopping-cart"></i></a>
+                    <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
+                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                        </span>
+                    </a>
                     
                     @if (User.Identity.IsAuthenticated)
                     {
@@ -261,6 +266,27 @@
                     device: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
                 })
             }).catch(e => console.error("Analytics Error:", e));
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function addToCart(productId) {
+            fetch('/Cart/AddToCartAjax', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'productId=' + productId + '&quantity=1'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('cart-badge').innerText = data.cartCount;
+                    Swal.fire({
+                        toast: true, position: 'bottom-end', showConfirmButton: false,
+                        timer: 3000, timerProgressBar: true, icon: 'success',
+                        title: 'تم إضافة المنتج للسلة بنجاح 🛒'
+                    });
+                }
+            });
         }
     </script>
     @await RenderSectionAsync("Scripts", required: false)

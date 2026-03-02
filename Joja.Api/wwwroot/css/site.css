@@ -825,3 +825,81 @@ footer {
     transform: scale(1.1);
     color: white;
 }
+
+/* صندوق الصورة */
+.image-box {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 380px;
+    /* جعل الصندوق أطول */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s ease;
+}
+
+.image-box:hover {
+    transform: translateY(-5px);
+    /* تأثير ارتفاع بسيط عند الوقوف بالماوس */
+}
+
+/* صورة المنتج داخل الصندوق */
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* التعديل للموبايل (ارتفاع مناسب للصورة) */
+@media (max-width: 768px) {
+    .image-box {
+        height: 250px;
+    }
+}
+
+/* إزالة أي بوردر أو خلفية من النصوص */
+.product-info {
+    background: transparent;
+    border: none;
+}
+
+.product-title {
+    color: #B7477E !important;
+    /* لون بينك */
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.new-price {
+    color: #6f42c1 !important;
+    /* لون موف */
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.95rem;
+    margin-left: 8px;
+}
+
+/* زر أضف للسلة */
+.btn-add-cart {
+    background-color: #B7477E;
+    color: white;
+    border-radius: 25px;
+    padding: 6px 20px;
+    font-size: 0.9rem;
+    width: 100%;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.btn-add-cart:hover {
+    background-color: #923864;
+    color: white;
+}

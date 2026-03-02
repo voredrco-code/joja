@@ -2,21 +2,22 @@
 
 @foreach (var product in Model)
 {
-    <div class="col-6 col-md-4 col-lg-3 mb-4">
-        <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none">
-            <div class="product-card position-relative text-center">
-                
+    <div class="col-6 col-md-4 col-lg-3 mb-5">
+        <div class="product-item text-center">
+            <a href="/Home/Details/@product.Id" class="d-block position-relative image-box">
                 @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
                 {
                     var discount = Math.Round((decimal)((product.OriginalPrice.Value - product.Price) / product.OriginalPrice.Value * 100));
                     <span class="discount-badge">خصم @discount%</span>
                 }
-                
-                <img src="@product.MainImageUrl?.Replace("/upload/", "/upload/w_400,q_auto,f_auto/")" alt="@product.Name" class="img-fluid mb-3" />
-                
-                <h5 class="product-title">@product.Name</h5>
-                
-                <div class="product-price mt-2">
+                <img src="@product.MainImageUrl?.Replace("/upload/", "/upload/w_400,q_auto,f_auto/")" alt="@product.Name" class="product-img" />
+            </a>
+            
+            <div class="product-info mt-3">
+                <a href="/Home/Details/@product.Id">
+                    <h5 class="product-title">@product.Name</h5>
+                </a>
+                <div class="product-price">
                     @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
                     {
                         <span class="old-price">@product.OriginalPrice.Value EGP</span>
@@ -27,7 +28,8 @@
                         <span class="new-price">@product.Price.ToString("0.00") EGP</span>
                     }
                 </div>
+                <button type="button" onclick="addToCart(@product.Id)" class="btn btn-add-cart mt-2">أضف للسلة</button>
             </div>
-        </a>
+        </div>
     </div>
 }
