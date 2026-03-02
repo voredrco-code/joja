@@ -2,14 +2,30 @@
 
 @foreach (var product in Model)
 {
-    <div class="product-card">
-        <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id">
-            <img src="@product.MainImageUrl?.Replace("/upload/", "/upload/w_500,q_auto,f_auto/")" alt="@product.Name" class="product-image img-fluid" />
-        </a>
-        <div class="product-info">
-            <h3 class="product-name">@product.Name</h3>
-            <p class="product-price">@product.Price.ToString("0.00") EGP</p>
-            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">View Details</a>
+    <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none text-dark" style="display: block;">
+        <div class="product-card position-relative text-center" style="background: transparent; border: none;">
+            
+            @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
+            {
+                var discount = Math.Round((decimal)((product.OriginalPrice.Value - product.Price) / product.OriginalPrice.Value * 100));
+                <span class="discount-badge">خصم @discount%</span>
+            }
+            
+            <img src="@product.MainImageUrl?.Replace("/upload/", "/upload/w_400,q_auto,f_auto/")" alt="@product.Name" class="img-fluid rounded mb-3" style="width: 100%; height: 300px; object-fit: cover;" />
+            
+            <h5 class="product-title" style="font-size: 1.1rem; font-weight: 600;">@product.Name</h5>
+            
+            <div class="product-price mt-2" style="font-family: 'Inter', sans-serif;">
+                @if (product.OriginalPrice.HasValue && product.OriginalPrice > product.Price)
+                {
+                    <span class="old-price">@product.OriginalPrice.Value EGP</span>
+                    <span class="new-price">@product.Price EGP</span>
+                }
+                else
+                {
+                    <span class="new-price" style="color: #666; font-weight: 600;">@product.Price.ToString("0.00") EGP</span>
+                }
+            </div>
         </div>
-    </div>
+    </a>
 }

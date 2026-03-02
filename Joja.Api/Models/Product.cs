@@ -7,8 +7,17 @@ public class Product
     public string Description { get; set; } = string.Empty;
     public string? DescriptionEn { get; set; }
     public decimal Price { get; set; }
-    public string? MainImageUrl { get; set; } = "";
     
+    // السعر الأصلي (قبل الخصم) - لو مفيش خصم سيبه فاضي
+    public decimal? OriginalPrice { get; set; }
+    
+    // المكونات
+    public string? Ingredients { get; set; }
+    
+    // طريقة الاستخدام
+    public string? UsageInstructions { get; set; }
+
+    public string? MainImageUrl { get; set; } = "";
     
     // Video
     public string? VideoUrl { get; set; } 

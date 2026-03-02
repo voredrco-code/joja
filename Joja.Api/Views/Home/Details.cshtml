@@ -41,6 +41,29 @@
                 @Model.Description
             </p>
 
+            <div class="product-accordion mt-4">
+                @if (!string.IsNullOrEmpty(Model.Ingredients))
+                {
+                    <details>
+                        <summary>المكونات (Ingredients)</summary>
+                        <p>@Model.Ingredients</p>
+                    </details>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.UsageInstructions))
+                {
+                    <details>
+                        <summary>طريقة الاستخدام (How to use)</summary>
+                        <p>@Model.UsageInstructions</p>
+                    </details>
+                }
+            </div>
+
+            <div class="customer-reviews mt-5 mb-5">
+                <h4 style="color: #2D5A27; border-bottom: 2px solid #eee; padding-bottom: 10px;">تقييمات العملاء ⭐</h4>
+                <p class="text-muted mt-3">كن أول من يقيم هذا المنتج! (قريباً)</p>
+            </div>
+
             <div class="actions">
                 <form asp-controller="Cart" asp-action="AddToCart" method="post" id="addToCartForm" data-product-name="@Model.Name">
                     <input type="hidden" name="productId" value="@Model.Id" />
