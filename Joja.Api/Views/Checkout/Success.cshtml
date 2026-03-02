@@ -6,19 +6,27 @@
 <div class="container" style="margin-top: 80px; text-align: center;">
     <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 600px;">
         <i class="fas fa-check-circle" style="font-size: 5rem; color: #4CAF50; margin-bottom: 20px;"></i>
-        <h1 class="brand-font" style="color: #333;">Thank You!</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 30px;">Your order has been placed successfully.</p>
+        <h1 class="brand-font" style="color: #333;">شكراً لك!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">تم استلام طلبك بنجاح وسنتواصل معك قريباً للتأكيد.</p>
         
         <div style="background: #f9f9f9; padding: 20px; border-radius: 4px; margin-bottom: 30px; text-align: left;">
-            <p><strong>Order ID:</strong> #@Model.Id</p>
-            <p><strong>Total Amount:</strong> @Model.TotalAmount.ToString("C")</p>
-            <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
-            @if(Model.PaymentMethod == "InstaPay" || Model.PaymentMethod == "Wallet")
-            {
-                <p style="color: #D71920; font-weight: bold;">Reminder: Please send the payment screenshot to our WhatsApp if you haven't already.</p>
-            }
+            <p><strong>رقم الطلب:</strong> #@Model.Id</p>
+            <p><strong>الإجمالي:</strong> @Model.TotalAmount.ToString("0.00") ج.م</p>
         </div>
 
-        <a asp-controller="Home" asp-action="Index" class="btn-primary" style="background-color: #333;">Back to Home</a>
+        <a asp-controller="Home" asp-action="Index" class="btn-primary" style="background-color: #333;">العودة للرئيسية</a>
     </div>
 </div>
+
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1136168747656955');
+  fbq('track', 'Purchase', {value: @Model.TotalAmount, currency: 'EGP'});
+</script>

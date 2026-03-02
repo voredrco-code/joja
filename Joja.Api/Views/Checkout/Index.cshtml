@@ -90,7 +90,7 @@
                 {
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                         <span>@item.Product.Name x @item.Quantity</span>
-                        <span>@((item.PriceAtPurchase * item.Quantity).ToString("C"))</span>
+                        <span>@((item.UnitPrice * item.Quantity).ToString("C"))</span>
                     </div>
                 }
                 

@@ -39,7 +39,9 @@ public class HomeController : Controller
 
         var order = new Order 
         { 
-            CustomerId = customer.Id, 
+            CustomerName = customerName ?? "", 
+            Phone = phone ?? "",
+            Address = address ?? "",
             OrderDate = DateTime.Now, 
             Status = "Pending",
             TotalAmount = 0 // Will be calculated from items
@@ -239,7 +241,8 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         var orders = await _context.Orders
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Product)
-            .Where(o => o.Customer.Email == email)
+            .Where(o => o.Phone == email) // Using email/phone generically as identifier based on previous usage, though phone is preferred for order directly now
+
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
 
@@ -265,7 +268,6 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         ViewBag.Products = await _context.Products.ToListAsync();
 
         var orders = await _context.Orders
-            .Include(o => o.Customer)
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
 

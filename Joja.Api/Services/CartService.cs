@@ -24,7 +24,7 @@ public class CartService
                 ProductId = product.Id,
                 Product = product,
                 Quantity = quantity,
-                PriceAtPurchase = product.Price,
+                UnitPrice = product.Price,
                 SelectedVariantsJson = variantsJson
             });
         }
@@ -41,5 +41,5 @@ public class CartService
 
     public void Clear() => Items.Clear();
     
-    public decimal Total => Items.Sum(i => i.PriceAtPurchase * i.Quantity);
+    public decimal Total => Items.Sum(i => i.UnitPrice * i.Quantity);
 }

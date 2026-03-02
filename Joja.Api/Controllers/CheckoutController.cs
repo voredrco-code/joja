@@ -43,48 +43,21 @@ public class CheckoutController : Controller
 
         if (ModelState.IsValid)
         {
-            // 1. Create or Update Customer (Simple implementation: always create new or find by email)
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == model.Email);
-            if (customer == null)
-            {
-                customer = new Customer
-                {
-                    Name = model.Name,
-                    Email = model.Email,
-                    Phone = model.Phone,
-                    Address = model.Address,
-                    City = model.City,
-                    CreatedAt = DateTime.Now
-                };
-                _context.Customers.Add(customer);
-            }
-            else
-            {
-                // Update existing customer info
-                customer.Name = model.Name;
-                customer.Phone = model.Phone;
-                customer.Address = model.Address;
-                customer.City = model.City;
-            }
-
-            await _context.SaveChangesAsync();
-
-            // 2. Create Order
+            // 1. Create Order
             var order = new Order
             {
-                CustomerId = customer.Id,
+                CustomerName = model.Name,
+                Phone = model.Phone,
+                Address = $"{model.Address}, {model.City}",
                 OrderDate = DateTime.Now,
                 TotalAmount = _cartService.Total + 85m, // Add Shipping Cost
-                Status = "Pending",
-                PaymentMethod = model.PaymentMethod,
-                ShippingAddress = $"{model.Address}, {model.City}",
-                Notes = model.Notes
+                Status = "Pending"
             };
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // 3. Create OrderItems
+            // 2. Create OrderItems
             foreach (var item in CartService.Items)
             {
                 var orderItem = new OrderItem
@@ -92,7 +65,7 @@ public class CheckoutController : Controller
                     OrderId = order.Id,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    PriceAtPurchase = item.PriceAtPurchase,
+                    UnitPrice = item.UnitPrice,
                     SelectedVariantsJson = item.SelectedVariantsJson
                 };
                 _context.OrderItems.Add(orderItem);

@@ -76,7 +76,7 @@
                 @foreach (var order in Model) {
                     <tr style="border-bottom: 1px solid #ddd;">
                         <td style="padding: 12px;">#@order.Id</td>
-                        <td style="padding: 12px;">@order.Customer.Email</td>
+                        <td style="padding: 12px;">@order.CustomerName <br><small>@order.Phone</small></td>
                         <td style="padding: 12px;">@order.OrderDate.ToShortDateString()</td>
                         <td style="padding: 12px;">@order.TotalAmount.ToString("C")</td>
                         <td style="padding: 12px;">
