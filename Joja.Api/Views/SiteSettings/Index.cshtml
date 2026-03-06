@@ -26,6 +26,18 @@
                     <input name="whatsAppNumber" class="form-control form-control-lg" value="@Model?.WhatsAppNumber" placeholder="2010..." required />
                     <small class="text-muted">هذا الرقم سيتم استخدامه في زر الواتساب العائم الموجود في جميع صفحات الموقع للتواصل المباشر مع العملاء.</small>
                 </div>
+
+                <div class="form-group mb-3 mt-4">
+                    <label class="control-label fw-bold">النص الترويجي في الهيدر (Header Announcement)</label>
+                    <input name="headerAnnouncementText" class="form-control form-control-lg" value="@Model?.HeaderAnnouncementText" placeholder="Welcome to Joja Organic..." />
+                    <small class="text-muted">هذا النص سيظهر في الشريط الإعلاني أعلى الموقع.</small>
+                </div>
+                
+                <div class="form-group mb-3 form-check form-switch mt-4">
+                    <input class="form-check-input" type="checkbox" role="switch" id="enableStickyCart" name="enableStickyCart" value="true" @(Model?.EnableStickyCart == true ? "checked" : "") style="transform: scale(1.5); margin-left: 10px;">
+                    <label class="form-check-label fw-bold" for="enableStickyCart" style="font-size: 1.1rem; margin-right: 25px;">تفعيل الشريط الثابت للسلة (Sticky Cart Bar)</label>
+                    <div class="text-muted mt-1" style="font-size: 0.9rem;">عند التفعيل، سيظهر شريط ثابت أسفل الشاشة للمستخدم عند النزول لأسفل في صفحة تفاصيل المنتج، مما يسهل عملية الشراء السريع.</div>
+                </div>
                 
                 <button type="submit" class="btn btn-success btn-lg w-100 mt-3 rounded-pill fw-bold">
                     <i class="fas fa-save"></i> حفظ التعديلات

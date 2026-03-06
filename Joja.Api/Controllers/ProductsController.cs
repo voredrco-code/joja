@@ -49,7 +49,7 @@ namespace Joja.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> AdditionalImages)
+        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> AdditionalImages, List<IFormFile> VariantImages, List<int> VariantImageIndices)
         {
             if (product == null) product = new Product();
             product.Name = product.Name ?? " ";
@@ -105,6 +105,35 @@ namespace Joja.Api.Controllers
                     }
                 }
 
+                // Process Variants and their specific images
+                if (product.Variants != null && product.Variants.Any())
+                {
+                    for (int i = 0; i < product.Variants.Count; i++)
+                    {
+                        var variant = product.Variants[i];
+                        
+                        // Check if an image was specifically uploaded for this variant index
+                        if (VariantImages != null && VariantImageIndices != null)
+                        {
+                            int imageIndexInList = VariantImageIndices.IndexOf(i);
+                            if (imageIndexInList >= 0 && imageIndexInList < VariantImages.Count)
+                            {
+                                var imgFile = VariantImages[imageIndexInList];
+                                if (imgFile != null && imgFile.Length > 0)
+                                {
+                                    if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
+                                    using (var stream = imgFile.OpenReadStream())
+                                    {
+                                        var uploadParams = new ImageUploadParams() { File = new FileDescription(imgFile.FileName, stream) };
+                                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                                        variant.ImageUrl = uploadResult.SecureUrl.ToString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -129,7 +158,7 @@ namespace Joja.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product, IFormFile MainImageFile, IFormFile VideoFile)
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> VariantImages, List<int> VariantImageIndices)
         {
             if (product == null) product = new Product();
             if (id != product.Id) return NotFound();
@@ -140,7 +169,9 @@ namespace Joja.Api.Controllers
 
             try
             {
-                var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                var existingProduct = await _context.Products
+                    .Include(p => p.Variants) // eager load variants
+                    .FirstOrDefaultAsync(p => p.Id == id);
                     
                 if (MainImageFile != null && MainImageFile.Length > 0)
                 {
@@ -166,7 +197,83 @@ namespace Joja.Api.Controllers
                 }
                 else if (existingProduct != null) { product.VideoUrl = existingProduct.VideoUrl; }
 
-                _context.Update(product);
+                // Process Variants
+                if (existingProduct != null && existingProduct.Variants != null)
+                {
+                    // 1. Remove variants that are missing from the submitted list
+                    var incomingVariantIds = product.Variants != null ? product.Variants.Where(v => v.Id > 0).Select(v => v.Id).ToList() : new List<int>();
+                    var variantsToRemove = existingProduct.Variants.Where(v => !incomingVariantIds.Contains(v.Id)).ToList();
+                    _context.ProductVariants.RemoveRange(variantsToRemove);
+
+                    if (product.Variants != null)
+                    {
+                        for (int i = 0; i < product.Variants.Count; i++)
+                        {
+                            var variant = product.Variants[i];
+
+                            // Check if a new image was specifically uploaded for this variant index
+                            string? uploadedImageUrl = null;
+                            if (VariantImages != null && VariantImageIndices != null)
+                            {
+                                int imageIndexInList = VariantImageIndices.IndexOf(i);
+                                if (imageIndexInList >= 0 && imageIndexInList < VariantImages.Count)
+                                {
+                                    var imgFile = VariantImages[imageIndexInList];
+                                    if (imgFile != null && imgFile.Length > 0)
+                                    {
+                                        if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
+                                        using (var stream = imgFile.OpenReadStream())
+                                        {
+                                            var uploadParams = new ImageUploadParams() { File = new FileDescription(imgFile.FileName, stream) };
+                                            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                                            uploadedImageUrl = uploadResult.SecureUrl.ToString();
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (variant.Id > 0) 
+                            {
+                                // Existing Variant update
+                                var existingVariant = existingProduct.Variants.FirstOrDefault(v => v.Id == variant.Id);
+                                if (existingVariant != null)
+                                {
+                                    existingVariant.Name = variant.Name;
+                                    existingVariant.PriceAdjustment = variant.PriceAdjustment;
+                                    
+                                    // Override URL if we just uploaded a new one, else keep the hidden one provided by the form
+                                    if (uploadedImageUrl != null) existingVariant.ImageUrl = uploadedImageUrl;
+                                    else existingVariant.ImageUrl = variant.ImageUrl; 
+                                }
+                            }
+                            else 
+                            {
+                                // New Variant being added during Edit
+                                variant.ProductId = id; 
+                                if (uploadedImageUrl != null) variant.ImageUrl = uploadedImageUrl;
+                                _context.ProductVariants.Add(variant);
+                            }
+                        }
+                    }
+                }
+
+                // Map updated basic properties back to tracked entity
+                if (existingProduct != null)
+                {
+                    existingProduct.Name = product.Name;
+                    existingProduct.Price = product.Price;
+                    existingProduct.OriginalPrice = product.OriginalPrice;
+                    existingProduct.Ingredients = product.Ingredients;
+                    existingProduct.UsageInstructions = product.UsageInstructions;
+                    existingProduct.Description = product.Description;
+                    existingProduct.DescriptionEn = product.DescriptionEn;
+                    existingProduct.MainImageUrl = product.MainImageUrl;
+                    existingProduct.VideoUrl = product.VideoUrl;
+                    existingProduct.CategoryId = product.CategoryId;
+                    
+                    _context.Update(existingProduct);
+                }
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

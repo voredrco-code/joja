@@ -11,7 +11,7 @@
     var instaLink = appSettings?.InstagramLink ?? "#";
 }
 <!DOCTYPE html>
-<html lang="@currentLang" dir="@direction">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,7 +56,7 @@
 </head>
 <body>
     <header>
-        <!-- Top Bar -->
+        <!-- Top Bar (Old) -->
         @if (!string.IsNullOrEmpty(appSettings?.TopBarText))
         {
              <div class="top-bar" style="background-color: #B7477E; color: white; text-align: center; padding: 8px 0; font-size: 0.9rem; font-weight: 500;">
@@ -65,7 +65,15 @@
                  </div>
              </div>
         }
-
+        
+        <!-- Dynamic Header Announcement -->
+        @{
+            var siteSettingHeader = _context.SiteSettings.FirstOrDefault();
+            var headerText = siteSettingHeader?.HeaderAnnouncementText ?? "Welcome to Joja Organic - Natural Skincare";
+        }
+        <div class="announcement-bar" style="background-color: #B7477E; color: white; text-align: center; padding: 8px 0; font-weight: bold; font-size: 0.9rem;">
+            @headerText
+        </div>
         <nav class="navbar">
             <div class="container nav-container">
                 <!-- Logo Left -->
@@ -89,14 +97,6 @@
 
                 <!-- Icons Right -->
                 <div class="nav-icons">
-                    <!-- Language Switcher -->
-                    <form asp-controller="Language" asp-action="SetLanguage" method="post" style="display:inline-block; margin:0;">
-                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                        <button type="submit" name="lang" value="@(currentLang == "ar" ? "en" : "ar")" 
-                                class="lang-switch-btn" title="@(currentLang == "ar" ? "English" : "العربية")">
-                            <i class="fas fa-globe"></i> @(currentLang == "ar" ? "EN" : "ع")
-                        </button>
-                    </form>
                     <a href="#"><i class="fas fa-search"></i></a>
                     <a href="#"><i class="fas fa-user"></i></a>
                     <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
@@ -110,13 +110,13 @@
                     {
                         <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row; list-style: none; margin: 0; padding: 0; align-items: center; gap: 15px;">
                             <li class="nav-item">
-                                <span class="nav-link text-success" style="font-weight: bold;">مرحباً يا أدمن 👑</span>
+                                <span class="nav-link text-success" style="font-weight: bold;">Welcome Admin 👑</span>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-warning" asp-controller="Auth" asp-action="ChangePassword" style="font-weight: bold;">تغيير الباسورد</a>
+                                <a class="nav-link text-warning" asp-controller="Auth" asp-action="ChangePassword" style="font-weight: bold;">Change Password</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout" style="font-weight: bold;">تسجيل الخروج</a>
+                                <a class="nav-link text-danger" asp-controller="Auth" asp-action="Logout" style="font-weight: bold;">Logout</a>
                             </li>
                         </ul>
                     }
@@ -149,7 +149,7 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>About JOJA</h3>
-                    <p>Natural skincare products made with love and the finest natural ingredients.</p>
+                    <p>Natural skincare products formulated with care & science</p>
                 </div>
                 <div class="footer-col">
                     <h3>Quick Links</h3>
@@ -289,7 +289,7 @@
                     Swal.fire({
                         toast: true, position: 'bottom-end', showConfirmButton: false,
                         timer: 3000, timerProgressBar: true, icon: 'success',
-                        title: 'تم إضافة المنتج للسلة بنجاح 🛒'
+                        title: 'Product added to cart successfully 🛒'
                     });
                 }
             });

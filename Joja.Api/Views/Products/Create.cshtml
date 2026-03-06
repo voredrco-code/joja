@@ -75,11 +75,49 @@
             <textarea asp-for="DescriptionEn" class="form-control desc-textarea" rows="5" placeholder="Enter English description here..."></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">حفظ المنتج</button>
+        <div class="card p-4 mb-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Product Options (Variants)</h4>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addVariantRow()">+ Add Variant</button>
+            </div>
+            <div id="variantsContainer">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary px-5">حفظ المنتج</button>
         <a asp-action="Index" class="btn btn-secondary">عودة للقائمة</a>
     </form>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let variantIndex = 0;
+
+        function addVariantRow() {
+            const container = document.getElementById('variantsContainer');
+            const row = document.createElement('div');
+            row.className = 'variant-card bg-light p-3 mb-2 rounded border position-relative';
+            row.innerHTML = `
+                <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 10px; right: 10px;" onclick="this.parentElement.remove()">X</button>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Variant Name (e.g. 50ml)</label>
+                        <input type="text" name="Variants[${variantIndex}].Name" class="form-control form-control-sm" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Price Adj. (e.g. +50 or -20)</label>
+                        <input type="number" step="0.01" name="Variants[${variantIndex}].PriceAdjustment" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-5">
+                        <label>Variant Image (Overrides Main Image)</label>
+                        <input type="file" name="VariantImages" class="form-control form-control-sm" accept="image/*" />
+                        <input type="hidden" name="VariantImageIndices" value="${variantIndex}" />
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            variantIndex++;
+        }
+    </script>
 }
