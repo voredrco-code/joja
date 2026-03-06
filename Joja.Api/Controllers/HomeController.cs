@@ -204,7 +204,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     {
         var product = await _context.Products
             .Include(p => p.Category)
-            .Include(p => p.ProductImages)
+            .Include(p => p.GalleryImages)
             .FirstOrDefaultAsync(m => m.Id == id);
             
         if (product == null) return NotFound();

@@ -37,5 +37,5 @@ public class Product
     public List<ProductVariant> Variants { get; set; } = new();
 
     // Images
-    public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+    public ICollection<ProductImage> GalleryImages { get; set; } = new List<ProductImage>();
 }

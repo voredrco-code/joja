@@ -49,7 +49,7 @@ namespace Joja.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> AdditionalImages, List<IFormFile> VariantImages, List<int> VariantImageIndices)
+        public async Task<IActionResult> Create(Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> galleryFiles, List<IFormFile> VariantImages, List<int> VariantImageIndices)
         {
             if (product == null) product = new Product();
             product.Name = product.Name ?? " ";
@@ -83,24 +83,29 @@ namespace Joja.Api.Controllers
 
                 if (string.IsNullOrEmpty(product.MainImageUrl)) { product.MainImageUrl = " "; }
 
-                if (AdditionalImages != null && AdditionalImages.Count > 0)
+                if (galleryFiles != null && galleryFiles.Count > 0)
                 {
-                    if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
-                    
-                    foreach (var img in AdditionalImages)
+                    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "upload", "gallery");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        if (img.Length > 0)
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    
+                    foreach (var imgFile in galleryFiles)
+                    {
+                        if (imgFile.Length > 0)
                         {
-                            using (var stream = img.OpenReadStream())
+                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imgFile.FileName;
+                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
                             {
-                                var uploadParams = new ImageUploadParams() { File = new FileDescription(img.FileName, stream) };
-                                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                                
-                                product.ProductImages.Add(new ProductImage 
-                                { 
-                                    ImageUrl = uploadResult.SecureUrl.ToString() 
-                                });
+                                await imgFile.CopyToAsync(fileStream);
                             }
+                            
+                            product.GalleryImages.Add(new ProductImage 
+                            { 
+                                ImageUrl = "/upload/gallery/" + uniqueFileName
+                            });
                         }
                     }
                 }
@@ -158,7 +163,7 @@ namespace Joja.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> VariantImages, List<int> VariantImageIndices)
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile MainImageFile, IFormFile VideoFile, List<IFormFile> galleryFiles, List<IFormFile> VariantImages, List<int> VariantImageIndices)
         {
             if (product == null) product = new Product();
             if (id != product.Id) return NotFound();
@@ -171,6 +176,7 @@ namespace Joja.Api.Controllers
             {
                 var existingProduct = await _context.Products
                     .Include(p => p.Variants) // eager load variants
+                    .Include(p => p.GalleryImages) // eager load gallery
                     .FirstOrDefaultAsync(p => p.Id == id);
                     
                 if (MainImageFile != null && MainImageFile.Length > 0)
@@ -196,6 +202,35 @@ namespace Joja.Api.Controllers
                     }
                 }
                 else if (existingProduct != null) { product.VideoUrl = existingProduct.VideoUrl; }
+
+                // Process Gallery Images (Append to existing)
+                if (galleryFiles != null && galleryFiles.Count > 0 && existingProduct != null)
+                {
+                    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "upload", "gallery");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    
+                    foreach (var imgFile in galleryFiles)
+                    {
+                        if (imgFile.Length > 0)
+                        {
+                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imgFile.FileName;
+                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await imgFile.CopyToAsync(fileStream);
+                            }
+                            
+                            existingProduct.GalleryImages.Add(new ProductImage 
+                            { 
+                                ProductId = existingProduct.Id,
+                                ImageUrl = "/upload/gallery/" + uniqueFileName
+                            });
+                        }
+                    }
+                }
 
                 // Process Variants
                 if (existingProduct != null && existingProduct.Variants != null)
