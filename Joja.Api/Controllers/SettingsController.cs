@@ -27,6 +27,8 @@ public class SettingsController : Controller
             _context.AppSettings.Add(settings);
             await _context.SaveChangesAsync();
         }
+        var siteSettings = await _context.SiteSettings.FirstOrDefaultAsync();
+        ViewBag.HeaderAnnouncementText = siteSettings?.HeaderAnnouncementText;
         
         return View(settings);
     }
@@ -58,7 +60,7 @@ public class SettingsController : Controller
     // POST: Settings/UpdateSocialLinks
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink, string pixelId, string topBarText)
+    public async Task<IActionResult> UpdateSocialLinks(string facebookLink, string instagramLink, string pixelId, string topBarText, string headerAnnouncementText)
     {
         var settings = await _context.AppSettings.FirstOrDefaultAsync();
         
@@ -82,6 +84,19 @@ public class SettingsController : Controller
             _context.Update(settings);
         }
         
+        // Handle Header Announcement explicitly mapping to SiteSetting
+        var siteSettings = await _context.SiteSettings.FirstOrDefaultAsync();
+        if (siteSettings == null)
+        {
+            siteSettings = new SiteSetting { HeaderAnnouncementText = headerAnnouncementText };
+            _context.SiteSettings.Add(siteSettings);
+        }
+        else
+        {
+            siteSettings.HeaderAnnouncementText = headerAnnouncementText;
+            _context.Update(siteSettings);
+        }
+
         await _context.SaveChangesAsync();
         
         TempData["SuccessMessage"] = "تم حفظ الإعدادات العامة وروابط السوشيال ميديا بنجاح!";

@@ -984,3 +984,6 @@ footer {
         gap: 15px !important;
     }
 }
+/* Force Header Bars Text Color */
+.top-bar, .top-bar *, .announcement-bar, .announcement-bar *, .announcement-bar a, .top-bar a { color: #ffffff !important; }
+
