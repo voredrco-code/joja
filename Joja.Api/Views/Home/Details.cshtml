@@ -27,21 +27,25 @@
         </div>
 
         <div class="col-12 col-md-6">
-            <h1 style="color: #333; font-weight: 800; font-size: 2.2rem; margin-bottom: 10px;">@Model.Name</h1>
+            <h1 style="color: #333; font-weight: 800; font-size: 2.2rem; margin-bottom: 15px;">@Model.Name</h1>
             
             <div class="price-section mb-4">
-                <span style="color: #B7477E; font-weight: bold; font-size: 2rem;">@Model.Price EGP</span>
+                @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+                {
+                    <span style="text-decoration: line-through; color: #a0a0a0; font-size: 1.2rem; margin-right: 10px;">@Model.OriginalPrice.Value EGP</span>
+                }
+                <span style="color: #B7477E; font-weight: 800; font-size: 2.2rem;">@Model.Price EGP</span>
             </div>
 
             @if (Model.Variants != null && Model.Variants.Any())
             {
                 <div class="product-variants mb-4">
-                    <label class="fw-bold mb-2 d-block">Select Option:</label>
+                    <label class="fw-bold mb-2 d-block" style="font-size: 1.1rem; color: #444;">Select Option:</label>
                     <div class="d-flex gap-2 flex-wrap">
                         @foreach (var variant in Model.Variants)
                         {
                             var variantImg = string.IsNullOrEmpty(variant.ImageUrl) ? "" : variant.ImageUrl;
-                            <button type="button" class="btn variant-btn d-flex align-items-center gap-2" style="border: 1px solid #ddd; border-radius: 30px; padding: 8px 15px; background: #fff; color: #333;" data-image="@variantImg" onclick="selectVariant(this)">
+                            <button type="button" class="btn variant-btn d-flex align-items-center gap-2" style="border: 1px solid #ddd; border-radius: 30px; padding: 8px 15px; background: #fff; color: #333; transition: all 0.3s;" data-image="@variantImg" onclick="selectVariant(this)">
                                 @if (!string.IsNullOrEmpty(variant.ImageUrl))
                                 {
                                     <img src="@variant.ImageUrl" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
@@ -54,14 +58,42 @@
             }
 
             <div class="d-flex gap-3 mb-4">
-                <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.1rem; border: none;">
+                <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
                     Add to Cart 🛒
                 </button>
             </div>
 
-            <div class="product-description mb-4" style="color: #555; line-height: 1.8;">
+            <div class="product-description mb-4" style="color: #555; line-height: 1.8; font-size: 1.05rem;">
                 @Html.Raw(Model.Description)
             </div>
+
+            <div class="accordion" id="productAccordion">
+                <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
+                    <h2 class="accordion-header" id="headingIngredients">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="true" aria-controls="collapseIngredients" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
+                            🌿 Ingredients
+                        </button>
+                    </h2>
+                    <div id="collapseIngredients" class="accordion-collapse collapse show" aria-labelledby="headingIngredients" data-bs-parent="#productAccordion">
+                        <div class="accordion-body" style="color: #555; line-height: 1.6;">
+                            @(string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients)
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
+                    <h2 class="accordion-header" id="headingUsage">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsage" aria-expanded="false" aria-controls="collapseUsage" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
+                            ✨ Usage Instructions
+                        </button>
+                    </h2>
+                    <div id="collapseUsage" class="accordion-collapse collapse" aria-labelledby="headingUsage" data-bs-parent="#productAccordion">
+                        <div class="accordion-body" style="color: #555; line-height: 1.6;">
+                            @(string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -69,8 +101,21 @@
 <script>
     function changeMainImage(newSrc, element) {
         if(newSrc) document.getElementById('main-product-image').src = newSrc;
+        if(element && element.classList.contains('thumbnail-img')) {
+            document.querySelectorAll('.thumbnail-img').forEach(el => el.style.borderColor = 'transparent');
+            element.style.borderColor = '#B7477E';
+        }
     }
     function selectVariant(button) {
+        document.querySelectorAll('.variant-btn').forEach(btn => {
+            btn.style.borderColor = '#ddd';
+            btn.style.backgroundColor = '#fff';
+            btn.style.color = '#333';
+        });
+        button.style.borderColor = '#B7477E';
+        button.style.backgroundColor = '#fdf2f7';
+        button.style.color = '#B7477E';
+
         var newImageUrl = button.getAttribute('data-image');
         if (newImageUrl && newImageUrl.trim() !== '') {
             changeMainImage(newImageUrl, null);
