@@ -9,161 +9,71 @@
 
 <div class="container mt-5 mb-5">
     <div class="row">
-        
         <div class="col-12 col-md-6 mb-4">
-            <div class="product-gallery sticky-top" style="top: 20px;">
-                <div class="main-image-container mb-3" style="border-radius: 12px; height: 500px; background: #ffffff; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; overflow: hidden; padding: 10px;">
-                    <img id="main-product-image" src="@Model.MainImageUrl" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="@Model.Name" />
-                </div>
-                
-                @if (Model.GalleryImages != null && Model.GalleryImages.Any())
-                {
-                    <div class="thumbnails-container d-flex gap-2" style="overflow-x: auto;">
-                        <img src="@Model.MainImageUrl" class="thumbnail-img" onclick="changeMainImage('@Model.MainImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid #B7477E; background: #fff;" />
-                        @foreach (var img in Model.GalleryImages)
-                        {
-                            <img src="@img.ImageUrl" class="thumbnail-img" onclick="changeMainImage('@img.ImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid transparent; background: #fff;" />
-                        }
-                    </div>
-                }
+            <div class="main-image-container" style="border: 1px solid #eaeaea; border-radius: 12px; height: 500px; padding: 20px; background-color: #ffffff; display: flex; align-items: center; justify-content: center;">
+                <img id="main-product-image" src="@Model.MainImageUrl" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="@Model.Name" />
             </div>
+            
+            @if (Model.GalleryImages != null && Model.GalleryImages.Any())
+            {
+                <div class="thumbnails-container d-flex gap-2 mt-3" style="overflow-x: auto;">
+                    <img src="@Model.MainImageUrl" class="thumbnail-img" onclick="changeMainImage('@Model.MainImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid #B7477E; padding: 5px; background: #fff;" />
+                    @foreach (var img in Model.GalleryImages)
+                    {
+                        <img src="@img.ImageUrl" class="thumbnail-img" onclick="changeMainImage('@img.ImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid transparent; padding: 5px; background: #fff;" />
+                    }
+                </div>
+            }
         </div>
 
         <div class="col-12 col-md-6">
-            <div class="product-details-info">
-                <h1 style="color: #333; font-weight: 800; font-size: 2rem; margin-bottom: 15px;">@Model.Name</h1>
-                
-                <div class="price-section mb-3">
-                    @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
-                    {
-                        <span style="text-decoration: line-through; color: #a0a0a0; font-size: 1.2rem; margin-right: 10px;">@Model.OriginalPrice.Value EGP</span>
-                    }
-                    <span style="color: #B7477E; font-weight: bold; font-size: 1.8rem;">@Model.Price EGP</span>
-                </div>
+            <h1 style="color: #333; font-weight: 800; font-size: 2.2rem; margin-bottom: 10px;">@Model.Name</h1>
+            
+            <div class="price-section mb-4">
+                <span style="color: #B7477E; font-weight: bold; font-size: 2rem;">@Model.Price EGP</span>
+            </div>
 
-                @if (Model.Variants != null && Model.Variants.Any())
-                {
-                    <div class="product-variants mb-4">
-                        <label class="fw-bold mb-2 d-block">Select Option:</label>
-                        <div class="d-flex gap-2 flex-wrap">
-                            @foreach (var variant in Model.Variants)
-                            {
-                                var variantImg = string.IsNullOrEmpty(variant.ImageUrl) ? "" : variant.ImageUrl;
-                                <button type="button" class="btn variant-btn d-flex align-items-center gap-2" style="border: 1px solid #ddd; border-radius: 8px; padding: 8px 15px; background: #fff; color: #333;" data-image="@variantImg" onclick="selectVariant(this)">
-                                    @if (!string.IsNullOrEmpty(variant.ImageUrl))
-                                    {
-                                        <img src="@variant.ImageUrl" style="width: 30px; height: 30px; border-radius: 4px; object-fit: cover;" />
-                                    }
-                                    <span style="font-weight: 600;">@variant.Name</span>
-                                </button>
-                            }
-                        </div>
+            @if (Model.Variants != null && Model.Variants.Any())
+            {
+                <div class="product-variants mb-4">
+                    <label class="fw-bold mb-2 d-block">Select Option:</label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        @foreach (var variant in Model.Variants)
+                        {
+                            var variantImg = string.IsNullOrEmpty(variant.ImageUrl) ? "" : variant.ImageUrl;
+                            <button type="button" class="btn variant-btn d-flex align-items-center gap-2" style="border: 1px solid #ddd; border-radius: 30px; padding: 8px 15px; background: #fff; color: #333;" data-image="@variantImg" onclick="selectVariant(this)">
+                                @if (!string.IsNullOrEmpty(variant.ImageUrl))
+                                {
+                                    <img src="@variant.ImageUrl" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
+                                }
+                                <span style="font-weight: 600;">@variant.Name</span>
+                            </button>
+                        }
                     </div>
-                }
+                </div>
+            }
 
-                <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn w-100 mb-4" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; transition: background 0.3s;">
+            <div class="d-flex gap-3 mb-4">
+                <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.1rem; border: none;">
                     Add to Cart 🛒
                 </button>
+            </div>
 
-                <div class="product-description" style="color: #555; line-height: 1.8; font-size: 1rem;">
-                    @Html.Raw(Model.Description)
-                </div>
-                
-                </div>
+            <div class="product-description mb-4" style="color: #555; line-height: 1.8;">
+                @Html.Raw(Model.Description)
+            </div>
         </div>
-        
     </div>
 </div>
-@if(siteSettings.EnableStickyCart)
-{
-    <div id="sticky-cart-bar" class="sticky-bottom-bar d-none">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-none d-md-flex align-items-center">
-                <img src="@Model.MainImageUrl" width="40" height="40" style="border-radius:5px; object-fit:cover; margin-right:10px;" id="sticky-img" />
-                <span style="font-weight:bold; color:#333;" id="sticky-title">@Model.Name</span>
-            </div>
-            <div class="d-flex gap-2 w-100 justify-content-end">
-                <button onclick="addToCartAjax(@Model.Id)" class="btn btn-outline-primary" style="border-color:#B7477E; color:#B7477E; background: white;">Add to Cart</button>
-                <a href="/Checkout" class="btn" style="background-color:#B7477E; color:white;">Buy Now</a>
-            </div>
-        </div>
-    </div>
-}
 
 <script>
-    // دالة تغيير الصورة من المعرض
-    function changeMainImage(newSrc, thumbElement) {
-        if (newSrc) {
-            document.getElementById('main-product-image').src = newSrc;
-        }
-        // تغيير التحديد للصور المصغرة
-        if (thumbElement) {
-            document.querySelectorAll('.thumbnail-img').forEach(el => el.style.borderColor = 'transparent');
-            thumbElement.style.borderColor = '#B7477E';
-        }
+    function changeMainImage(newSrc, element) {
+        if(newSrc) document.getElementById('main-product-image').src = newSrc;
     }
-
-    // دالة اختيار المتغير (Variant)
     function selectVariant(button) {
-        // Update Price Logic
-        let priceAdj = parseFloat(button.getAttribute('data-price-adj')) || 0;
-        let basePrice = @Model.Price;
-        let finalPrice = basePrice + priceAdj;
-        let priceDisp = document.getElementById('display-price');
-        if(priceDisp) priceDisp.innerText = finalPrice.toFixed(2);
-        
-        // تمييز زر المتغير
-        document.querySelectorAll('.variant-btn').forEach(btn => {
-            btn.style.borderColor = '#ddd';
-            btn.style.backgroundColor = '#fff';
-            btn.style.color = '#333';
-        });
-        button.style.borderColor = '#B7477E';
-        button.style.backgroundColor = '#fdf2f7'; // لون بينك فاتح جداً
-        button.style.color = '#B7477E';
-
-        // تغيير الصورة الرئيسية إذا كان للمتغير صورة
         var newImageUrl = button.getAttribute('data-image');
         if (newImageUrl && newImageUrl.trim() !== '') {
             changeMainImage(newImageUrl, null);
         }
     }
-
-    // Handle Sticky Cart Visibility targeting main-add-to-cart position
-    document.addEventListener('DOMContentLoaded', function() {
-        const stickyBar = document.getElementById('sticky-cart-bar');
-        if(!stickyBar) return;
-
-        const mainBtn = document.getElementById('main-add-to-cart');
-        if(!mainBtn) return;
-
-        window.addEventListener('scroll', function() {
-            // Give 100px buffer to hide original button fully
-            const btnBottom = mainBtn.getBoundingClientRect().bottom;
-            if(btnBottom < 0) {
-                stickyBar.classList.remove('d-none');
-            } else {
-                stickyBar.classList.add('d-none');
-            }
-        });
-    });
 </script>
-
-<style>
-    .btn-joja-dark:hover {
-        background: #B7477E !important;
-    }
-    
-    .variant-btn.active-variant {
-        background-color: #B7477E !important;
-        color: white !important;
-        border-color: #B7477E !important;
-    }
-    
-    @@media (max-width: 768px) {
-        .product-details-grid {
-            grid-template-columns: 1fr !important;
-            gap: 30px !important;
-        }
-    }
-</style>
