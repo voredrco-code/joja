@@ -31,19 +31,20 @@ public class SiteSettingsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateWhatsApp(string whatsAppNumber, string? headerAnnouncementText, bool enableStickyCart = false)
+    public async Task<IActionResult> UpdateWhatsApp(string whatsAppNumber, string? headerAnnouncementText, string? footerAboutText, bool enableStickyCart = false)
     {
         var settings = await _context.SiteSettings.FirstOrDefaultAsync();
         
         if (settings == null)
         {
-            settings = new SiteSetting { WhatsAppNumber = whatsAppNumber, HeaderAnnouncementText = headerAnnouncementText, EnableStickyCart = enableStickyCart };
+            settings = new SiteSetting { WhatsAppNumber = whatsAppNumber, HeaderAnnouncementText = headerAnnouncementText, FooterAboutText = footerAboutText, EnableStickyCart = enableStickyCart };
             _context.SiteSettings.Add(settings);
         }
         else
         {
             settings.WhatsAppNumber = whatsAppNumber;
             settings.HeaderAnnouncementText = headerAnnouncementText;
+            settings.FooterAboutText = footerAboutText;
             settings.EnableStickyCart = enableStickyCart;
             _context.Update(settings);
         }

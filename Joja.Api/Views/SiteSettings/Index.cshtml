@@ -32,6 +32,12 @@
                     <input name="headerAnnouncementText" class="form-control form-control-lg" value="@Model?.HeaderAnnouncementText" placeholder="Welcome to Joja Organic..." />
                     <small class="text-muted">هذا النص سيظهر في الشريط الإعلاني أعلى الموقع.</small>
                 </div>
+
+                <div class="form-group mb-3 mt-4">
+                    <label class="control-label fw-bold">نص الفوتر عن المتجر (Footer About Text)</label>
+                    <input name="footerAboutText" class="form-control form-control-lg" value="@Model?.FooterAboutText" placeholder="Natural skincare products formulated with care & science" />
+                    <small class="text-muted">هذا النص سيظهر في قسم (عن الموقع) في الفوتر أسفل جميع الصفحات.</small>
+                </div>
                 
                 <div class="form-group mb-3 form-check form-switch mt-4">
                     <input class="form-check-input" type="checkbox" role="switch" id="enableStickyCart" name="enableStickyCart" value="true" @(Model?.EnableStickyCart == true ? "checked" : "") style="transform: scale(1.5); margin-left: 10px;">

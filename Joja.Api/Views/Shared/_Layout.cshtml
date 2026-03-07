@@ -148,11 +148,20 @@
     </main>
 
     <footer>
+        <style>
+            footer, footer h3, footer p, footer .copyright { color: #ffffff !important; }
+            footer a { color: #ffffff !important; transition: 0.3s; }
+            footer a:hover { opacity: 0.8; }
+        </style>
+        @{
+            var siteSettingFooter = _context.SiteSettings.FirstOrDefault();
+            var footerText = siteSettingFooter?.FooterAboutText ?? "Natural skincare products formulated with care & science";
+        }
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>About JOJA</h3>
-                    <p>Natural skincare products formulated with care & science</p>
+                    <p>@footerText</p>
                 </div>
                 <div class="footer-col">
                     <h3>Quick Links</h3>
