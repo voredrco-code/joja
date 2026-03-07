@@ -13,12 +13,12 @@
         <a asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id" style="text-decoration: none;">
             <h5 class="product-title" style="color: #333; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; transition: color 0.3s;" onmouseover="this.style.color='#B7477E'" onmouseout="this.style.color='#333'">@Model.Name</h5>
         </a>
-        <div class="product-price mt-1">
+        <div class="card-footer bg-transparent border-0 text-center pb-3">
             @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
             {
-                <span class="old-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 0.9rem; margin-right: 8px;">@Model.OriginalPrice.Value EGP</span>
+                <span class="text-muted text-decoration-line-through me-2">@Model.OriginalPrice.Value EGP</span>
             }
-            <span class="new-price" style="color: #B7477E; font-weight: 800; font-size: 1.25rem;">@Model.Price EGP</span>
+            <span style="color: #D8689A; font-size: 1.2rem; font-weight: 800; text-shadow: 0 0 10px rgba(216, 104, 154, 0.4);">@Model.Price EGP</span>
         </div>
     </div>
 </div>
