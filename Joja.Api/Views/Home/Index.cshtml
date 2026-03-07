@@ -116,32 +116,43 @@ else
 
 
 
-<!-- Joja Moments (Video Stories) -->
-<section class="video-stories-section py-5" style="padding: 50px 0; overflow: hidden; background-color: #f9f9f9;">
-    <div class="container text-center mb-4">
-        <h2 class="brand-font" style="margin-bottom: 20px;">@(ViewBag.BestSellers ?? "Best Sellers")</h2>
-    </div>
-    <div class="video-ticker-container">
+<!-- Joja Gallery Strip -->
+<div class="joja-gallery-strip-container" style="background-color: #fcfcfc; padding: 40px 0;">
+    <h2 class="text-center mb-4" style="color: #B7477E; font-weight: 800; font-size: 2.2rem; font-family: 'Playfair Display', serif; text-transform: uppercase;">✨ Look Premium With Joja Organic</h2>
+    
+    <div class="video-ticker-container" style="cursor: default;">
         <div class="video-track">
-            @foreach (var product in Model.Products.Where(p => !string.IsNullOrEmpty(p.VideoUrl)))
+            @foreach (var product in Model.Products)
             {
-                <div class="video-item" onclick="openVideo('@product.VideoUrl', '@product.Name')">
-                    <video class="hover-video" autoplay loop muted playsinline>
-                        <source src="@product.VideoUrl" type="video/mp4">
-                    </video>
-                </div>
+                if (product.GalleryImages != null && product.GalleryImages.Any()) {
+                    foreach (var galleryImg in product.GalleryImages) {
+                        <div class="video-item">
+                            <img src="@galleryImg.ImageUrl" alt="@product.Name" class="hover-video gallery-strip-img" style="pointer-events: auto;" />
+                        </div>
+                    }
+                } else if (!string.IsNullOrEmpty(product.MainImageUrl)) {
+                    <div class="video-item">
+                        <img src="@product.MainImageUrl" alt="@product.Name" class="hover-video gallery-strip-img" style="pointer-events: auto;" />
+                    </div>
+                }
             }
-            @foreach (var product in Model.Products.Where(p => !string.IsNullOrEmpty(p.VideoUrl)))
+            @foreach (var product in Model.Products)
             {
-                <div class="video-item" onclick="openVideo('@product.VideoUrl', '@product.Name')">
-                    <video class="hover-video" autoplay loop muted playsinline>
-                        <source src="@product.VideoUrl" type="video/mp4">
-                    </video>
-                </div>
+                if (product.GalleryImages != null && product.GalleryImages.Any()) {
+                    foreach (var galleryImg in product.GalleryImages) {
+                        <div class="video-item">
+                            <img src="@galleryImg.ImageUrl" alt="@product.Name" class="hover-video gallery-strip-img" style="pointer-events: auto;" />
+                        </div>
+                    }
+                } else if (!string.IsNullOrEmpty(product.MainImageUrl)) {
+                    <div class="video-item">
+                        <img src="@product.MainImageUrl" alt="@product.Name" class="hover-video gallery-strip-img" style="pointer-events: auto;" />
+                    </div>
+                }
             }
         </div>
     </div>
-</section>
+</div>
 
 <!-- Filter Buttons -->
 <div class="container">
@@ -211,19 +222,7 @@ else
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        const videos = document.querySelectorAll('.hover-video');
-
-        videos.forEach(video => {
-            // عند وقوف الماوس: شغّل الصوت
-            video.parentElement.addEventListener('mouseenter', () => {
-                video.muted = false;
-            });
-
-            // عند إبعاد الماوس: اكتم الصوت تاني
-            video.parentElement.addEventListener('mouseleave', () => {
-                video.muted = true;
-            });
-        });
+        // Removed audio handling logic as it's now an image gallery string
     });
 </script>
 }

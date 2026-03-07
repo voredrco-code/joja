@@ -233,6 +233,26 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return View(_context);
     }
 
+    [HttpGet]
+    public IActionResult SetLanguage(string culture, string returnUrl)
+    {
+        Response.Cookies.Append(
+            Microsoft.AspNetCore.Localization.CookieRequestCultureProvider.DefaultCookieName,
+            Microsoft.AspNetCore.Localization.CookieRequestCultureProvider.MakeCookieValue(new Microsoft.AspNetCore.Localization.RequestCulture(culture)),
+            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+        );
+
+        var customLang = culture.StartsWith("ar") ? "ar" : "en";
+        Response.Cookies.Append("UserLanguage", customLang, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return LocalRedirect(returnUrl);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
     // New: Order History
     public async Task<IActionResult> MyOrders(string email)
     {

@@ -66,6 +66,14 @@ app.UseStaticFiles();
 
 app.UseAuthentication(); // 👈 ده الجديد
 app.UseAuthorization();
+
+var supportedCultures = new[] { "en-US", "ar-EG" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("en-US") // الإنجليزية هي الافتراضية دائماً للزوار الجدد
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+app.UseRequestLocalization(localizationOptions);
+
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";

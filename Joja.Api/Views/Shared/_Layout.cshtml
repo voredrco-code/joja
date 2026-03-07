@@ -99,7 +99,7 @@
                 </ul>
 
                 <!-- Icons Right -->
-                <div class="nav-icons">
+                <div class="nav-icons d-flex align-items-center">
                     <a href="#"><i class="fas fa-search"></i></a>
                     <a href="#"><i class="fas fa-user"></i></a>
                     <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
@@ -108,6 +108,28 @@
                             0
                         </span>
                     </a>
+                    
+                    <!-- Language Switcher -->
+                    <div class="language-switcher ms-3 me-3 d-flex align-items-center">
+                        @{
+                            var currentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
+                            // إذا لم تكن اللغة الحالية تبدأ بـ ar، إذن نحن في النسخة الإنجليزية (الافتراضية)
+                            var isArabic = currentCulture.StartsWith("ar");
+                        }
+                        
+                        @if (isArabic)
+                        {
+                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@Url.Encode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                                <i class="fas fa-globe"></i> English
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@Url.Encode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                                <i class="fas fa-globe"></i> العربية
+                            </a>
+                        }
+                    </div>
                     
                     @if (User.Identity.IsAuthenticated)
                     {

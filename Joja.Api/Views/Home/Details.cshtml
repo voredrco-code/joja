@@ -27,7 +27,12 @@
         </div>
 
         <div class="col-12 col-md-6">
-            <h1 style="color: #333; font-weight: 800; font-size: 2.2rem; margin-bottom: 15px;">@Model.Name</h1>
+            @{
+                var currentCultureTitle = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
+                var isArabicTitle = currentCultureTitle.StartsWith("ar");
+                var displayName = isArabicTitle ? Model.Name : (!string.IsNullOrEmpty(Model.NameEn) ? Model.NameEn : Model.Name);
+            }
+            <h1 style="color: #333; font-weight: 800; font-size: 2.2rem; margin-bottom: 15px;">@displayName</h1>
             
             <div class="price-section mb-4">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
@@ -64,31 +69,56 @@
             </div>
 
             <div class="product-description mb-4" style="color: #555; line-height: 1.8; font-size: 1.05rem;">
-                @Html.Raw(Model.Description)
+                @{
+                    var currentCultureDesc = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
+                    var isArabicDesc = currentCultureDesc.StartsWith("ar");
+                    
+                    // تحديد الوصف بناءً على اللغة (مع عمل Fallback إذا كان الوصف الإنجليزي فارغاً)
+                    var displayDescription = isArabicDesc ? Model.Description : 
+                                             (!string.IsNullOrEmpty(Model.DescriptionEn) ? Model.DescriptionEn : Model.Description);
+                }
+                
+                @Html.Raw(displayDescription)
             </div>
 
             <div class="accordion" id="productAccordion">
                 <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingIngredients">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="true" aria-controls="collapseIngredients" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
-                            🌿 Ingredients
+                            🌿 @(isArabicDesc ? "المكونات" : "Ingredients")
                         </button>
                     </h2>
                     <div id="collapseIngredients" class="accordion-collapse collapse show" aria-labelledby="headingIngredients" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @(string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients)
+                            @{
+                                var defaultIngredientsEn = "100% natural and safe ingredients.";
+                                var defaultIngredientsAr = "مكونات طبيعية وآمنة بنسبة 100%.";
+                                
+                                var displayIngredients = isArabicDesc 
+                                    ? (string.IsNullOrEmpty(Model.Ingredients) ? defaultIngredientsAr : Model.Ingredients)
+                                    : (!string.IsNullOrEmpty(Model.IngredientsEn) ? Model.IngredientsEn : (string.IsNullOrEmpty(Model.Ingredients) ? defaultIngredientsEn : Model.Ingredients));
+                            }
+                            @displayIngredients
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingUsage">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsage" aria-expanded="false" aria-controls="collapseUsage" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
-                            ✨ Usage Instructions
+                            ✨ @(isArabicDesc ? "طريقة الاستخدام" : "Usage Instructions")
                         </button>
                     </h2>
                     <div id="collapseUsage" class="accordion-collapse collapse" aria-labelledby="headingUsage" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @(string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions)
+                            @{
+                                var defaultUsageEn = "Apply gently on the skin.";
+                                var defaultUsageAr = "ضعيه بلطف على البشرة.";
+                                
+                                var displayUsage = isArabicDesc 
+                                    ? (string.IsNullOrEmpty(Model.UsageInstructions) ? defaultUsageAr : Model.UsageInstructions)
+                                    : (!string.IsNullOrEmpty(Model.UsageInstructionsEn) ? Model.UsageInstructionsEn : (string.IsNullOrEmpty(Model.UsageInstructions) ? defaultUsageEn : Model.UsageInstructions));
+                            }
+                            @displayUsage
                         </div>
                     </div>
                 </div>
