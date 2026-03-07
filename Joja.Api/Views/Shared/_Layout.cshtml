@@ -119,13 +119,13 @@
                         
                         @if (isArabic)
                         {
-                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@Url.Encode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
                                 <i class="fas fa-globe"></i> English
                             </a>
                         }
                         else
                         {
-                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@Url.Encode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
                                 <i class="fas fa-globe"></i> العربية
                             </a>
                         }
