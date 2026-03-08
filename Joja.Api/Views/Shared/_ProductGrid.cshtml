@@ -1,24 +1,24 @@
 @model Joja.Api.Models.Product
 <div class="product-item text-center">
-    <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.Id" class="image-box d-block position-relative" style="background-color: #f9f9f9; border-radius: 12px; overflow: hidden; height: 320px;">
+    <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.Id" class="product-image-container d-block mb-3" style="position: relative; width: 100%; padding-top: 100%; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #f1f1f1;">
         @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
         {
             var discount = Math.Round((decimal)((Model.OriginalPrice.Value - Model.Price) / Model.OriginalPrice.Value * 100));
             <span class="discount-badge position-absolute" style="top: 10px; right: 10px; background-color: #C5A059; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; z-index: 10;">خصم @discount%</span>
         }
-        <img src="@Model.MainImageUrl" alt="@Model.Name" style="width: 100%; height: 100%; object-fit: cover;" />
+        <img src="@Model.MainImageUrl" class="product-img" alt="@Model.Name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px; transition: transform 0.3s ease;">
     </a>
     
     <div class="product-info mt-3 text-center">
         <a asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id" style="text-decoration: none;">
             <h5 class="product-title" style="color: #333; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; transition: color 0.3s;" onmouseover="this.style.color='#B7477E'" onmouseout="this.style.color='#333'">@Model.Name</h5>
         </a>
-        <div class="card-footer bg-transparent border-0 text-center pb-3">
+        <div class="product-price mt-1 text-center pb-3">
             @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
             {
-                <span class="text-muted text-decoration-line-through me-2">@Model.OriginalPrice.Value EGP</span>
+                <span class="old-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 0.85rem; margin-right: 5px;">@Model.OriginalPrice.Value EGP</span>
             }
-            <span style="color: #D8689A; font-size: 1.2rem; font-weight: 800; text-shadow: 0 0 10px rgba(216, 104, 154, 0.4);">@Model.Price EGP</span>
+            <span class="new-price" style="color: #D8689A; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 10px rgba(216, 104, 154, 0.4);">@Model.Price EGP</span>
         </div>
     </div>
 </div>
