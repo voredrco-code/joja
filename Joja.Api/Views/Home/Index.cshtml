@@ -3,49 +3,6 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- Hero Section -->
-<!-- Hero Section -->
-@if (Model.Banners != null && Model.Banners.Any())
-{
-    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            @for (int i = 0; i < Model.Banners.Count(); i++)
-            {
-                var banner = Model.Banners.ElementAt(i);
-                <div class="carousel-item @(i == 0 ? "active" : "")">
-                    <section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('@banner.ImageUrl');">
-                        <div class="container hero-content">
-                            <h1>@banner.Title</h1>
-                            <p>@banner.Subtitle</p>
-                            <a href="@banner.LinkUrl" class="btn-primary">Shop Now</a>
-                        </div>
-                    </section>
-                </div>
-            }
-        </div>
-        @if (Model.Banners.Count() > 1)
-        {
-            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        }
-    </div>
-}
-else
-{
-    <section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/logo.webp');">
-        <div class="container hero-content">
-            <h1>@(ViewBag.HeroTitle ?? "Natural Beauty for You")</h1>
-            <p>@(ViewBag.HeroSubtitle ?? "Discover our natural collection")</p>
-            <a href="#" class="btn-primary">@(ViewBag.ShopNow ?? "Shop Now")</a>
-        </div>
-    </section>
-}
 
 <!-- Video Reels Section -->
 @if (Model.VideoBanners != null && Model.VideoBanners.Any())
@@ -165,7 +122,7 @@ else
     </div>
 
     <!-- Product Grid Container -->
-    <div id="product-container" class="row desktop-4-grid mt-4">
+    <div id="product-container" class="row mt-4">
         @foreach (var product in Model.Products)
         {
             <partial name="_ProductGrid" model="product" />
