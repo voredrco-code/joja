@@ -129,7 +129,7 @@ h3,
 /* Product Cards */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 30px;
     margin-top: 40px;
 }
@@ -981,14 +981,18 @@ footer {
 
 /* 3 منتجات للشاشات المتوسطة (التابلت) */
 @media (max-width: 991px) {
-    .desktop-4-grid {
+
+    .desktop-4-grid,
+    .product-grid {
         grid-template-columns: repeat(3, 1fr) !important;
     }
 }
 
 /* منتجين لشاشات الموبايل */
 @media (max-width: 768px) {
-    .desktop-4-grid {
+
+    .desktop-4-grid,
+    .product-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 15px !important;
     }
