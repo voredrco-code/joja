@@ -1,26 +1,26 @@
 @model Joja.Api.Models.Product
-<div class="product-item text-center">
-    <div class="product-image-container mb-3" style="position: relative; width: 100%; padding-top: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #f1f1f1;">
-        @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
-        {
-            var discount = Math.Round((decimal)((Model.OriginalPrice.Value - Model.Price) / Model.OriginalPrice.Value * 100));
-            <span class="discount-badge position-absolute" style="top: 10px; right: 10px; background-color: #C5A059; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; z-index: 10;">خصم @discount%</span>
-        }
-        <a asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id">
-            <img src="@Model.MainImageUrl" class="product-img" alt="@Model.Name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 15px; transition: transform 0.3s ease;">
-        </a>
-    </div>
-    
-    <div class="product-info mt-3 text-center">
-        <a asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id" style="text-decoration: none;">
-            <h5 class="product-title" style="color: #333; font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; transition: color 0.3s;" onmouseover="this.style.color='#B7477E'" onmouseout="this.style.color='#333'">@Model.Name</h5>
-        </a>
-        <div class="product-price mt-1 text-center">
-            @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
-            {
-                <span class="old-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 0.9rem; margin-right: 8px;">@Model.OriginalPrice.Value EGP</span>
-            }
-            <span class="new-price" style="color: #D8689A; font-weight: 800; font-size: 1.25rem; text-shadow: 0 0 10px rgba(216, 104, 154, 0.45);">@Model.Price EGP</span>
+<div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="product-card h-100 d-flex flex-column" style="border: none; background: transparent;">
+        
+        <div class="product-image-container mb-2" style="position: relative; width: 100%; padding-top: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #f1f1f1;">
+            <a href="/Products/Details/@Model.Id" style="display: block;">
+                <img src="@Model.MainImageUrl" class="product-img" alt="@Model.Name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 15px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            </a>
         </div>
+
+        <div class="product-info text-center mt-2 flex-grow-1">
+            <a href="/Products/Details/@Model.Id" style="text-decoration: none;">
+                <h5 class="product-title" style="color: #333; font-size: 1rem; font-weight: 700; margin-bottom: 5px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">@Model.Name</h5>
+            </a>
+            
+            <div class="product-price mt-1">
+                @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+                {
+                    <span class="old-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 0.85rem; margin-right: 5px;">@Model.OriginalPrice.Value EGP</span>
+                }
+                <span class="new-price" style="color: #D8689A; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 10px rgba(216, 104, 154, 0.45);">@Model.Price EGP</span>
+            </div>
+        </div>
+        
     </div>
 </div>
