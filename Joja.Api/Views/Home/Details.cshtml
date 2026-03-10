@@ -65,14 +65,9 @@
 
             <div class="product-description mb-4" style="color: #555; line-height: 1.8; font-size: 1.05rem;">
                 @{
-                    var currentCultureDesc = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
-                    var isArabicDesc = currentCultureDesc.StartsWith("ar");
-                    
-                    // تحديد الوصف بناءً على اللغة (مع عمل Fallback إذا كان الوصف الإنجليزي فارغاً)
-                    var displayDescription = isArabicDesc ? Model.Description : 
-                                             (!string.IsNullOrEmpty(Model.DescriptionEn) ? Model.DescriptionEn : Model.Description);
+                    // Force English description, fallback to Description if English is empty
+                    var displayDescription = !string.IsNullOrEmpty(Model.DescriptionEn) ? Model.DescriptionEn : Model.Description;
                 }
-                
                 @Html.Raw(displayDescription)
             </div>
 
@@ -80,34 +75,24 @@
                 <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingIngredients">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="true" aria-controls="collapseIngredients" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
-                            🌿 @(isArabicDesc ? "المكونات" : "Ingredients")
+                            🌿 Ingredients
                         </button>
                     </h2>
                     <div id="collapseIngredients" class="accordion-collapse collapse show" aria-labelledby="headingIngredients" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @{
-                                var defaultIngredientsEn = "100% natural and safe ingredients.";
-                                var defaultIngredientsAr = "مكونات طبيعية وآمنة بنسبة 100%.";
-                                var defaultIngredients = isArabicDesc ? defaultIngredientsAr : defaultIngredientsEn;
-                            }
-                            @(string.IsNullOrEmpty(Model.Ingredients) ? defaultIngredients : Model.Ingredients)
+                            @(string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients)
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingUsage">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsage" aria-expanded="false" aria-controls="collapseUsage" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
-                            ✨ @(isArabicDesc ? "طريقة الاستخدام" : "Usage Instructions")
+                            ✨ Usage Instructions
                         </button>
                     </h2>
                     <div id="collapseUsage" class="accordion-collapse collapse" aria-labelledby="headingUsage" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @{
-                                var defaultUsageEn = "Apply gently on the skin.";
-                                var defaultUsageAr = "ضعيه بلطف على البشرة.";
-                                var defaultUsage = isArabicDesc ? defaultUsageAr : defaultUsageEn;
-                            }
-                            @(string.IsNullOrEmpty(Model.UsageInstructions) ? defaultUsage : Model.UsageInstructions)
+                            @(string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions)
                         </div>
                     </div>
                 </div>
