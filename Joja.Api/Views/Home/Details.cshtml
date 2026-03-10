@@ -27,14 +27,14 @@
         </div>
 
         <div class="col-12 col-md-6">
-            <h1 style="color: #333; font-weight: 800; font-size: 2.2rem; margin-bottom: 15px;">@Model.Name</h1>
+            <h1 style="color: #000; font-weight: 800; font-size: 2.2rem; margin-bottom: 15px;">@Model.Name</h1>
             
             <div class="price-section mb-4">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
                 {
                     <span style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px;">@Model.OriginalPrice.Value EGP</span>
                 }
-                <span style="color: #D8689A; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(216, 104, 154, 0.4);">@Model.Price EGP</span>
+                <span style="color: #B7477E; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(183, 71, 126, 0.3);">@Model.Price EGP</span>
             </div>
 
             @if (Model.Variants != null && Model.Variants.Any())
