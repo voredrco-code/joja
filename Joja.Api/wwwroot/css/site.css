@@ -775,20 +775,20 @@ a {
     border-radius: 8px;
 }
 
-/* 4. تغيير لون اسم المنتج إلى البينك (نفس لون الهيدر) */
+/* 4. تغيير لون اسم المنتج إلى الأسود */
 .product-title {
-    color: #B7477E !important;
-    /* لون بينك */
+    color: #000 !important;
+    /* لون أسود */
     font-weight: 700;
     font-size: 1.2rem;
     margin-top: 15px;
     margin-bottom: 10px;
 }
 
-/* 5. تغيير لون السعر الجديد إلى الموف (Purple) */
+/* 5. تغيير لون السعر الجديد إلى البينك */
 .new-price {
-    color: #6f42c1 !important;
-    /* لون موف أنيق يليق مع البراند */
+    color: #B7477E !important;
+    /* لون بينك أنيق يليق مع البراند */
     font-weight: 800;
     font-size: 1.3rem;
 }
@@ -933,16 +933,16 @@ footer {
 }
 
 .product-title {
-    color: #B7477E !important;
-    /* لون بينك */
+    color: #000 !important;
+    /* لون أسود */
     font-size: 1.15rem;
     font-weight: 700;
     margin-bottom: 5px;
 }
 
 .new-price {
-    color: #6f42c1 !important;
-    /* لون موف */
+    color: #B7477E !important;
+    /* لون بينك */
     font-size: 1.25rem;
     font-weight: bold;
 }
