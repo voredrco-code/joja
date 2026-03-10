@@ -49,6 +49,27 @@
         </div>
 
         <div class="form-group mb-3">
+            <label asp-for="IngredientsEn" class="control-label">Ingredients (English)</label>
+            <textarea asp-for="IngredientsEn" class="form-control" rows="3" placeholder="e.g. Pure Argon oil..."></textarea>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="UsageInstructionsEn" class="control-label">Usage Instructions (English)</label>
+            <textarea asp-for="UsageInstructionsEn" class="form-control" rows="3" placeholder="e.g. Apply 3 drops..."></textarea>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <label asp-for="Rating" class="control-label">التقييم (Rating)</label>
+                <input asp-for="Rating" class="form-control" type="number" step="0.1" min="0" max="5" />
+            </div>
+            <div class="col-6">
+                <label asp-for="ReviewersCount" class="control-label">عدد المقيمين (Reviewers Count)</label>
+                <input asp-for="ReviewersCount" class="form-control" type="number" step="1" min="0" />
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
             <label asp-for="CategoryId" class="control-label">التصنيف (اختياري)</label>
             <select asp-for="CategoryId" class="form-control" asp-items="@(ViewData["CategoryId"] as SelectList)">
                 <option value="">-- بدون تصنيف --</option>

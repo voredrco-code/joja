@@ -27,7 +27,28 @@
         </div>
 
         <div class="col-12 col-md-6">
-            <h1 style="color: #000; font-weight: 800; font-size: 2.2rem; margin-bottom: 15px;">@Model.Name</h1>
+            <h1 style="color: #000; font-weight: 800; font-size: 2.2rem; margin-bottom: 5px;">@Model.Name</h1>
+            
+            <div class="d-flex align-items-center mb-3">
+                <div class="stars" style="color: #f39c12; font-size: 1.2rem; margin-right: 10px;">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Model.Rating)
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        else if (i - 0.5 <= Model.Rating)
+                        {
+                            <i class="fas fa-star-half-alt"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star"></i>
+                        }
+                    }
+                </div>
+                <span style="color: #777; font-size: 0.95rem;">(@(Model.Rating.ToString("0.0"))) - @Model.ReviewersCount Reviews</span>
+            </div>
             
             <div class="price-section mb-4">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
@@ -80,7 +101,7 @@
                     </h2>
                     <div id="collapseIngredients" class="accordion-collapse collapse show" aria-labelledby="headingIngredients" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @(string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients)
+                            @(string.IsNullOrEmpty(Model.IngredientsEn) ? (string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients) : Model.IngredientsEn)
                         </div>
                     </div>
                 </div>
@@ -92,7 +113,7 @@
                     </h2>
                     <div id="collapseUsage" class="accordion-collapse collapse" aria-labelledby="headingUsage" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @(string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions)
+                            @(string.IsNullOrEmpty(Model.UsageInstructionsEn) ? (string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions) : Model.UsageInstructionsEn)
                         </div>
                     </div>
                 </div>

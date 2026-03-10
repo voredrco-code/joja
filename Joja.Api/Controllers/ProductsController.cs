@@ -298,10 +298,18 @@ namespace Joja.Api.Controllers
                     existingProduct.Name = product.Name;
                     existingProduct.Price = product.Price;
                     existingProduct.OriginalPrice = product.OriginalPrice;
+                    
                     existingProduct.Ingredients = product.Ingredients;
+                    existingProduct.IngredientsEn = product.IngredientsEn;
                     existingProduct.UsageInstructions = product.UsageInstructions;
+                    existingProduct.UsageInstructionsEn = product.UsageInstructionsEn;
+                    
                     existingProduct.Description = product.Description;
                     existingProduct.DescriptionEn = product.DescriptionEn;
+                    
+                    existingProduct.Rating = product.Rating;
+                    existingProduct.ReviewersCount = product.ReviewersCount;
+
                     existingProduct.MainImageUrl = product.MainImageUrl;
                     existingProduct.VideoUrl = product.VideoUrl;
                     existingProduct.CategoryId = product.CategoryId;
