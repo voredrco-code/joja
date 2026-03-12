@@ -45,4 +45,7 @@ public class Product
 
     // Images
     public ICollection<ProductImage> GalleryImages { get; set; } = new List<ProductImage>();
+
+    // Product Reviews
+    public ICollection<ProductReview> Reviews { get; set; } = new List<ProductReview>();
 }

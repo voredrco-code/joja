@@ -146,16 +146,24 @@
                                     <input type="hidden" name="Variants[@i].ProductId" value="@Model.Variants[i].ProductId" />
 
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label>Variant Name (e.g. 50ml)</label>
                                             <input type="text" name="Variants[@i].Name" value="@Model.Variants[i].Name" class="form-control form-control-sm" required />
                                         </div>
-                                        <div class="col-md-3">
-                                            <label>Price Adj. (e.g. +50 or -20)</label>
+                                        <div class="col-md-2">
+                                            <label>Size</label>
+                                            <input type="text" name="Variants[@i].Size" value="@Model.Variants[i].Size" class="form-control form-control-sm" placeholder="e.g. 100ml" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label>Scent/Color</label>
+                                            <input type="text" name="Variants[@i].Color" value="@Model.Variants[i].Color" class="form-control form-control-sm" placeholder="e.g. Rose" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label>Price Adj.</label>
                                             <input type="number" step="0.01" name="Variants[@i].PriceAdjustment" value="@Model.Variants[i].PriceAdjustment" class="form-control form-control-sm" />
                                         </div>
-                                        <div class="col-md-5">
-                                            <label>Variant Image (Overrides Main Image)</label>
+                                        <div class="col-md-3">
+                                            <label>Variant Image</label>
                                             @if (!string.IsNullOrEmpty(Model.Variants[i].ImageUrl))
                                             {
                                                 <div class="mb-1 d-flex align-items-center">
@@ -191,6 +199,29 @@
                 <!-- Gallery Upload -->
                 <div class="card p-4 mb-4 shadow-sm">
                     <h4 class="mb-3">Gallery Images</h4>
+
+                    @if (Model.GalleryImages != null && Model.GalleryImages.Any())
+                    {
+                        <p class="text-muted mb-2"><strong>Current Images (@Model.GalleryImages.Count):</strong></p>
+                        <div class="d-flex flex-wrap gap-3 mb-3">
+                            @foreach (var img in Model.GalleryImages)
+                            {
+                                <div style="position: relative; display: inline-block;">
+                                    <img src="@img.ImageUrl" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #eee;" />
+                                    <form method="post" asp-action="DeleteGalleryImage" asp-controller="Products" style="margin: 0;">
+                                        <input type="hidden" name="imageId" value="@img.Id" />
+                                        <input type="hidden" name="productId" value="@Model.Id" />
+                                        <button type="submit" onclick="return confirm('Delete this image?')" 
+                                            style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center;">
+                                            ✕
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <hr />
+                    }
+
                     <label>Add Additional Images</label>
                     <input type="file" name="galleryFiles" multiple class="form-control" accept="image/*" />
                     <small class="text-muted">You can select multiple images to add to the gallery.</small>
@@ -236,18 +267,25 @@
             row.innerHTML = `
                 <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 10px; right: 10px;" onclick="this.parentElement.remove()">X</button>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Variant Name (e.g. 50ml)</label>
                         <input type="text" name="Variants[${variantIndex}].Name" class="form-control form-control-sm" required />
                     </div>
-                    <div class="col-md-3">
-                        <label>Price Adj. (e.g. +50 or -20)</label>
+                    <div class="col-md-2">
+                        <label>Size</label>
+                        <input type="text" name="Variants[${variantIndex}].Size" class="form-control form-control-sm" placeholder="e.g. 100ml" />
+                    </div>
+                    <div class="col-md-2">
+                        <label>Scent/Color</label>
+                        <input type="text" name="Variants[${variantIndex}].Color" class="form-control form-control-sm" placeholder="e.g. Rose" />
+                    </div>
+                    <div class="col-md-2">
+                        <label>Price Adj.</label>
                         <input type="number" step="0.01" name="Variants[${variantIndex}].PriceAdjustment" class="form-control form-control-sm" />
                     </div>
-                    <div class="col-md-5">
-                        <label>Variant Image (Overrides Main Image)</label>
+                    <div class="col-md-3">
+                        <label>Variant Image</label>
                         <input type="file" name="VariantImages" data-index="${variantIndex}" class="form-control form-control-sm" accept="image/*" />
-                        <!-- Hidden field so we know which index this file belongs to in the backend -->
                         <input type="hidden" name="VariantImageIndices" value="${variantIndex}" />
                     </div>
                 </div>
@@ -255,7 +293,5 @@
             container.appendChild(row);
             variantIndex++;
         }
-        // Initial render
-        renderVariants();
     </script>
 }

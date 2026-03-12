@@ -25,6 +25,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<SiteSetting> SiteSettings { get; set; }
     public DbSet<AnalyticsLog> AnalyticsLogs { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
+    public DbSet<ProductReview> ProductReviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

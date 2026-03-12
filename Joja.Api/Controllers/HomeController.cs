@@ -205,11 +205,34 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         var product = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.GalleryImages)
+            .Include(p => p.Variants)
+            .Include(p => p.Reviews)
             .FirstOrDefaultAsync(m => m.Id == id);
             
         if (product == null) return NotFound();
 
         return View(product);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SubmitReview(int productId, string userName, double rating, string comment)
+    {
+        if (productId <= 0 || string.IsNullOrWhiteSpace(userName))
+            return RedirectToAction(nameof(Details), new { id = productId });
+
+        var review = new ProductReview
+        {
+            ProductId = productId,
+            UserName = userName.Trim(),
+            Rating = Math.Clamp(rating, 1, 5),
+            Comment = comment?.Trim(),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.ProductReviews.Add(review);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Details), new { id = productId });
     }
 
     [HttpPost]

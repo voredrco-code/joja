@@ -736,6 +736,13 @@ html {
     background-color: #ffffff !important;
     font-family: 'Tajawal', sans-serif !important;
     overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Fix Bootstrap row negative margins on mobile */
+.row {
+    margin-right: 0;
+    margin-left: 0;
 }
 
 /* 2. إزالة الخط السفلي من جميع المنتجات والروابط */

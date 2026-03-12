@@ -155,7 +155,10 @@ namespace Joja.Api.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(p => p.Variants)
+                .Include(p => p.GalleryImages)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (product == null) return NotFound();
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
             return View(product);
@@ -275,6 +278,8 @@ namespace Joja.Api.Controllers
                                 {
                                     existingVariant.Name = variant.Name;
                                     existingVariant.PriceAdjustment = variant.PriceAdjustment;
+                                    existingVariant.Size = variant.Size;
+                                    existingVariant.Color = variant.Color;
                                     
                                     // Override URL if we just uploaded a new one, else keep the hidden one provided by the form
                                     if (uploadedImageUrl != null) existingVariant.ImageUrl = uploadedImageUrl;
@@ -340,6 +345,27 @@ namespace Joja.Api.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteGalleryImage(int imageId, int productId)
+        {
+            var image = await _context.ProductImages.FindAsync(imageId);
+            if (image != null)
+            {
+                // Delete file from disk if stored locally
+                if (!string.IsNullOrEmpty(image.ImageUrl) && image.ImageUrl.StartsWith("/upload/"))
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", image.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (System.IO.File.Exists(filePath))
+                        System.IO.File.Delete(filePath);
+                }
+
+                _context.ProductImages.Remove(image);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Edit), new { id = productId });
         }
     }
 }
