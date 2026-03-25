@@ -139,29 +139,29 @@ else
         }
     </div>
 
-    <div class="joja-strict-grid" id="product-container">
+    <div class="desktop-4-grid" id="product-container">
         
         @foreach (var item in Model.Products) 
         {
-            <div class="product-card h-100 d-flex flex-column" style="border: none; background: transparent; text-align: center; margin: 0 auto; width: 100%;">
+            <div class="product-card">
                 
-                <div class="product-image-container mb-2" style="position: relative; width: 100%; aspect-ratio: 1 / 1; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #f1f1f1;">
-                    <a href="/Home/Details/@item.Id" style="display: block; width: 100%; height: 100%;">
-                        <img src="@item.MainImageUrl" class="product-img" alt="@item.Name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 15px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div class="image-box">
+                    <a href="/Home/Details/@item.Id">
+                        <img src="@item.MainImageUrl" class="product-img" alt="@item.Name">
                     </a>
                 </div>
 
-                <div class="product-info text-center mt-2 flex-grow-1">
-                    <a href="/Home/Details/@item.Id" style="text-decoration: none;">
-                        <h5 class="product-title" style="color: #000000; font-size: 1.15rem; font-weight: 800; margin-bottom: 5px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">@item.Name</h5>
+                <div class="product-info">
+                    <a href="/Home/Details/@item.Id">
+                        <h5 class="product-title">@item.Name</h5>
                     </a>
                     
-                    <div class="product-price mt-1">
+                    <div class="product-price">
                         @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
                         {
-                            <span class="old-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 0.85rem; margin-right: 5px;">@item.OriginalPrice.Value EGP</span>
+                            <span class="old-price">@item.OriginalPrice.Value EGP</span>
                         }
-                        <span class="new-price" style="color: #B7477E; font-weight: 800; font-size: 1rem; text-shadow: 0 0 8px rgba(183, 71, 126, 0.3);">@item.Price EGP</span>
+                        <span class="new-price">@item.Price EGP</span>
                     </div>
                 </div>
                 

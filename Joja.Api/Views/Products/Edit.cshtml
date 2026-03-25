@@ -257,6 +257,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
         // --- Variants Logic (New) ---
         let variantIndex = @(Model.Variants?.Count ?? 0);
 

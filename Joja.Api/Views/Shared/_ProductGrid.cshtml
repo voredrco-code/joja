@@ -1,24 +1,24 @@
 @model Joja.Api.Models.Product
-<div class="col-6 col-md-4 col-lg-3 mb-4">
-    <div class="product-card h-100 d-flex flex-column" style="border: none; background: transparent; padding: 10px;">
+<div class="product-card-wrap">
+    <div class="product-card h-100 d-flex flex-column">
         
-        <div class="product-image-container mb-2" style="position: relative; width: 100%; padding-top: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #eaeaea; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-            <a href="/Products/Details/@Model.Id" style="display: block;">
-                <img src="@Model.MainImageUrl" class="product-img" alt="@Model.Name" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 20px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="image-box">
+            <a href="/Home/Details/@Model.Id">
+                <img src="@Model.MainImageUrl" class="product-img" alt="@Model.Name">
             </a>
         </div>
 
         <div class="product-info text-center mt-2 flex-grow-1">
-            <a href="/Products/Details/@Model.Id" style="text-decoration: none;">
-                <h5 class="product-title" style="color: #000; font-size: 1rem; font-weight: 700; margin-bottom: 5px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="@Model.Name">@Model.Name</h5>
+            <a href="/Home/Details/@Model.Id" style="text-decoration: none;">
+                <h5 class="product-title" title="@Model.Name">@Model.Name</h5>
             </a>
             
             <div class="product-price mt-1">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
                 {
-                    <span class="old-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 0.85rem; margin-right: 5px;">@Model.OriginalPrice.Value EGP</span>
+                    <span class="old-price">@Model.OriginalPrice.Value EGP</span>
                 }
-                <span class="new-price" style="color: #B7477E; font-weight: 800; font-size: 1.1rem; text-shadow: 0 0 8px rgba(183, 71, 126, 0.3);">@Model.Price EGP</span>
+                <span class="new-price">@Model.Price EGP</span>
             </div>
         </div>
         
