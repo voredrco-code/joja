@@ -2,7 +2,8 @@
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext _context
 @{
-    var currentLang = ViewBag.CurrentLanguage ?? "ar";
+    // قراءة الكوكي مباشرةً - يشتغل على كل الصفحات
+    var currentLang = Context.Request.Cookies["UserLanguage"] ?? "ar";
     var direction = currentLang == "ar" ? "rtl" : "ltr";
     
     // Fetch Settings
@@ -109,15 +110,9 @@
                         </span>
                     </a>
                     
-                    <!-- Language Switcher -->
+                    <!-- Language Switcher - يستخدم currentLang المقروء من الكوكي مباشرةً -->
                     <div class="language-switcher ms-3 me-3 d-flex align-items-center">
-                        @{
-                            var currentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
-                            // إذا لم تكن اللغة الحالية تبدأ بـ ar، إذن نحن في النسخة الإنجليزية (الافتراضية)
-                            var isArabic = currentCulture.StartsWith("ar");
-                        }
-                        
-                        @if (isArabic)
+                        @if (currentLang == "ar")
                         {
                             <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
                                 <i class="fas fa-globe"></i> English
@@ -132,6 +127,7 @@
                     </div>
                     
                     @if (User.Identity.IsAuthenticated)
+
                     {
                         <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row; list-style: none; margin: 0; padding: 0; align-items: center; gap: 15px;">
                             <li class="nav-item">
