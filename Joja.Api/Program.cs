@@ -79,12 +79,13 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.C
 
 var app = builder.Build();
 
-// Migrate Database on startup
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate(); // ده هيحدث الجداول بس من غير ما يمسح حاجة
-}
+// Migrate Database on startup - DISABLED to prevent DNS crash on Render
+// Run migrations manually via: dotnet ef database update
+// using (var scope = app.Services.CreateScope())
+// {
+//     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//     context.Database.Migrate(); // ده هيحدث الجداول بس من غير ما يمسح حاجة
+// }
 
 // 6. إعدادات التشغيل (بدون مسح داتابيز)
 app.UseDeveloperExceptionPage();
