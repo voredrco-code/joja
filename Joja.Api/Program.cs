@@ -113,6 +113,21 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedUICultures(supportedCultures);
 app.UseRequestLocalization(localizationOptions);
 
+// 🔍 Debug endpoint - لمعرفة الـ connection string الفعلي
+app.MapGet("/debug-connection-info", (IConfiguration config, IServiceProvider services) =>
+{
+    var fromEnv1 = Environment.GetEnvironmentVariable("DATABASE_URL");
+    var fromEnv2 = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+    var fromConfig = config.GetConnectionString("DefaultConnection");
+
+    var text = $"""
+    DATABASE_URL env: {(fromEnv1 != null ? "SET (" + fromEnv1.Substring(0, Math.Min(30, fromEnv1.Length)) + "...)" : "NOT SET")}
+    ConnectionStrings__DefaultConnection env: {(fromEnv2 != null ? "SET (" + fromEnv2.Substring(0, Math.Min(50, fromEnv2.Length)) + "...)" : "NOT SET")}
+    appsettings DefaultConnection: {fromConfig ?? "NULL"}
+    """;
+    return Results.Content(text, "text/plain");
+});
+
 // ✅ Endpoint سري لتطبيق الـ Migrations يدوياً على Render
 app.MapGet("/apply-db-migrations-secret-url", async (IServiceProvider services) =>
 {
