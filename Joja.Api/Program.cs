@@ -36,7 +36,19 @@ static string? ConvertPostgresUrl(string? url)
 // أولوية: DATABASE_URL > ConnectionStrings__DefaultConnection > appsettings > Fallback Neon
 const string neonFallback = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_0tAN1zkchMds;SslMode=Require;TrustServerCertificate=true;";
 
-var rawConnectionString = neonFallback;
+var rawConnectionString =
+    Environment.GetEnvironmentVariable("DATABASE_URL") ??
+    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ??
+    builder.Configuration.GetConnectionString("DefaultConnection") ??
+    neonFallback;
+
+// لو القيمة من appsettings هي SQLite أو فارغة، ارجع للـ Neon مباشرة
+if (string.IsNullOrWhiteSpace(rawConnectionString) ||
+    rawConnectionString.Contains("joja_live.db") ||
+    rawConnectionString.Contains("Data Source"))
+{
+    rawConnectionString = neonFallback;
+}
 
 var connectionString = ConvertPostgresUrl(rawConnectionString);
 
