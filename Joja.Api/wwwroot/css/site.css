@@ -740,12 +740,16 @@ html {
     max-width: 100%;
 }
 
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body,
 html {
     background-color: #ffffff !important;
     font-family: 'Tajawal', sans-serif !important;
 }
-
 
 /* Fix Bootstrap row negative margins on mobile */
 .row {
@@ -1015,7 +1019,12 @@ footer {
     .desktop-4-grid,
     .product-grid {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 15px !important;
+        gap: 12px !important;
+    }
+    
+    /* ضمان توسيط عناصر الشبكة */
+    .desktop-4-grid {
+        justify-items: center;
     }
 }
 

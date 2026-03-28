@@ -2,8 +2,8 @@
 @inject Joja.Api.Data.ApplicationDbContext _context
 @{
     ViewData["Title"] = Model.Name;
-    var language = "en"; // Defaulting to English (Hardcoded for strict compliance)
-    var isAr = false;
+    var language = Context.Request.Cookies["UserLanguage"] ?? "ar";
+    var isAr = language == "ar";
     var siteSettings = _context.SiteSettings.FirstOrDefault() ?? new Joja.Api.Models.SiteSetting();
 }
 
@@ -86,8 +86,9 @@
 
             <div class="product-description mb-4" style="color: #555; line-height: 1.8; font-size: 1.05rem;">
                 @{
-                    // Force English description, fallback to Description if English is empty
-                    var displayDescription = !string.IsNullOrEmpty(Model.DescriptionEn) ? Model.DescriptionEn : Model.Description;
+                    var displayDescription = isAr
+                        ? (!string.IsNullOrEmpty(Model.Description) ? Model.Description : Model.DescriptionEn)
+                        : (!string.IsNullOrEmpty(Model.DescriptionEn) ? Model.DescriptionEn : Model.Description);
                 }
                 @Html.Raw(displayDescription)
             </div>
@@ -101,7 +102,14 @@
                     </h2>
                     <div id="collapseIngredients" class="accordion-collapse collapse show" aria-labelledby="headingIngredients" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @(string.IsNullOrEmpty(Model.IngredientsEn) ? (string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients) : Model.IngredientsEn)
+                            @if (isAr)
+                            {
+                                @(string.IsNullOrEmpty(Model.Ingredients) ? "مكونات طبيعية 100% آمنة." : Model.Ingredients)
+                            }
+                            else
+                            {
+                                @(string.IsNullOrEmpty(Model.IngredientsEn) ? (string.IsNullOrEmpty(Model.Ingredients) ? "100% natural and safe ingredients." : Model.Ingredients) : Model.IngredientsEn)
+                            }
                         </div>
                     </div>
                 </div>
@@ -113,7 +121,14 @@
                     </h2>
                     <div id="collapseUsage" class="accordion-collapse collapse" aria-labelledby="headingUsage" data-bs-parent="#productAccordion">
                         <div class="accordion-body" style="color: #555; line-height: 1.6;">
-                            @(string.IsNullOrEmpty(Model.UsageInstructionsEn) ? (string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions) : Model.UsageInstructionsEn)
+                            @if (isAr)
+                            {
+                                @(string.IsNullOrEmpty(Model.UsageInstructions) ? "ضعي على البشرة بلطف." : Model.UsageInstructions)
+                            }
+                            else
+                            {
+                                @(string.IsNullOrEmpty(Model.UsageInstructionsEn) ? (string.IsNullOrEmpty(Model.UsageInstructions) ? "Apply gently on the skin." : Model.UsageInstructions) : Model.UsageInstructionsEn)
+                            }
                         </div>
                     </div>
                 </div>
