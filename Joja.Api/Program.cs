@@ -140,7 +140,8 @@ app.MapGet("/apply-db-migrations-secret-url", async (IServiceProvider services) 
     }
     catch (Exception ex)
     {
-        return Results.Content($"❌ Migration Failed:\n{ex.Message}\n\n{ex.InnerException?.Message}", "text/plain");
+        var safeConn = connectionString != null ? System.Text.RegularExpressions.Regex.Replace(connectionString, "Password=[^;]*", "Password=***") : "NULL";
+        return Results.Content($"❌ Migration Failed:\nConnection String Used: {safeConn}\n\n{ex.Message}\n\n{ex.InnerException?.Message}", "text/plain");
     }
 });
 
