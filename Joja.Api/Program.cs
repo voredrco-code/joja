@@ -37,23 +37,16 @@ static string? ConvertPostgresUrl(string? url)
 const string neonFallback = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_0tAN1zkchMds;SslMode=Require;TrustServerCertificate=true;";
 
 var configConn = builder.Configuration.GetConnectionString("DefaultConnection");
-var envDbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-var envConnStr = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
-var rawConnectionString = configConn;
+const string renderProd = "Host=dpg-d6f3njhdrdic739mv9hg-a.oregon-postgres.render.com;Port=5432;Database=joja_db;Username=joja_db_user;Password=pRubff4Cepr9YAB7yjuXhmEUWDMvrUOV;SslMode=Require;TrustServerCertificate=true;";
 
-// لو الكونفج فاضي أو بيشاور على SQLite محلي، نعتمد على المتغيرات التانية
+var rawConnectionString = Environment.GetEnvironmentVariable("RENDER") == "true" ? renderProd : configConn;
+
 if (string.IsNullOrWhiteSpace(rawConnectionString) ||
     rawConnectionString.Contains("joja_live.db") ||
     rawConnectionString.Contains("Data Source"))
 {
-    // نتجاهل DATABASE_URL لو بيشاور على اللينك الداخلي المكسور بتاع Render علشان مش بيشتغل لو الـ regions مختلفة
-    if (envDbUrl != null && !envDbUrl.Contains("render.com") && envDbUrl.Contains("dpg-"))
-    {
-        envDbUrl = null; 
-    }
-    
-    rawConnectionString = envConnStr ?? envDbUrl ?? neonFallback;
+    rawConnectionString = neonFallback;
 }
 
 var connectionString = ConvertPostgresUrl(rawConnectionString);
