@@ -102,6 +102,22 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedUICultures(supportedCultures);
 app.UseRequestLocalization(localizationOptions);
 
+// ✅ Endpoint سري لتطبيق الـ Migrations يدوياً على Render
+app.MapGet("/apply-db-migrations-secret-url", async (IServiceProvider services) =>
+{
+    try
+    {
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.Database.MigrateAsync();
+        return Results.Content("✅ Database Migrations Applied Successfully.", "text/plain");
+    }
+    catch (Exception ex)
+    {
+        return Results.Content($"❌ Migration Failed:\n{ex.Message}\n\n{ex.InnerException?.Message}", "text/plain");
+    }
+});
+
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
