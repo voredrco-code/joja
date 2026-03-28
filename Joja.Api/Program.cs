@@ -11,8 +11,35 @@ AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. جلب رابط الاتصال
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// 2. جلب رابط الاتصال - يدعم كل صيغ Render
+static string? ConvertPostgresUrl(string? url)
+{
+    // لو الرابط بيبدأ بـ postgres:// أو postgresql:// نحوله لـ Npgsql format
+    if (url != null && (url.StartsWith("postgres://") || url.StartsWith("postgresql://")))
+    {
+        try
+        {
+            var uri = new Uri(url);
+            var userInfo = uri.UserInfo.Split(':');
+            var username = userInfo[0];
+            var password = userInfo.Length > 1 ? userInfo[1] : "";
+            var host = uri.Host;
+            var port = uri.Port > 0 ? uri.Port : 5432;
+            var database = uri.AbsolutePath.TrimStart('/');
+            return $"Host={host};Port={port};Database={database};Username={username};Password={password};SslMode=Require;TrustServerCertificate=true;";
+        }
+        catch { return url; }
+    }
+    return url;
+}
+
+// أولوية: DATABASE_URL > ConnectionStrings__DefaultConnection > appsettings
+var rawConnectionString =
+    Environment.GetEnvironmentVariable("DATABASE_URL") ??
+    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ??
+    builder.Configuration.GetConnectionString("DefaultConnection");
+
+var connectionString = ConvertPostgresUrl(rawConnectionString);
 
 // 3. إعداد الداتابيز
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
