@@ -12,7 +12,7 @@ AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // 2. جلب رابط الاتصال
-var connectionString = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_0tAN1zkchMds;SslMode=Require;TrustServerCertificate=true;";
+var connectionString = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_OSj2pWmgUv7J;SslMode=Require;TrustServerCertificate=true;";
 
 // 3. إعداد الداتابيز
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
