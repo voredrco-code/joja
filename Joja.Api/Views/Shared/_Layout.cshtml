@@ -300,15 +300,20 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function addToCartAjax(productId) {
-            let qty = 1;
+        function addToCartAjax(productId, qtyOverride, variantId) {
+            let qty = qtyOverride || 1;
             let qtyInput = document.getElementById('qtyInput');
-            if(qtyInput) { qty = qtyInput.value; }
+            if(!qtyOverride && qtyInput) { qty = qtyInput.value; }
             
+            let bodyData = 'productId=' + productId + '&quantity=' + qty;
+            if (variantId) {
+                bodyData += '&variantId=' + variantId;
+            }
+
             fetch('/Cart/AddToCartAjax', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'productId=' + productId + '&quantity=' + qty
+                body: bodyData
             })
             .then(response => response.json())
             .then(data => {

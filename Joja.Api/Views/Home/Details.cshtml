@@ -53,9 +53,9 @@
             <div class="price-section mb-4">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
                 {
-                    <span style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px;">@Model.OriginalPrice.Value EGP</span>
+                    <span id="original-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px;" data-base-original="@Model.OriginalPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.OriginalPrice.Value EGP</span>
                 }
-                <span style="color: #B7477E; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(183, 71, 126, 0.3);">@Model.Price EGP</span>
+                <span id="current-price" style="color: #B7477E; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(183, 71, 126, 0.3);" data-base-price="@Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.Price EGP</span>
             </div>
 
             @if (Model.Variants != null && Model.Variants.Any())
@@ -66,7 +66,10 @@
                         @foreach (var variant in Model.Variants)
                         {
                             var variantImg = string.IsNullOrEmpty(variant.ImageUrl) ? "" : variant.ImageUrl;
-                            <button type="button" class="btn variant-btn d-flex align-items-center gap-2" style="border: 1px solid #ddd; border-radius: 30px; padding: 8px 15px; background: #fff; color: #333; transition: all 0.3s;" data-image="@variantImg" onclick="selectVariant(this)">
+                            var priceAdj = variant.PriceAdjustment ?? 0;
+                            <button type="button" class="btn variant-btn d-flex align-items-center gap-2" 
+                                style="border: 1px solid #ddd; border-radius: 30px; padding: 8px 15px; background: #fff; color: #333; transition: all 0.3s;" 
+                                data-id="@variant.Id" data-image="@variantImg" data-priceadj="@(priceAdj.ToString(System.Globalization.CultureInfo.InvariantCulture))" onclick="selectVariant(this)">
                                 @if (!string.IsNullOrEmpty(variant.ImageUrl))
                                 {
                                     <img src="@variant.ImageUrl" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
@@ -78,8 +81,8 @@
                 </div>
             }
 
-            <div class="d-flex gap-3 mb-4">
-                <button type="button" onclick="addToCartAjax(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
+                <input type="hidden" id="selectedVariantId" value="" />
+                <button type="button" onclick="addToCartWithVariant(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
                     Add to Cart 🛒
                 </button>
             </div>
@@ -251,15 +254,41 @@
             btn.style.borderColor = '#ddd';
             btn.style.backgroundColor = '#fff';
             btn.style.color = '#333';
+            btn.classList.remove('selected-variant');
         });
         button.style.borderColor = '#B7477E';
         button.style.backgroundColor = '#fdf2f7';
         button.style.color = '#B7477E';
+        button.classList.add('selected-variant');
 
         var newImageUrl = button.getAttribute('data-image');
         if (newImageUrl && newImageUrl.trim() !== '') {
             changeMainImage(newImageUrl, null);
         }
+
+        var variantId = button.getAttribute('data-id');
+        document.getElementById('selectedVariantId').value = variantId;
+
+        // Update Price
+        var priceAdj = parseFloat(button.getAttribute('data-priceadj')) || 0;
+        var currentPriceEl = document.getElementById('current-price');
+        var originalPriceEl = document.getElementById('original-price');
+        
+        if (currentPriceEl) {
+            var basePrice = parseFloat(currentPriceEl.getAttribute('data-base-price')) || 0;
+            var newPrice = basePrice + priceAdj;
+            currentPriceEl.innerText = newPrice.toFixed(2) + ' EGP';
+        }
+        if (originalPriceEl) {
+            var baseOrig = parseFloat(originalPriceEl.getAttribute('data-base-original')) || 0;
+            var newOrig = baseOrig + priceAdj;
+            originalPriceEl.innerText = newOrig.toFixed(2) + ' EGP';
+        }
+    }
+
+    function addToCartWithVariant(productId) {
+        let variantId = document.getElementById('selectedVariantId')?.value;
+        addToCartAjax(productId, 1, variantId);
     }
 
     // === Reviews Toggle ===

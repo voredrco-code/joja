@@ -8,14 +8,17 @@ public class CartService
     // In production, this would be Session or Database backed
     public static List<OrderItem> Items { get; } = new();
 
-    public void AddItem(Product product, int quantity, Dictionary<string, string>? selectedVariants = null)
+    public void AddItem(Product product, int quantity, Dictionary<string, string>? selectedVariants = null, decimal? priceOverride = null)
     {
-        var variantsJson = selectedVariants != null ? System.Text.Json.JsonSerializer.Serialize(selectedVariants) : null;
+        var variantsJson = selectedVariants != null && selectedVariants.Count > 0 ? System.Text.Json.JsonSerializer.Serialize(selectedVariants) : null;
         
         var existing = Items.FirstOrDefault(i => i.ProductId == product.Id && i.SelectedVariantsJson == variantsJson);
         if (existing != null)
         {
             existing.Quantity += quantity;
+            // Optionally update price if it changed, but usually we just add quantity
+            if (priceOverride.HasValue) 
+                existing.UnitPrice = priceOverride.Value;
         }
         else
         {
@@ -24,7 +27,7 @@ public class CartService
                 ProductId = product.Id,
                 Product = product,
                 Quantity = quantity,
-                UnitPrice = product.Price,
+                UnitPrice = priceOverride ?? product.Price,
                 SelectedVariantsJson = variantsJson
             });
         }

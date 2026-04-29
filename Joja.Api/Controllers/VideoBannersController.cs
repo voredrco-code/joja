@@ -45,16 +45,17 @@ public class VideoBannersController : Controller
                 await VideoFile.CopyToAsync(fileStream);
             }
             videoBanner.VideoUrl = "/videos/banners/" + uniqueFileName;
-            
-            _context.Add(videoBanner);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
-        else
+
+        if (string.IsNullOrEmpty(videoBanner.VideoUrl))
         {
-            ModelState.AddModelError("", "Please select a video file.");
+            ModelState.AddModelError("VideoUrl", "Please provide a Video URL or upload a video file.");
+            return View(videoBanner);
         }
-        return View(videoBanner);
+
+        _context.Add(videoBanner);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: VideoBanners/Edit/5

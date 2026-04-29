@@ -42,7 +42,7 @@
     <h1 class="brand-font">Edit Product: @Model.Name</h1>
     <hr />
     
-    <form asp-action="Edit" enctype="multipart/form-data" id="editForm">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" id="editForm">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="MainImageUrl" />
@@ -140,6 +140,7 @@
                                 <div class="variant-card bg-light p-3 mb-2 rounded border position-relative">
                                     <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 10px; right: 10px;" onclick="if(confirm('Delete variant?')) this.parentElement.remove()">X</button>
                                     
+                                    <input type="hidden" name="Variants.Index" value="@i" />
                                     <input type="hidden" name="Variants[@i].Id" value="@Model.Variants[i].Id" />
                                     <!-- Keep the existing image URL to avoid overriding it if no new file is uploaded -->
                                     <input type="hidden" name="Variants[@i].ImageUrl" value="@Model.Variants[i].ImageUrl" />
@@ -267,6 +268,7 @@
             row.className = 'variant-card bg-light p-3 mb-2 rounded border position-relative';
             row.innerHTML = `
                 <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 10px; right: 10px;" onclick="this.parentElement.remove()">X</button>
+                <input type="hidden" name="Variants.Index" value="${variantIndex}" />
                 <div class="row">
                     <div class="col-md-3">
                         <label>Variant Name (e.g. 50ml)</label>

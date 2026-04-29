@@ -88,9 +88,28 @@
                 
                 @foreach (var item in Joja.Api.Services.CartService.Items)
                 {
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
-                        <span>@item.Product.Name x @item.Quantity</span>
-                        <span>@((item.UnitPrice * item.Quantity).ToString("C"))</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; flex-wrap: wrap;">
+                        <div style="flex: 1;">
+                            <strong>@item.Product.Name x @item.Quantity</strong>
+                            @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
+                            {
+                                var variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
+                                if (variants != null)
+                                {
+                                    var displayVariants = variants.Where(v => v.Key != "_ImageUrl").ToList();
+                                    if (displayVariants.Any())
+                                    {
+                                        <div style="font-size: 0.8rem; color: #666; margin-top: 2px;">
+                                            @foreach (var v in displayVariants)
+                                            {
+                                                <span>@v.Key: @v.Value</span>@if (v.Key != displayVariants.Last().Key) { <span>, </span> }
+                                            }
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                        <div style="font-weight: bold;">@((item.UnitPrice * item.Quantity).ToString("C"))</div>
                     </div>
                 }
                 

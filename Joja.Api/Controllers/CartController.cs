@@ -28,8 +28,10 @@ public class CartController : Controller
         var product = await _context.Products.FindAsync(productId);
         if (product != null)
         {
-            // Collect variants from form
             var selectedVariants = new Dictionary<string, string>();
+            decimal? priceOverride = null;
+            
+            // Collect variants from form
             foreach (var key in Request.Form.Keys)
             {
                 if (key.StartsWith("selectedVariant_"))
@@ -39,7 +41,29 @@ public class CartController : Controller
                 }
             }
 
-            _cartService.AddItem(product, quantity, selectedVariants);
+            // Look up price adjustment if any variant was selected
+            if (selectedVariants.Any())
+            {
+                // To properly look up the adjustment, we'd need the actual VariantId, but if the form only sends names
+                // we try to match it. Actually, it's safer to ensure variant form passes a single variantId like ajax.
+                // For now, if there is a variant name we match it against the product variants.
+                var variantName = selectedVariants.Values.FirstOrDefault();
+                if (!string.IsNullOrEmpty(variantName))
+                {
+                    // Need to load variants
+                    var prodWithVariants = await _context.Products.Include(p => p.Variants).FirstOrDefaultAsync(p => p.Id == productId);
+                    if (prodWithVariants?.Variants != null)
+                    {
+                        var variant = prodWithVariants.Variants.FirstOrDefault(v => v.Name == variantName || v.Size == variantName);
+                        if (variant?.PriceAdjustment.HasValue == true)
+                        {
+                            priceOverride = prodWithVariants.Price + variant.PriceAdjustment.Value;
+                        }
+                    }
+                }
+            }
+
+            _cartService.AddItem(product, quantity, selectedVariants, priceOverride);
         }
 
         if (redirect == "checkout")
@@ -51,13 +75,34 @@ public class CartController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToCartAjax(int productId, int quantity = 1)
+    public async Task<IActionResult> AddToCartAjax(int productId, int quantity = 1, int? variantId = null)
     {
-        var product = await _context.Products.FindAsync(productId);
+        var product = await _context.Products.Include(p => p.Variants).FirstOrDefaultAsync(p => p.Id == productId);
         if (product != null)
         {
             var selectedVariants = new Dictionary<string, string>();
-            _cartService.AddItem(product, quantity, selectedVariants);
+            decimal? priceOverride = null;
+
+            if (variantId.HasValue && product.Variants != null)
+            {
+                var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
+                if (variant != null)
+                {
+                    if (!string.IsNullOrEmpty(variant.Name))
+                        selectedVariants.Add("Variant", variant.Name);
+                    if (!string.IsNullOrEmpty(variant.Size))
+                        selectedVariants.Add("Size", variant.Size);
+                    if (!string.IsNullOrEmpty(variant.Color))
+                        selectedVariants.Add("Color", variant.Color);
+                    if (!string.IsNullOrEmpty(variant.ImageUrl))
+                        selectedVariants.Add("_ImageUrl", variant.ImageUrl);
+
+                    if (variant.PriceAdjustment.HasValue)
+                        priceOverride = product.Price + variant.PriceAdjustment.Value;
+                }
+            }
+
+            _cartService.AddItem(product, quantity, selectedVariants.Count > 0 ? selectedVariants : null, priceOverride);
             
             return Json(new { success = true, cartCount = CartService.Items.Sum(i => i.Quantity) });
         }

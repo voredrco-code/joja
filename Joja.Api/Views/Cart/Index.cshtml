@@ -31,18 +31,30 @@
                     <div style="display: table-row; border-bottom: 1px solid #eee;">
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
                             <div style="display: flex; align-items: center;">
-                                <img src="@item.Product.MainImageUrl" alt="@item.Product.Name" class="img-fluid" style="width: 50px; border-radius: 4px; margin-right: 15px;" />
+                                @{
+                                    var displayImage = item.Product.MainImageUrl;
+                                    Dictionary<string, string> variants = null;
+                                    if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
+                                    {
+                                        variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
+                                        if (variants != null && variants.ContainsKey("_ImageUrl"))
+                                        {
+                                            displayImage = variants["_ImageUrl"];
+                                        }
+                                    }
+                                }
+                                <img src="@displayImage" alt="@item.Product.Name" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />
                                 <div>
                                     <div style="font-weight: bold;">@item.Product.Name</div>
-                                    @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
+                                    @if (variants != null)
                                     {
-                                        var variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
-                                        if (variants != null)
+                                        var displayVariants = variants.Where(v => v.Key != "_ImageUrl").ToList();
+                                        if (displayVariants.Any())
                                         {
                                             <div style="font-size: 0.8rem; color: #666;">
-                                                @foreach (var v in variants)
+                                                @foreach (var v in displayVariants)
                                                 {
-                                                    <span>@v.Key: @v.Value</span>@if (v.Key != variants.Keys.Last()) { <span>, </span> }
+                                                    <span>@v.Key: @v.Value</span>@if (v.Key != displayVariants.Last().Key) { <span>, </span> }
                                                 }
                                             </div>
                                         }

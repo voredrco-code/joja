@@ -121,6 +121,7 @@
             row.className = 'variant-card bg-light p-3 mb-2 rounded border position-relative';
             row.innerHTML = `
                 <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 10px; right: 10px;" onclick="this.parentElement.remove()">X</button>
+                <input type="hidden" name="Variants.Index" value="${variantIndex}" />
                 <div class="row">
                     <div class="col-md-4">
                         <label>Variant Name (e.g. 50ml)</label>

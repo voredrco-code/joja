@@ -64,10 +64,9 @@ else
                     <div class="swiper-slide joja-reel-slide">
                         <div class="joja-reel-card">
                             <video class="joja-reel-video" 
-                                   loop playsinline 
-                                   preload="metadata"
-                                   onmouseenter="this.play()"
-                                   onmouseleave="this.pause()">
+                                   autoplay loop muted playsinline 
+                                   preload="auto"
+                                   style="width: 100%; height: 100%; object-fit: cover;">
                                 <source src="@vid.VideoUrl" type="video/mp4">
                             </video>
                             @if (!string.IsNullOrEmpty(vid.Title))

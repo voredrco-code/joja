@@ -30,8 +30,15 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label class="control-label">Video File (Required)</label>
-                    <input type="file" name="VideoFile" class="form-control" accept="video/*" required />
+                    <label asp-for="VideoUrl" class="control-label">Video URL (Optional: Paste external link here if not uploading a file)</label>
+                    <input asp-for="VideoUrl" class="form-control" placeholder="e.g. https://www.youtube.com/... or https://firebasestorage..." />
+                    <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="control-label">Or Upload Video File</label>
+                    <input type="file" name="VideoFile" class="form-control" accept="video/*" />
+                    <small class="text-muted">If you upload a file, it will override the Video URL above.</small>
                 </div>
 
                 <div class="form-group mt-4">
