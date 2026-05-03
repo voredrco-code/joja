@@ -220,7 +220,30 @@ else
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Removed audio handling logic as it's now an image gallery string
+        // Ticker Videos Hover/Touch to Unmute
+        const tickerVideos = document.querySelectorAll('.joja-reel-video');
+        
+        tickerVideos.forEach(video => {
+            // Desktop hover
+            video.addEventListener('mouseenter', function() {
+                this.muted = false;
+            });
+            
+            video.addEventListener('mouseleave', function() {
+                this.muted = true;
+            });
+            
+            // Mobile touch
+            video.addEventListener('touchstart', function(e) {
+                if (this.muted) {
+                    // Mute all other videos first
+                    tickerVideos.forEach(v => v.muted = true);
+                    this.muted = false;
+                } else {
+                    this.muted = true;
+                }
+            }, { passive: true });
+        });
     });
 </script>
 }
