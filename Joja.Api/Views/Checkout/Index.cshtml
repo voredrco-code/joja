@@ -94,7 +94,7 @@
                     {
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; flex-wrap: wrap;">
                             <div style="flex: 1;">
-                                <strong>@(isAr && !string.IsNullOrEmpty(item.Product.NameAr) ? item.Product.NameAr : item.Product.Name) x @item.Quantity</strong>
+                                <strong>@(!isAr && !string.IsNullOrEmpty(item.Product.NameEn) ? item.Product.NameEn : item.Product.Name) x @item.Quantity</strong>
                                 @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
                                 {
                                     var variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
