@@ -132,9 +132,9 @@ else
     
     <!-- Filter Buttons -->
     <div class="filter-buttons filter-list my-4 d-flex justify-content-center flex-wrap gap-2">
-        <button class="btn-filter active" onclick="filter(null)" style="border: 2px solid #eaeaea; background: #fff; padding: 8px 20px; border-radius: 30px; font-weight: bold; color: #333; transition: all 0.3s; cursor: pointer;">@(ViewBag.FilterAll ?? "All")</button>
+        <button class="btn-filter active" onclick="filter(null)">@(ViewBag.FilterAll ?? "All")</button>
         @foreach(var cat in Model.Categories) {
-            <button class="btn-filter" onclick="filter(@cat.Id)" style="border: 2px solid #eaeaea; background: #fff; padding: 8px 20px; border-radius: 30px; font-weight: bold; color: #333; transition: all 0.3s; cursor: pointer;">@cat.Name</button>
+            <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>
         }
     </div>
 

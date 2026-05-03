@@ -69,7 +69,7 @@
                             var priceAdj = variant.PriceAdjustment ?? 0;
                             <button type="button" class="btn variant-btn d-flex align-items-center gap-2" 
                                 style="border: 1px solid #ddd; border-radius: 30px; padding: 8px 15px; background: #fff; color: #333; transition: all 0.3s;" 
-                                data-id="@variant.Id" data-image="@variantImg" data-priceadj="@(priceAdj.ToString(System.Globalization.CultureInfo.InvariantCulture))" onclick="selectVariant(this)">
+                                data-id="@variant.Id" data-image="@variantImg" data-variantprice="@(priceAdj.ToString(System.Globalization.CultureInfo.InvariantCulture))" onclick="selectVariant(this)">
                                 @if (!string.IsNullOrEmpty(variant.ImageUrl))
                                 {
                                     <img src="@variant.ImageUrl" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
@@ -270,19 +270,24 @@
         document.getElementById('selectedVariantId').value = variantId;
 
         // Update Price
-        var priceAdj = parseFloat(button.getAttribute('data-priceadj')) || 0;
+        var variantPrice = parseFloat(button.getAttribute('data-variantprice'));
         var currentPriceEl = document.getElementById('current-price');
         var originalPriceEl = document.getElementById('original-price');
         
         if (currentPriceEl) {
-            var basePrice = parseFloat(currentPriceEl.getAttribute('data-base-price')) || 0;
-            var newPrice = basePrice + priceAdj;
-            currentPriceEl.innerText = newPrice.toFixed(2) + ' EGP';
+            if (!isNaN(variantPrice) && variantPrice > 0) {
+                currentPriceEl.innerText = variantPrice.toFixed(2) + ' EGP';
+            } else {
+                var basePrice = parseFloat(currentPriceEl.getAttribute('data-base-price')) || 0;
+                currentPriceEl.innerText = basePrice.toFixed(2) + ' EGP';
+            }
         }
         if (originalPriceEl) {
-            var baseOrig = parseFloat(originalPriceEl.getAttribute('data-base-original')) || 0;
-            var newOrig = baseOrig + priceAdj;
-            originalPriceEl.innerText = newOrig.toFixed(2) + ' EGP';
+            if (!isNaN(variantPrice) && variantPrice > 0) {
+                originalPriceEl.style.display = 'none';
+            } else {
+                originalPriceEl.style.display = 'inline';
+            }
         }
     }
 

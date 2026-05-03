@@ -55,9 +55,9 @@ public class CartController : Controller
                     if (prodWithVariants?.Variants != null)
                     {
                         var variant = prodWithVariants.Variants.FirstOrDefault(v => v.Name == variantName || v.Size == variantName);
-                        if (variant?.PriceAdjustment.HasValue == true)
+                        if (variant?.PriceAdjustment.HasValue == true && variant.PriceAdjustment.Value > 0)
                         {
-                            priceOverride = prodWithVariants.Price + variant.PriceAdjustment.Value;
+                            priceOverride = variant.PriceAdjustment.Value;
                         }
                     }
                 }
@@ -97,8 +97,8 @@ public class CartController : Controller
                     if (!string.IsNullOrEmpty(variant.ImageUrl))
                         selectedVariants.Add("_ImageUrl", variant.ImageUrl);
 
-                    if (variant.PriceAdjustment.HasValue)
-                        priceOverride = product.Price + variant.PriceAdjustment.Value;
+                    if (variant.PriceAdjustment.HasValue && variant.PriceAdjustment.Value > 0)
+                        priceOverride = variant.PriceAdjustment.Value;
                 }
             }
 

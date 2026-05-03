@@ -2,10 +2,10 @@
 Write-Host "=== Joja Safe Upload to SmarterASP ===" -ForegroundColor Green
 
 # FTP Configuration
-$ftpServer = "win8213.site4now.net"
+$ftpServer = "208.98.35.213"
 $ftpUsername = "kordy7-001"
 $ftpPassword = "kokololo2323"
-$baseUri = "ftp://$ftpServer/site1"
+$baseUri = "ftp://$ftpServer/"
 
 # Paths
 $localPath = "c:\Users\selko\.vscode\joja\Joja.Api\publish"

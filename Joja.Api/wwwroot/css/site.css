@@ -244,23 +244,26 @@ h3,
 
 /* Filter Buttons */
 .btn-filter {
-    background: transparent;
-    border: 1px solid var(--joja-black);
-    padding: 8px 25px;
+    background: #fff;
+    border: 2px solid #eaeaea;
+    padding: 8px 20px;
     margin: 5px;
+    border-radius: 30px;
     font-family: 'Montserrat', sans-serif;
     text-transform: uppercase;
+    font-weight: bold;
+    color: #333;
     font-size: 0.85rem;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     cursor: pointer;
     letter-spacing: 1px;
 }
 
 .btn-filter.active,
 .btn-filter:hover {
-    background-color: var(--joja-nude);
-    color: var(--joja-black);
-    border-color: var(--joja-nude);
+    background-color: var(--joja-button-bg);
+    color: var(--joja-white);
+    border-color: var(--joja-button-bg);
 }
 
 /* Footer (Basic) */

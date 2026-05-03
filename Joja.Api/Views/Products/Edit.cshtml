@@ -160,8 +160,8 @@
                                             <input type="text" name="Variants[@i].Color" value="@Model.Variants[i].Color" class="form-control form-control-sm" placeholder="e.g. Rose" />
                                         </div>
                                         <div class="col-md-2">
-                                            <label>Price Adj.</label>
-                                            <input type="number" step="0.01" name="Variants[@i].PriceAdjustment" value="@Model.Variants[i].PriceAdjustment" class="form-control form-control-sm" />
+                                            <label>Variant Price</label>
+                                            <input type="number" step="0.01" name="Variants[@i].PriceAdjustment" value="@Model.Variants[i].PriceAdjustment" class="form-control form-control-sm" required />
                                         </div>
                                         <div class="col-md-3">
                                             <label>Variant Image</label>
@@ -283,8 +283,8 @@
                         <input type="text" name="Variants[${variantIndex}].Color" class="form-control form-control-sm" placeholder="e.g. Rose" />
                     </div>
                     <div class="col-md-2">
-                        <label>Price Adj.</label>
-                        <input type="number" step="0.01" name="Variants[${variantIndex}].PriceAdjustment" class="form-control form-control-sm" />
+                        <label>Variant Price</label>
+                        <input type="number" step="0.01" name="Variants[${variantIndex}].PriceAdjustment" class="form-control form-control-sm" required />
                     </div>
                     <div class="col-md-3">
                         <label>Variant Image</label>
