@@ -5,6 +5,7 @@ using Joja.Api.Models;
 
 namespace Joja.Api.Controllers;
 
+[Microsoft.AspNetCore.Authorization.Authorize]
 public class PagesController : Controller
 {
     private readonly ApplicationDbContext _context;
