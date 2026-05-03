@@ -5,7 +5,8 @@
 @{
     // قراءة الكوكي مباشرةً - يشتغل على كل الصفحات
     var currentLang = Context.Request.Cookies["UserLanguage"] ?? "en";
-    var direction = currentLang == "ar" ? "rtl" : "ltr";
+    // Force LTR for both languages to keep identical layout
+    var direction = "ltr";
     
     // Fetch Settings
     var appSettings = await _context.AppSettings.FirstOrDefaultAsync();
