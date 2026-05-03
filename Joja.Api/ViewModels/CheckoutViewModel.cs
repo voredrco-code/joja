@@ -18,6 +18,6 @@ public class CheckoutViewModel
     // Read-only for display
     public CartService? Cart { get; set; }
 
-    public decimal ShippingCost => 85m;
+    public decimal ShippingCost { get; set; } = 85m;
     public decimal TotalWithShipping => (Cart?.Total ?? 0) + ShippingCost;
 }

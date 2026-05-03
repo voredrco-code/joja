@@ -4,9 +4,33 @@ namespace Joja.Api.Services;
 
 public class CartService
 {
-    // Static list to verify functionality without DB/Session in this "no-sdk" environment
-    // In production, this would be Session or Database backed
-    public static List<OrderItem> Items { get; } = new();
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, List<OrderItem>> _carts = new();
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public CartService(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    private string GetCartId()
+    {
+        var context = _httpContextAccessor.HttpContext;
+        if (context == null) return "default_cart";
+
+        var cartId = context.Request.Cookies["CartId"];
+        if (string.IsNullOrEmpty(cartId))
+        {
+            cartId = Guid.NewGuid().ToString();
+            context.Response.Cookies.Append("CartId", cartId, new CookieOptions { 
+                Expires = DateTimeOffset.Now.AddDays(30),
+                HttpOnly = true,
+                IsEssential = true
+            });
+        }
+        return cartId;
+    }
+
+    public List<OrderItem> Items => _carts.GetOrAdd(GetCartId(), _ => new List<OrderItem>());
 
     public void AddItem(Product product, int quantity, Dictionary<string, string>? selectedVariants = null, decimal? priceOverride = null)
     {

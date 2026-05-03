@@ -104,7 +104,7 @@ public class CartController : Controller
 
             _cartService.AddItem(product, quantity, selectedVariants.Count > 0 ? selectedVariants : null, priceOverride);
             
-            return Json(new { success = true, cartCount = CartService.Items.Sum(i => i.Quantity) });
+            return Json(new { success = true, cartCount = _cartService.Items.Sum(i => i.Quantity) });
         }
         
         return Json(new { success = false, message = "Product not found" });

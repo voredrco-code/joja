@@ -23,7 +23,8 @@ builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLength
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
-builder.Services.AddSingleton<Joja.Api.Services.CartService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<Joja.Api.Services.CartService>();
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
 
 // 5. إعدادات Cloudinary

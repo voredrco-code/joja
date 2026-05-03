@@ -1,16 +1,19 @@
 @model Joja.Api.Services.CartService
+@inject Joja.Api.Services.ILocalizationService _localizationService
 @{
-    ViewData["Title"] = "Shopping Cart";
+    var language = Context.Request.Cookies["UserLanguage"] ?? "en";
+    var isAr = language == "ar";
+    ViewData["Title"] = isAr ? "سلة المشتريات" : "Shopping Cart";
 }
 
 <div class="container" style="margin-top: 50px;">
-    <h1 class="section-title">Your Shopping Cart</h1>
+    <h1 class="section-title">@(isAr ? "سلة المشتريات الخاصة بك" : "Your Shopping Cart")</h1>
 
-    @if (Joja.Api.Services.CartService.Items.Count == 0)
+    @if (Model.Items.Count == 0)
     {
         <div style="text-align: center; margin: 50px 0;">
-            <p>Your cart is empty.</p>
-            <a asp-controller="Home" asp-action="Index" class="btn-primary">Continue Shopping</a>
+            <p>@(isAr ? "سلتك فارغة حالياً." : "Your cart is empty.")</p>
+            <a asp-controller="Home" asp-action="Index" class="btn-primary">@(isAr ? "متابعة التسوق" : "Continue Shopping")</a>
         </div>
     }
     else
@@ -18,15 +21,15 @@
         <div class="cart-table" style="width: 100%; border-collapse: collapse; display: table;">
             <div style="display: table-header-group; font-weight: bold; border-bottom: 2px solid #ddd;">
                 <div style="display: table-row;">
-                    <div style="display: table-cell; padding: 15px;">Product</div>
-                    <div style="display: table-cell; padding: 15px;">Price</div>
-                    <div style="display: table-cell; padding: 15px;">Quantity</div>
-                    <div style="display: table-cell; padding: 15px;">Total</div>
+                    <div style="display: table-cell; padding: 15px;">@(isAr ? "المنتج" : "Product")</div>
+                    <div style="display: table-cell; padding: 15px;">@(isAr ? "السعر" : "Price")</div>
+                    <div style="display: table-cell; padding: 15px;">@(isAr ? "الكمية" : "Quantity")</div>
+                    <div style="display: table-cell; padding: 15px;">@(isAr ? "المجموع" : "Total")</div>
                     <div style="display: table-cell; padding: 15px;"></div>
                 </div>
             </div>
             <div style="display: table-row-group;">
-                @foreach (var item in Joja.Api.Services.CartService.Items)
+                @foreach (var item in Model.Items)
                 {
                     <div style="display: table-row; border-bottom: 1px solid #eee;">
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
@@ -43,9 +46,9 @@
                                         }
                                     }
                                 }
-                                <img src="@displayImage" alt="@item.Product.Name" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />
+                                <img src="@displayImage" alt="@item.Product.Name" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px; margin-left: 15px;" />
                                 <div>
-                                    <div style="font-weight: bold;">@item.Product.Name</div>
+                                    <div style="font-weight: bold;">@(isAr && !string.IsNullOrEmpty(item.Product.NameAr) ? item.Product.NameAr : item.Product.Name)</div>
                                     @if (variants != null)
                                     {
                                         var displayVariants = variants.Where(v => v.Key != "_ImageUrl").ToList();
@@ -62,21 +65,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.UnitPrice.ToString("0.00") ج.م</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.UnitPrice.ToString("0.00") @(isAr ? "ج.م" : "EGP")</div>
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.Quantity</div>
-                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@((item.UnitPrice * item.Quantity).ToString("0.00")) ج.م</div>
+                        <div style="display: table-cell; padding: 15px; vertical-align: middle;">@((item.UnitPrice * item.Quantity).ToString("0.00")) @(isAr ? "ج.م" : "EGP")</div>
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
-                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: #B7477E; text-decoration: none; font-size: 0.9rem;">&times; Remove</a>
+                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: #B7477E; text-decoration: none; font-size: 0.9rem;">&times; @(isAr ? "حذف" : "Remove")</a>
                         </div>
                     </div>
                 }
             </div>
         </div>
 
-        <div class="cart-summary" style="margin-top: 30px; text-align: right;">
-            <h3>الإجمالي: @Model.Total.ToString("C")</h3>
+        <div class="cart-summary" style="margin-top: 30px; text-align: @(isAr ? "right" : "right");">
+            <h3>@(isAr ? "الإجمالي:" : "Subtotal:") @Model.Total.ToString("0.00") @(isAr ? "ج.م" : "EGP")</h3>
             <a asp-controller="Checkout" asp-action="Index" class="btn btn-lg mt-3 fw-bold shadow-sm" style="background-color: #B7477E; color: white; border-radius: 8px; font-size: 1.25rem; padding: 12px 35px;">
-                متابعة لإتمام الطلب  🛒
+                @(isAr ? "متابعة لإتمام الطلب 🛒" : "Proceed to Checkout 🛒")
             </a>
         </div>
     }
