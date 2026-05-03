@@ -301,6 +301,7 @@ namespace Joja.Api.Controllers
                 if (existingProduct != null)
                 {
                     existingProduct.Name = product.Name;
+                    existingProduct.NameEn = product.NameEn;
                     existingProduct.Price = product.Price;
                     existingProduct.OriginalPrice = product.OriginalPrice;
                     

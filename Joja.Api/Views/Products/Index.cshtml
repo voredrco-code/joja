@@ -18,6 +18,7 @@
             <tr>
                 <th>Image</th>
                 <th>Name</th>
+                <th>Name (EN)</th>
                 <th>Price</th>
                 <th>Category</th>
                 <th>Actions</th>
@@ -30,6 +31,7 @@
                         <img src="@item.MainImageUrl" alt="@item.Name" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
                     </td>
                     <td>@item.Name</td>
+                    <td>@(string.IsNullOrEmpty(item.NameEn) ? "—" : item.NameEn)</td>
                     <td>@item.Price EGP</td>
                     <td>@item.Category?.Name</td>
                     <td>

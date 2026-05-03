@@ -15,6 +15,7 @@
                 <tr>
                     <th>#</th>
                     <th>اسم القسم</th>
+                    <th>Name (EN)</th>
                     <th>عدد المنتجات</th>
                     <th>الإجراءات</th>
                 </tr>
@@ -25,6 +26,7 @@
                     <tr>
                         <td>@cat.Id</td>
                         <td>@cat.Name</td>
+                        <td>@(string.IsNullOrEmpty(cat.NameEn) ? "—" : cat.NameEn)</td>
                         <td>@cat.Products.Count</td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-warning">✏️ تعديل</a>
