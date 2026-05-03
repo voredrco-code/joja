@@ -90,41 +90,30 @@ else
                 height: 100%;
                 object-fit: cover;
             }
-            @keyframes scrollVideos {
+            @@keyframes scrollVideos {
                 0% { transform: translateX(0); }
                 100% { transform: translateX(-50%); }
             }
         </style>
         <div class="joja-reels-ticker-container">
             <div class="joja-reels-ticker-track">
-                @foreach (var vid in Model.VideoBanners)
+                <!-- We duplicate the list 4 times so it fills large screens perfectly -->
+                @for (int i = 0; i < 4; i++)
                 {
-                    <div class="joja-reel-card-ticker">
-                        <video class="joja-reel-video" 
-                               autoplay loop muted playsinline 
-                               preload="auto">
-                            <source src="@vid.VideoUrl">
-                        </video>
-                        @if (!string.IsNullOrEmpty(vid.Title))
-                        {
-                            <div class="joja-reel-caption">@vid.Title</div>
-                        }
-                    </div>
-                }
-                <!-- Duplicate for seamless looping -->
-                @foreach (var vid in Model.VideoBanners)
-                {
-                    <div class="joja-reel-card-ticker">
-                        <video class="joja-reel-video" 
-                               autoplay loop muted playsinline 
-                               preload="auto">
-                            <source src="@vid.VideoUrl">
-                        </video>
-                        @if (!string.IsNullOrEmpty(vid.Title))
-                        {
-                            <div class="joja-reel-caption">@vid.Title</div>
-                        }
-                    </div>
+                    @foreach (var vid in Model.VideoBanners)
+                    {
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="@vid.VideoUrl">
+                            </video>
+                            @if (!string.IsNullOrEmpty(vid.Title))
+                            {
+                                <div class="joja-reel-caption">@vid.Title</div>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>

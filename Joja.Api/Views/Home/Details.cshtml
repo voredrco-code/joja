@@ -1,5 +1,6 @@
 @model Joja.Api.Models.Product
 @inject Joja.Api.Data.ApplicationDbContext _context
+@inject Joja.Api.Services.ILocalizationService _localizationService
 @{
     ViewData["Title"] = Model.Name;
     var language = Context.Request.Cookies["UserLanguage"] ?? "ar";
@@ -61,7 +62,7 @@
             @if (Model.Variants != null && Model.Variants.Any())
             {
                 <div class="product-variants mb-4">
-                    <label class="fw-bold mb-2 d-block" style="font-size: 1.1rem; color: #444;">Select Option:</label>
+                    <label class="fw-bold mb-2 d-block" style="font-size: 1.1rem; color: #444;">@_localizationService.GetUiText("SelectOption", language)</label>
                     <div class="d-flex gap-2 flex-wrap">
                         @foreach (var variant in Model.Variants)
                         {
@@ -83,7 +84,7 @@
 
                 <input type="hidden" id="selectedVariantId" value="" />
                 <button type="button" onclick="addToCartWithVariant(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
-                    Add to Cart 🛒
+                    @_localizationService.GetUiText("AddToCart", language)
                 </button>
             </div>
 
@@ -100,7 +101,7 @@
                 <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingIngredients">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="true" aria-controls="collapseIngredients" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
-                            🌿 Ingredients
+                            @_localizationService.GetUiText("IngredientsLbl", language)
                         </button>
                     </h2>
                     <div id="collapseIngredients" class="accordion-collapse collapse show" aria-labelledby="headingIngredients" data-bs-parent="#productAccordion">
@@ -119,7 +120,7 @@
                 <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                     <h2 class="accordion-header" id="headingUsage">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsage" aria-expanded="false" aria-controls="collapseUsage" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
-                            ✨ Usage Instructions
+                            @_localizationService.GetUiText("UsageInstructionsLbl", language)
                         </button>
                     </h2>
                     <div id="collapseUsage" class="accordion-collapse collapse" aria-labelledby="headingUsage" data-bs-parent="#productAccordion">
@@ -146,7 +147,7 @@
             <!-- Toggle Button -->
             <div class="d-flex align-items-center justify-content-between mb-3" style="border-bottom: 2px solid #eaeaea; padding-bottom: 12px;">
                 <h3 style="color: #333; font-weight: 800; font-size: 1.8rem; margin: 0;">
-                    Customer Reviews
+                    @_localizationService.GetUiText("CustomerReviews", language)
                     @if (Model.Reviews != null && Model.Reviews.Any())
                     {
                         <span style="font-size: 1rem; color: #B7477E; font-weight: 600; margin-left: 8px;">(@Model.Reviews.Count)</span>
@@ -155,7 +156,7 @@
                 <button type="button" id="toggleReviewsBtn" onclick="toggleReviews()" 
                     style="background: #B7477E; color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.3s;"
                     onmouseover="this.style.background='#9a3b69'" onmouseout="this.style.background='#B7477E'">
-                    <i class="far fa-comment-dots" id="reviewsIcon"></i>&nbsp; Show Reviews
+                    <i class="far fa-comment-dots" id="reviewsIcon"></i>&nbsp; <span id="reviewsBtnText">@_localizationService.GetUiText("ShowReviews", language)</span>
                 </button>
             </div>
 
@@ -196,24 +197,24 @@
                 {
                     <div class="text-center p-4 mb-4" style="background: #f9f9f9; border-radius: 12px;">
                         <i class="far fa-comment-dots fa-2x mb-2" style="color: #ccc;"></i>
-                        <p style="color: #aaa; margin: 0;">No reviews yet. Be the first!</p>
+                        <p style="color: #aaa; margin: 0;">@_localizationService.GetUiText("NoReviews", language)</p>
                     </div>
                 }
 
                 <!-- Public Review Submit Form -->
                 <div style="background: #fdf2f7; border: 1px solid #f1e0ea; border-radius: 12px; padding: 28px; margin-top: 10px;">
-                    <h5 style="color: #B7477E; font-weight: 700; margin-bottom: 20px;">✍️ Write a Review</h5>
+                    <h5 style="color: #B7477E; font-weight: 700; margin-bottom: 20px;">✍️ @_localizationService.GetUiText("LeaveReview", language)</h5>
                     <form method="post" asp-controller="Home" asp-action="SubmitReview">
                         <input type="hidden" name="productId" value="@Model.Id" />
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label style="font-weight: 600; color: #444; margin-bottom: 6px; display: block;">Your Name</label>
+                                <label style="font-weight: 600; color: #444; margin-bottom: 6px; display: block;">@_localizationService.GetUiText("YourName", language)</label>
                                 <input type="text" name="userName" required 
                                     style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; outline: none;"
                                     placeholder="e.g. Sara A." />
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label style="font-weight: 600; color: #444; margin-bottom: 6px; display: block;">Rating</label>
+                                <label style="font-weight: 600; color: #444; margin-bottom: 6px; display: block;">@_localizationService.GetUiText("RatingLbl", language)</label>
                                 <div class="star-rating-input d-flex gap-2 align-items-center">
                                     @for (int s = 5; s >= 1; s--)
                                     {
@@ -224,7 +225,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label style="font-weight: 600; color: #444; margin-bottom: 6px; display: block;">Comment (Optional)</label>
+                            <label style="font-weight: 600; color: #444; margin-bottom: 6px; display: block;">@_localizationService.GetUiText("CommentOptional", language)</label>
                             <textarea name="comment" rows="3"
                                 style="width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; resize: vertical; outline: none;"
                                 placeholder="Share your experience with this product..."></textarea>
@@ -232,7 +233,7 @@
                         <button type="submit"
                             style="background: #B7477E; color: white; border: none; border-radius: 8px; padding: 12px 30px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.3s;"
                             onmouseover="this.style.background='#9a3b69'" onmouseout="this.style.background='#B7477E'">
-                            Submit Review 🌟
+                            @_localizationService.GetUiText("SubmitReview", language) 🌟
                         </button>
                     </form>
                 </div>

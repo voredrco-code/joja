@@ -47,7 +47,19 @@ public class LocalizationService : ILocalizationService
                 { "NavContactUs", "Contact Us" },
                 { "QuickLinks", "Quick Links" },
                 { "FollowUs", "Follow Us" },
-                { "AboutJoja", "About JOJA" }
+                { "AboutJoja", "About JOJA" },
+                { "SelectOption", "Select Option:" },
+                { "IngredientsLbl", "🌿 Ingredients" },
+                { "UsageInstructionsLbl", "✨ Usage Instructions" },
+                { "CustomerReviews", "Customer Reviews" },
+                { "ShowReviews", "Show Reviews" },
+                { "HideReviews", "Hide Reviews" },
+                { "NoReviews", "No reviews yet. Be the first!" },
+                { "LeaveReview", "Leave a Review" },
+                { "YourName", "Your Name" },
+                { "RatingLbl", "Rating" },
+                { "CommentOptional", "Comment (Optional)" },
+                { "SubmitReview", "Submit Review" }
             };
             if (enDict.TryGetValue(key, out var val)) return val;
         }
@@ -60,7 +72,7 @@ public class LocalizationService : ILocalizationService
                 { "JojaMoments", "لحظات جوجا" },
                 { "BestSellers", "الأكثر مبيعاً" },
                 { "FilterAll", "الكل" },
-                { "AddToCart", "أضف للسلة" },
+                { "AddToCart", "أضف للسلة 🛒" },
                 { "Checkout", "إتمام الطلب" },
                 { "NavHome", "الرئيسية" },
                 { "NavShop", "المتجر" },
@@ -70,7 +82,19 @@ public class LocalizationService : ILocalizationService
                 { "NavContactUs", "تواصل معنا" },
                 { "QuickLinks", "روابط سريعة" },
                 { "FollowUs", "تابعنا" },
-                { "AboutJoja", "عن جوجا" }
+                { "AboutJoja", "عن جوجا" },
+                { "SelectOption", "اختر:" },
+                { "IngredientsLbl", "🌿 المكونات" },
+                { "UsageInstructionsLbl", "✨ طريقة الاستخدام" },
+                { "CustomerReviews", "تقييمات العملاء" },
+                { "ShowReviews", "عرض التقييمات" },
+                { "HideReviews", "إخفاء التقييمات" },
+                { "NoReviews", "لا توجد تقييمات بعد. كن الأول!" },
+                { "LeaveReview", "أضف تقييمك" },
+                { "YourName", "اسمك" },
+                { "RatingLbl", "التقييم" },
+                { "CommentOptional", "تعليق (اختياري)" },
+                { "SubmitReview", "إرسال التقييم" }
             };
             if (arDict.TryGetValue(key, out var val)) return val;
         }
