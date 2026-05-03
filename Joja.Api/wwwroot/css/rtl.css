@@ -1,8 +1,13 @@
 /* RTL (Right-to-Left) Styles for Arabic */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 
-html[dir="rtl"] body {
+html[dir="rtl"] body,
+html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, 
+html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6,
+html[dir="rtl"] p, html[dir="rtl"] a, html[dir="rtl"] span, html[dir="rtl"] div, html[dir="rtl"] button, html[dir="rtl"] input {
     direction: rtl;
     text-align: right;
+    font-family: 'Tajawal', sans-serif !important;
 }
 
 /* Navbar RTL */

@@ -4,7 +4,7 @@
 @inject Joja.Api.Services.ILocalizationService _localizationService
 @{
     // قراءة الكوكي مباشرةً - يشتغل على كل الصفحات
-    var currentLang = Context.Request.Cookies["UserLanguage"] ?? "ar";
+    var currentLang = Context.Request.Cookies["UserLanguage"] ?? "en";
     var direction = currentLang == "ar" ? "rtl" : "ltr";
     
     // Fetch Settings

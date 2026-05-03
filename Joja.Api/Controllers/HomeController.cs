@@ -127,7 +127,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     public async Task<IActionResult> Index(int? categoryId)
     {
         // Get user language from cookie (default: Arabic)
-        var language = Request.Cookies["UserLanguage"] ?? "ar";
+        var language = Request.Cookies["UserLanguage"] ?? "en";
         ViewBag.CurrentLanguage = language;
         
         // Get categories (always all for filter bar)
@@ -183,7 +183,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     public async Task<IActionResult> FilterProducts(int? categoryId)
     {
         // Get user language from cookie
-        var language = Request.Cookies["UserLanguage"] ?? "ar";
+        var language = Request.Cookies["UserLanguage"] ?? "en";
         
         var query = _context.Products.AsQueryable();
 

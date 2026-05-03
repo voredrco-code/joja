@@ -3,7 +3,7 @@
 @inject Joja.Api.Services.ILocalizationService _localizationService
 @{
     ViewData["Title"] = Model.Name;
-    var language = Context.Request.Cookies["UserLanguage"] ?? "ar";
+    var language = Context.Request.Cookies["UserLanguage"] ?? "en";
     var isAr = language == "ar";
     var siteSettings = _context.SiteSettings.FirstOrDefault() ?? new Joja.Api.Models.SiteSetting();
 }
