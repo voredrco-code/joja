@@ -87,11 +87,6 @@
                     <img src="~/images/logo.webp" alt="JOJA" class="logo-img" />
                 </a>
 
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                    <i class="fas fa-bars"></i>
-                </button>
-
                 <!-- Nav Center -->
                 <ul class="nav-links" id="navLinks">
                     <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
@@ -103,35 +98,40 @@
 
                 <!-- Icons Right -->
                 <div class="nav-icons d-flex align-items-center">
-                    <a href="#"><i class="fas fa-search"></i></a>
-                    <a href="#"><i class="fas fa-user"></i></a>
+                    <!-- Language Switcher - Moved to front -->
+                    <div class="language-switcher me-2 d-flex align-items-center">
+                        @if (currentLang == "ar")
+                        {
+                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.8rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                                <i class="fas fa-globe"></i> EN
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.8rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                                <i class="fas fa-globe"></i> AR
+                            </a>
+                        }
+                    </div>
+
+                    <a href="#" class="d-none d-md-inline-block"><i class="fas fa-search"></i></a>
+                    <a href="#" class="d-none d-md-inline-block"><i class="fas fa-user"></i></a>
+                    
                     <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
                         <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
                         <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             0
                         </span>
                     </a>
-                    
-                    <!-- Language Switcher - يستخدم currentLang المقروء من الكوكي مباشرةً -->
-                    <div class="language-switcher ms-3 me-3 d-flex align-items-center">
-                        @if (currentLang == "ar")
-                        {
-                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
-                                <i class="fas fa-globe"></i> English
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-3 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.9rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
-                                <i class="fas fa-globe"></i> العربية
-                            </a>
-                        }
-                    </div>
+
+                    <!-- Mobile Menu Toggle - Moved inside icons for far-right positioning -->
+                    <button class="mobile-menu-toggle ms-2" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     
                     @if (User.Identity.IsAuthenticated)
-
                     {
-                        <ul class="navbar-nav ms-auto" style="display: flex; flex-direction: row; list-style: none; margin: 0; padding: 0; align-items: center; gap: 15px;">
+                        <ul class="navbar-nav ms-auto d-none d-md-flex" style="flex-direction: row; list-style: none; margin: 0; padding: 0; align-items: center; gap: 15px;">
                             <li class="nav-item">
                                 <span class="nav-link text-success" style="font-weight: bold;">Welcome Admin 👑</span>
                             </li>
