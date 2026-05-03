@@ -72,7 +72,7 @@ else
                 white-space: nowrap;
                 animation: scrollVideos 25s linear infinite;
             }
-            .joja-reels-ticker-track:hover {
+            .joja-reels-ticker-track:hover, .joja-reels-ticker-track.paused {
                 animation-play-state: paused;
             }
             .joja-reel-card-ticker {
@@ -85,6 +85,13 @@ else
                 position: relative;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
                 vertical-align: top;
+            }
+            @@media (max-width: 768px) {
+                .joja-reel-card-ticker {
+                    width: 180px;
+                    height: 320px;
+                    margin-right: 10px;
+                }
             }
             .joja-reel-card-ticker video {
                 width: 100%;
@@ -223,6 +230,8 @@ else
         // Ticker Videos Hover/Touch to Unmute
         const tickerVideos = document.querySelectorAll('.joja-reel-video');
         
+        const tickerTrack = document.querySelector('.joja-reels-ticker-track');
+        
         tickerVideos.forEach(video => {
             // Desktop hover
             video.addEventListener('mouseenter', function() {
@@ -239,8 +248,10 @@ else
                     // Mute all other videos first
                     tickerVideos.forEach(v => v.muted = true);
                     this.muted = false;
+                    tickerTrack.classList.add('paused');
                 } else {
                     this.muted = true;
+                    tickerTrack.classList.remove('paused');
                 }
             }, { passive: true });
         });
