@@ -1,6 +1,7 @@
 @using Joja.Api.Data
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext _context
+@inject Joja.Api.Services.ILocalizationService _localizationService
 @{
     // قراءة الكوكي مباشرةً - يشتغل على كل الصفحات
     var currentLang = Context.Request.Cookies["UserLanguage"] ?? "ar";
@@ -92,11 +93,11 @@
 
                 <!-- Nav Center -->
                 <ul class="nav-links" id="navLinks">
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-controller="Home" asp-action="Index">Shop</a></li>
-                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="2">Hair Care</a></li>
-                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="1">Skin Care</a></li>
-                    <li><a href="#about-us">About Us</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="2">@_localizationService.GetUiText("NavHairCare", currentLang)</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="1">@_localizationService.GetUiText("NavSkinCare", currentLang)</a></li>
+                    <li><a href="#about-us">@_localizationService.GetUiText("NavAboutUs", currentLang)</a></li>
                 </ul>
 
                 <!-- Icons Right -->
@@ -178,19 +179,19 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h3>About JOJA</h3>
+                    <h3>@_localizationService.GetUiText("AboutJoja", currentLang)</h3>
                     <p>@footerText</p>
                 </div>
                 <div class="footer-col">
-                    <h3>Quick Links</h3>
+                    <h3>@_localizationService.GetUiText("QuickLinks", currentLang)</h3>
                     <ul>
-                        <li><a href="#">Shop All</a></li>
-                        <li><a href="#">Best Sellers</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
+                        <li><a href="#">@_localizationService.GetUiText("BestSellers", currentLang)</a></li>
+                        <li><a href="#">@_localizationService.GetUiText("NavContactUs", currentLang)</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h3>Follow Us</h3>
+                    <h3>@_localizationService.GetUiText("FollowUs", currentLang)</h3>
                     <div class="social-links">
                         <a href="@fbLink" target="_blank"><i class="fab fa-facebook"></i></a>
                         <a href="@instaLink" target="_blank"><i class="fab fa-instagram"></i></a>

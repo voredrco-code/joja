@@ -38,7 +38,16 @@ public class LocalizationService : ILocalizationService
                 { "BestSellers", "Best Sellers" },
                 { "FilterAll", "All" },
                 { "AddToCart", "Add To Cart" },
-                { "Checkout", "Checkout" }
+                { "Checkout", "Checkout" },
+                { "NavHome", "Home" },
+                { "NavShop", "Shop" },
+                { "NavHairCare", "Hair Care" },
+                { "NavSkinCare", "Skin Care" },
+                { "NavAboutUs", "About Us" },
+                { "NavContactUs", "Contact Us" },
+                { "QuickLinks", "Quick Links" },
+                { "FollowUs", "Follow Us" },
+                { "AboutJoja", "About JOJA" }
             };
             if (enDict.TryGetValue(key, out var val)) return val;
         }
@@ -52,7 +61,16 @@ public class LocalizationService : ILocalizationService
                 { "BestSellers", "الأكثر مبيعاً" },
                 { "FilterAll", "الكل" },
                 { "AddToCart", "أضف للسلة" },
-                { "Checkout", "إتمام الطلب" }
+                { "Checkout", "إتمام الطلب" },
+                { "NavHome", "الرئيسية" },
+                { "NavShop", "المتجر" },
+                { "NavHairCare", "العناية بالشعر" },
+                { "NavSkinCare", "العناية بالبشرة" },
+                { "NavAboutUs", "من نحن" },
+                { "NavContactUs", "تواصل معنا" },
+                { "QuickLinks", "روابط سريعة" },
+                { "FollowUs", "تابعنا" },
+                { "AboutJoja", "عن جوجا" }
             };
             if (arDict.TryGetValue(key, out var val)) return val;
         }

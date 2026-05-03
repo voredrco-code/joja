@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Joja.Api.Data;
 using Joja.Api.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 
 namespace Joja.Api.Controllers;
 
@@ -9,12 +11,21 @@ namespace Joja.Api.Controllers;
 public class VideoBannersController : Controller
 {
     private readonly ApplicationDbContext _context;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly Cloudinary _cloudinary;
 
-    public VideoBannersController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+    public VideoBannersController(ApplicationDbContext context, IConfiguration config)
     {
         _context = context;
-        _webHostEnvironment = webHostEnvironment;
+        
+        var cloudName = config["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary__CloudName");
+        var apiKey = config["Cloudinary:ApiKey"] ?? Environment.GetEnvironmentVariable("Cloudinary__ApiKey");
+        var apiSecret = config["Cloudinary:ApiSecret"] ?? Environment.GetEnvironmentVariable("Cloudinary__ApiSecret");
+        
+        if (!string.IsNullOrEmpty(cloudName))
+        {
+            Account account = new Account(cloudName, apiKey, apiSecret);
+            _cloudinary = new Cloudinary(account);
+        }
     }
 
     // GET: VideoBanners
@@ -36,15 +47,15 @@ public class VideoBannersController : Controller
     {
         if (VideoFile != null && VideoFile.Length > 0)
         {
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + VideoFile.FileName;
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "videos/banners");
-            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
+            using var stream = VideoFile.OpenReadStream();
+            var uploadParams = new VideoUploadParams()
             {
-                await VideoFile.CopyToAsync(fileStream);
-            }
-            videoBanner.VideoUrl = "/videos/banners/" + uniqueFileName;
+                File = new FileDescription(VideoFile.FileName, stream),
+                Folder = "joja/video_banners"
+            };
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
         }
 
         if (string.IsNullOrEmpty(videoBanner.VideoUrl))
@@ -80,15 +91,15 @@ public class VideoBannersController : Controller
         {
             if (VideoFile != null && VideoFile.Length > 0)
             {
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + VideoFile.FileName;
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "videos/banners");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
+                using var stream = VideoFile.OpenReadStream();
+                var uploadParams = new VideoUploadParams()
                 {
-                    await VideoFile.CopyToAsync(fileStream);
-                }
-                videoBanner.VideoUrl = "/videos/banners/" + uniqueFileName;
+                    File = new FileDescription(VideoFile.FileName, stream),
+                    Folder = "joja/video_banners"
+                };
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
             }
             else
             {
