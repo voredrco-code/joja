@@ -25,20 +25,61 @@ public class LocalizationService : ILocalizationService
                 .FirstOrDefault(t => t.Key == key && t.Language == "ar");
         }
         
-        return translation?.Value ?? key;
+        if (translation != null) return translation.Value;
+
+        // Built-in dictionaries if DB is empty
+        if (language == "en")
+        {
+            var enDict = new Dictionary<string, string> {
+                { "HeroTitle", "Natural Beauty for You" },
+                { "HeroSubtitle", "Discover our natural collection" },
+                { "ShopNow", "Shop Now" },
+                { "JojaMoments", "Joja Moments" },
+                { "BestSellers", "Best Sellers" },
+                { "FilterAll", "All" },
+                { "AddToCart", "Add To Cart" },
+                { "Checkout", "Checkout" }
+            };
+            if (enDict.TryGetValue(key, out var val)) return val;
+        }
+        else 
+        {
+            var arDict = new Dictionary<string, string> {
+                { "HeroTitle", "جمال طبيعي عشانك" },
+                { "HeroSubtitle", "اكتشفي مجموعتنا الطبيعية" },
+                { "ShopNow", "تسوقي الآن" },
+                { "JojaMoments", "لحظات جوجا" },
+                { "BestSellers", "الأكثر مبيعاً" },
+                { "FilterAll", "الكل" },
+                { "AddToCart", "أضف للسلة" },
+                { "Checkout", "إتمام الطلب" }
+            };
+            if (arDict.TryGetValue(key, out var val)) return val;
+        }
+
+        return key;
     }
 
     public Product GetLocalizedProduct(Product product, string language)
     {
         if (product == null) return product;
 
+        if (language == "en" && !string.IsNullOrEmpty(product.NameEn))
+        {
+            product.Name = product.NameEn;
+        }
+        if (language == "en" && !string.IsNullOrEmpty(product.DescriptionEn))
+        {
+            product.Description = product.DescriptionEn;
+        }
+
         var translation = _context.ProductTranslations
             .FirstOrDefault(t => t.ProductId == product.Id && t.Language == language);
 
         if (translation != null)
         {
-            product.Name = translation.Name;
-            product.Description = translation.Description;
+            if (!string.IsNullOrEmpty(translation.Name)) product.Name = translation.Name;
+            if (!string.IsNullOrEmpty(translation.Description)) product.Description = translation.Description;
         }
 
         return product;
@@ -48,12 +89,17 @@ public class LocalizationService : ILocalizationService
     {
         if (category == null) return category;
 
+        if (language == "en" && !string.IsNullOrEmpty(category.NameEn))
+        {
+            category.Name = category.NameEn;
+        }
+
         var translation = _context.CategoryTranslations
             .FirstOrDefault(t => t.CategoryId == category.Id && t.Language == language);
 
         if (translation != null)
         {
-            category.Name = translation.Name;
+            if (!string.IsNullOrEmpty(translation.Name)) category.Name = translation.Name;
         }
 
         return category;

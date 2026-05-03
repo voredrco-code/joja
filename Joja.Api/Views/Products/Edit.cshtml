@@ -57,9 +57,15 @@
                     <h4 class="mb-3">Basic Info</h4>
                     
                     <div class="form-group mb-3">
-                        <label asp-for="Name" class="control-label"></label>
+                        <label asp-for="Name" class="control-label">اسم المنتج (عربي)</label>
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="NameEn" class="control-label">Product Name (English)</label>
+                        <input asp-for="NameEn" class="form-control" placeholder="e.g. Argan Oil" />
+                        <span asp-validation-for="NameEn" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">

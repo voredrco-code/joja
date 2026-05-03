@@ -17,8 +17,12 @@
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
                         <div class="form-group mb-3">
-                            <label>اسم القسم</label>
+                            <label>اسم القسم (بالعربي)</label>
                             <input type="text" name="name" class="form-control" required placeholder="مثال: عروض أو Bundles" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>اسم القسم (بالإنجليزي - اختياري)</label>
+                            <input type="text" name="nameEn" class="form-control" placeholder="e.g. Offers or Bundles" />
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success">💾 حفظ</button>

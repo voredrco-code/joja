@@ -18,8 +18,12 @@
                     <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
                         @Html.AntiForgeryToken()
                         <div class="form-group mb-3">
-                            <label>اسم القسم الجديد</label>
+                            <label>اسم القسم (بالعربي)</label>
                             <input type="text" name="name" class="form-control" required value="@Model.Name" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>اسم القسم (بالإنجليزي - اختياري)</label>
+                            <input type="text" name="nameEn" class="form-control" value="@Model.NameEn" />
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-warning">💾 حفظ التعديل</button>

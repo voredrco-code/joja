@@ -1040,3 +1040,5 @@ footer {
 .top-bar a {
     color: #ffffff !important;
 }
+.joja-reels-swiper .swiper-wrapper { transition-timing-function: linear !important; }
+

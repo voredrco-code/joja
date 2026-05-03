@@ -33,7 +33,7 @@ public class CategoriesController : Controller
     // POST: Categories/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(string name)
+    public async Task<IActionResult> Create(string name, string? nameEn)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -41,7 +41,7 @@ public class CategoriesController : Controller
             return View();
         }
 
-        _context.Categories.Add(new Category { Name = name });
+        _context.Categories.Add(new Category { Name = name, NameEn = nameEn });
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
@@ -57,7 +57,7 @@ public class CategoriesController : Controller
     // POST: Categories/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, string name)
+    public async Task<IActionResult> Edit(int id, string name, string? nameEn)
     {
         var category = await _context.Categories.FindAsync(id);
         if (category == null) return NotFound();
@@ -69,6 +69,7 @@ public class CategoriesController : Controller
         }
 
         category.Name = name;
+        category.NameEn = nameEn;
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
