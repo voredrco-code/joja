@@ -24,7 +24,13 @@
                 <div class="form-group mb-3">
                     <label class="control-label fw-bold">رقم الهاتف (مع كود الدولة، مثال: 201090428764)</label>
                     <input name="whatsAppNumber" class="form-control form-control-lg" value="@Model?.WhatsAppNumber" placeholder="2010..." required />
-                    <small class="text-muted">هذا الرقم سيتم استخدامه في زر الواتساب العائم الموجود في جميع صفحات الموقع للتواصل المباشر مع العملاء.</small>
+                    <small class="text-muted">هذا الرقم سيتم استخدامه في زر الواتساب العائم وفي الفوتر للتواصل المباشر.</small>
+                </div>
+
+                <div class="form-group mb-3 mt-4">
+                    <label class="control-label fw-bold">البريد الإلكتروني للتواصل (Contact Email)</label>
+                    <input name="contactEmail" class="form-control form-control-lg" value="@Model?.ContactEmail" placeholder="example@mail.com" />
+                    <small class="text-muted">هذا البريد سيظهر في الفوتر أسفل الموقع بجانب رقم الواتساب.</small>
                 </div>
 
                 <div class="form-group mb-3 mt-4">
@@ -37,6 +43,18 @@
                     <label class="control-label fw-bold">نص الفوتر عن المتجر (Footer About Text)</label>
                     <input name="footerAboutText" class="form-control form-control-lg" value="@Model?.FooterAboutText" placeholder="Natural skincare products formulated with care & science" />
                     <small class="text-muted">هذا النص سيظهر في قسم (عن الموقع) في الفوتر أسفل جميع الصفحات.</small>
+                </div>
+
+                <div class="form-group mb-3 mt-4">
+                    <label class="control-label fw-bold">نظام الشحن (Shipping System)</label>
+                    <div class="alert alert-info py-2" style="font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> يتم حالياً حساب الشحن تلقائياً بناءً على المنطقة:
+                        <ul class="mb-0 mt-1">
+                            <li>القاهرة والجيزة والإسكندرية: <b>65 ج.م</b></li>
+                            <li>الصعيد: <b>85 ج.م</b></li>
+                            <li>باقي المحافظات: <b>75 ج.م</b></li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <div class="form-group mb-3 form-check form-switch mt-4">

@@ -546,6 +546,13 @@ footer {
         font-size: 1.1rem;
     }
 
+    /* Hide Search and User icons on mobile as requested */
+    .nav-icons > *:nth-child(2),
+    .nav-icons > *:nth-child(3) {
+        display: none !important;
+    }
+
+
     /* Hero Section */
     .hero-section {
         height: 350px;
@@ -1042,3 +1049,21 @@ footer {
 }
 .joja-reels-swiper .swiper-wrapper { transition-timing-function: linear !important; }
 
+
+/* WhatsApp Mobile Optimizations */
+@media (max-width: 768px) {
+    .whatsapp-float {
+        bottom: 20px;
+        right: 15px;
+        width: 55px;
+        height: 55px;
+        line-height: 55px;
+        font-size: 30px;
+    }
+
+    /* Move to left on Arabic mobile for better thumb reach and layout flow */
+    html[lang='ar'] .whatsapp-float {
+        right: auto;
+        left: 15px;
+    }
+}

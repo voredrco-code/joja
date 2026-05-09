@@ -11,6 +11,61 @@ public class CheckoutViewModel
     public string City { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     
+    public static List<string> Cities = new()
+    {
+        "القاهرة (Cairo)",
+        "الجيزة (Giza)",
+        "الإسكندرية (Alexandria)",
+        "القليوبية (Qalyubia)",
+        "الدقهلية (Dakahlia)",
+        "المنوفية (Monufia)",
+        "الشرقية (Sharqia)",
+        "الغربية (Gharbia)",
+        "البحيرة (Beheira)",
+        "دمياط (Damietta)",
+        "بورسعيد (Port Said)",
+        "الإسماعيلية (Ismailia)",
+        "السويس (Suez)",
+        "كفر الشيخ (Kafr El Sheikh)",
+        "الفيوم (Faiyum)",
+        "بني سويف (Beni Suef)",
+        "المنيا (Minya)",
+        "أسيوط (Asyut)",
+        "سوهاج (Sohag)",
+        "قنا (Qena)",
+        "الأقصر (Luxor)",
+        "أسوان (Aswan)",
+        "البحر الأحمر (Red Sea)",
+        "الوادي الجديد (New Valley)",
+        "مطروح (Matrouh)",
+        "شمال سيناء (North Sinai)",
+        "جنوب سيناء (South Sinai)"
+    };
+
+    public static decimal GetShippingCost(string city)
+    {
+        if (string.IsNullOrEmpty(city)) return 75m;
+
+        if (city.Contains("Cairo") || city.Contains("Giza") || city.Contains("Alexandria") ||
+            city.Contains("القاهرة") || city.Contains("الجيزة") || city.Contains("الإسكندرية"))
+        {
+            return 65m;
+        }
+
+        // Upper Egypt (الصعيد)
+        if (city.Contains("Beni Suef") || city.Contains("Faiyum") || city.Contains("Minya") ||
+            city.Contains("Asyut") || city.Contains("Sohag") || city.Contains("Qena") ||
+            city.Contains("Luxor") || city.Contains("Aswan") || city.Contains("New Valley") ||
+            city.Contains("بني سويف") || city.Contains("الفيوم") || city.Contains("المنيا") ||
+            city.Contains("أسيوط") || city.Contains("سوهاج") || city.Contains("قنا") ||
+            city.Contains("الأقصر") || city.Contains("أسوان") || city.Contains("الوادي الجديد"))
+        {
+            return 85m;
+        }
+
+        return 75m;
+    }
+    
     // Order Details
     public string PaymentMethod { get; set; } = "CashOnDelivery"; // CashOnDelivery, InstaPay, Wallet
     public string? Notes { get; set; }
@@ -18,6 +73,6 @@ public class CheckoutViewModel
     // Read-only for display
     public CartService? Cart { get; set; }
 
-    public decimal ShippingCost { get; set; } = 85m;
+    public decimal ShippingCost { get; set; }
     public decimal TotalWithShipping => (Cart?.Total ?? 0) + ShippingCost;
 }

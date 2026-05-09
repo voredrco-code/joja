@@ -17,6 +17,13 @@ public class SiteSettingsController : Controller
 
     public async Task<IActionResult> Index()
     {
+        // Ensuring the new column exists (Migration fallback)
+        try
+        {
+            await _context.Database.ExecuteSqlRawAsync("ALTER TABLE \"SiteSettings\" ADD COLUMN IF NOT EXISTS \"ContactEmail\" text;");
+        }
+        catch { /* Fallback for other providers or if already exists */ }
+
         var settings = await _context.SiteSettings.FirstOrDefaultAsync();
         
         if (settings == null)
@@ -31,18 +38,26 @@ public class SiteSettingsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateWhatsApp(string whatsAppNumber, string? headerAnnouncementText, string? footerAboutText, bool enableStickyCart = false)
+    public async Task<IActionResult> UpdateWhatsApp(string whatsAppNumber, string? contactEmail, string? headerAnnouncementText, string? footerAboutText, bool enableStickyCart = false)
     {
         var settings = await _context.SiteSettings.FirstOrDefaultAsync();
         
         if (settings == null)
         {
-            settings = new SiteSetting { WhatsAppNumber = whatsAppNumber, HeaderAnnouncementText = headerAnnouncementText, FooterAboutText = footerAboutText, EnableStickyCart = enableStickyCart };
+            settings = new SiteSetting 
+            { 
+                WhatsAppNumber = whatsAppNumber, 
+                ContactEmail = contactEmail,
+                HeaderAnnouncementText = headerAnnouncementText, 
+                FooterAboutText = footerAboutText, 
+                EnableStickyCart = enableStickyCart
+            };
             _context.SiteSettings.Add(settings);
         }
         else
         {
             settings.WhatsAppNumber = whatsAppNumber;
+            settings.ContactEmail = contactEmail;
             settings.HeaderAnnouncementText = headerAnnouncementText;
             settings.FooterAboutText = footerAboutText;
             settings.EnableStickyCart = enableStickyCart;
@@ -51,7 +66,7 @@ public class SiteSettingsController : Controller
         
         await _context.SaveChangesAsync();
         
-        TempData["SuccessMessage"] = "تم حفظ رقم الواتساب بنجاح!";
+        TempData["SuccessMessage"] = "تم حفظ الإعدادات بنجاح!";
         return RedirectToAction(nameof(Index));
     }
 }

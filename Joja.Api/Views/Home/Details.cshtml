@@ -54,9 +54,9 @@
             <div class="price-section mb-4">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
                 {
-                    <span id="original-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px;" data-base-original="@Model.OriginalPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.OriginalPrice.Value EGP</span>
+                    <span id="original-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px;" data-base-original="@Model.OriginalPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.OriginalPrice.Value جنيه مصري</span>
                 }
-                <span id="current-price" style="color: #B7477E; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(183, 71, 126, 0.3);" data-base-price="@Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.Price EGP</span>
+                <span id="current-price" style="color: #B7477E; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(183, 71, 126, 0.3);" data-base-price="@Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.Price جنيه مصري</span>
             </div>
 
             @if (Model.Variants != null && Model.Variants.Any())
@@ -277,10 +277,10 @@
         
         if (currentPriceEl) {
             if (!isNaN(variantPrice) && variantPrice > 0) {
-                currentPriceEl.innerText = variantPrice.toFixed(2) + ' EGP';
+                currentPriceEl.innerText = variantPrice.toFixed(2) + ' جنيه مصري';
             } else {
                 var basePrice = parseFloat(currentPriceEl.getAttribute('data-base-price')) || 0;
-                currentPriceEl.innerText = basePrice.toFixed(2) + ' EGP';
+                currentPriceEl.innerText = basePrice.toFixed(2) + ' جنيه مصري';
             }
         }
         if (originalPriceEl) {

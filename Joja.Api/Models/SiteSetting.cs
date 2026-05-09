@@ -7,4 +7,6 @@ public class SiteSetting
     public bool EnableStickyCart { get; set; } = true;
     public string? HeaderAnnouncementText { get; set; }
     public string? FooterAboutText { get; set; } = "Natural skincare products formulated with care & science";
+    public string? ContactEmail { get; set; } = "joja.organic@gmail.com";
+    public decimal ShippingCost { get; set; } = 85m;
 }

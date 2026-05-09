@@ -35,13 +35,13 @@
 
                     <div style="margin-bottom: 15px;">
                         <label asp-for="City" style="display: block; margin-bottom: 5px; font-weight: bold;">@(isAr ? "المحافظة / المدينة" : "City / Governorate")</label>
-                        <select asp-for="City" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required>
+                        <select asp-for="City" id="citySelect" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required onchange="updateShipping()">
                             <option value="">@(isAr ? "اختر المحافظة..." : "Select City...")</option>
-                            <option value="Cairo">@(isAr ? "القاهرة" : "Cairo")</option>
-                            <option value="Giza">@(isAr ? "الجيزة" : "Giza")</option>
-                            <option value="Alexandria">@(isAr ? "الإسكندرية" : "Alexandria")</option>
-                            <option value="Mansoura">@(isAr ? "المنصورة" : "Mansoura")</option>
-                            <option value="Other">@(isAr ? "أخرى" : "Other")</option>
+                            @foreach (var city in Joja.Api.ViewModels.CheckoutViewModel.Cities)
+                            {
+                                decimal price = Joja.Api.ViewModels.CheckoutViewModel.GetShippingCost(city);
+                                <option value="@city" data-price="@price">@city</option>
+                            }
                         </select>
                     </div>
 
@@ -126,14 +126,14 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                     <span>@(isAr ? "الشحن" : "Shipping")</span>
-                    <span>@(Model?.ShippingCost.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
+                    <span id="shippingDisplay">@(Model?.ShippingCost.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
                 </div>
                 
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
                 
                 <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
                     <span>@(isAr ? "الإجمالي" : "Total")</span>
-                    <span>@(Model?.TotalWithShipping.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
+                    <span id="totalDisplay">@(Model?.TotalWithShipping.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
                 </div>
             </div>
         </div>
@@ -150,5 +150,17 @@
         } else {
             instructions.style.display = 'none';
         }
+    }
+
+    function updateShipping() {
+        var select = document.getElementById('citySelect');
+        var selectedOption = select.options[select.selectedIndex];
+        var shippingPrice = parseFloat(selectedOption.getAttribute('data-price') || "0");
+        var subtotal = parseFloat("@(Model?.Cart?.Total ?? 0)");
+        
+        var currency = "@(isAr ? "ج.م" : "EGP")";
+        
+        document.getElementById('shippingDisplay').innerText = shippingPrice.toFixed(2) + " " + currency;
+        document.getElementById('totalDisplay').innerText = (subtotal + shippingPrice).toFixed(2) + " " + currency;
     }
 </script>

@@ -19,16 +19,20 @@ public class CheckoutController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         if (_cartService.Items.Count == 0)
         {
             return RedirectToAction("Index", "Cart");
         }
 
+        var settings = await _context.SiteSettings.FirstOrDefaultAsync();
+        var shippingCost = CheckoutViewModel.GetShippingCost(string.Empty); // Default cost
+
         var model = new CheckoutViewModel
         {
-             Cart = _cartService
+             Cart = _cartService,
+             ShippingCost = shippingCost
         };
         return View(model);
     }
@@ -43,6 +47,8 @@ public class CheckoutController : Controller
 
         if (ModelState.IsValid)
         {
+            decimal shippingCost = CheckoutViewModel.GetShippingCost(model.City);
+
             // 1. Create Order
             var order = new Order
             {
@@ -50,7 +56,7 @@ public class CheckoutController : Controller
                 Phone = model.Phone,
                 Address = $"{model.Address}, {model.City}",
                 OrderDate = DateTime.Now,
-                TotalAmount = _cartService.Total + 85m, // Add Shipping Cost
+                TotalAmount = _cartService.Total + shippingCost, // Dynamic Shipping Cost
                 Status = "Pending"
             };
 

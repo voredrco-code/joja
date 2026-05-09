@@ -114,8 +114,7 @@
                         }
                     </div>
 
-                    <a href="#" class="d-none d-md-inline-block"><i class="fas fa-search"></i></a>
-                    <a href="#" class="d-none d-md-inline-block"><i class="fas fa-user"></i></a>
+
                     
                     <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
                         <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
@@ -203,7 +202,20 @@
                     </div>
                 </div>
             </div>
-            <div class="copyright">
+            <div class="footer-contact-info" style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem;">
+                @{
+                    var contactEmail = siteSettingFooter?.ContactEmail ?? "joja.organic@gmail.com";
+                    var whatsappNumFooter = siteSettingFooter?.WhatsAppNumber ?? "201090428764";
+                }
+                <a href="https://wa.me/@whatsappNumFooter" target="_blank" style="text-decoration: none;">
+                    <i class="fab fa-whatsapp"></i> @whatsappNumFooter
+                </a>
+                <span style="margin: 0 10px; opacity: 0.8;">،</span>
+                <a href="mailto:@contactEmail" style="text-decoration: none;">
+                    <i class="fas fa-envelope"></i> @contactEmail
+                </a>
+            </div>
+            <div class="copyright" style="margin-top: 15px;">
                 &copy; 2026 JOJA Skincare. All rights reserved.
             </div>
         </div>
