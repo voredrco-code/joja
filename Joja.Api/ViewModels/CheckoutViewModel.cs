@@ -44,7 +44,7 @@ public class CheckoutViewModel
 
     public static decimal GetShippingCost(string city)
     {
-        if (string.IsNullOrEmpty(city)) return 75m;
+        if (string.IsNullOrEmpty(city)) return 85m;
 
         if (city.Contains("Cairo") || city.Contains("Giza") || city.Contains("Alexandria") ||
             city.Contains("القاهرة") || city.Contains("الجيزة") || city.Contains("الإسكندرية"))
@@ -52,18 +52,7 @@ public class CheckoutViewModel
             return 65m;
         }
 
-        // Upper Egypt (الصعيد)
-        if (city.Contains("Beni Suef") || city.Contains("Faiyum") || city.Contains("Minya") ||
-            city.Contains("Asyut") || city.Contains("Sohag") || city.Contains("Qena") ||
-            city.Contains("Luxor") || city.Contains("Aswan") || city.Contains("New Valley") ||
-            city.Contains("بني سويف") || city.Contains("الفيوم") || city.Contains("المنيا") ||
-            city.Contains("أسيوط") || city.Contains("سوهاج") || city.Contains("قنا") ||
-            city.Contains("الأقصر") || city.Contains("أسوان") || city.Contains("الوادي الجديد"))
-        {
-            return 85m;
-        }
-
-        return 75m;
+        return 85m;
     }
     
     // Order Details
