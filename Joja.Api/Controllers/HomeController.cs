@@ -124,7 +124,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return Redirect(url);
     }
 
-    public async Task<IActionResult> Index(int? categoryId)
+    public async Task<IActionResult> Index(int? categoryId, string? searchQuery)
     {
         // Get user language from cookie (default: Arabic)
         var language = Request.Cookies["UserLanguage"] ?? "en";
@@ -139,6 +139,13 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         if (categoryId.HasValue)
         {
             query = query.Where(p => p.CategoryId == categoryId.Value);
+        }
+        
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(p => (p.Name != null && p.Name.Contains(searchQuery)) || 
+                                     (p.NameEn != null && p.NameEn.Contains(searchQuery)));
+            ViewBag.SearchQuery = searchQuery;
         }
         var products = await query.ToListAsync();
         _localizationService.GetLocalizedProducts(products, language);
@@ -180,7 +187,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return View(viewModel);
     }
 
-    public async Task<IActionResult> FilterProducts(int? categoryId)
+    public async Task<IActionResult> FilterProducts(int? categoryId, string? searchQuery)
     {
         // Get user language from cookie
         var language = Request.Cookies["UserLanguage"] ?? "en";
@@ -190,6 +197,12 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         if (categoryId.HasValue)
         {
             query = query.Where(p => p.CategoryId == categoryId.Value);
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(p => (p.Name != null && p.Name.Contains(searchQuery)) || 
+                                     (p.NameEn != null && p.NameEn.Contains(searchQuery)));
         }
 
         var products = await query.ToListAsync();

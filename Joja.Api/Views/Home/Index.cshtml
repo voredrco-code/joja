@@ -223,7 +223,10 @@ else
     }
 
     function filter(catId) {
-        $.get("/Home/FilterProducts", { categoryId: catId }, function(data) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('searchQuery');
+        
+        $.get("/Home/FilterProducts", { categoryId: catId, searchQuery: searchQuery }, function(data) {
             $("#product-container").html(data);
         });
         // Toggle active class

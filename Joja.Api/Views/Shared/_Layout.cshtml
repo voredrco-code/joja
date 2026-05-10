@@ -113,9 +113,15 @@
                             </a>
                         }
                     </div>
-
-
                     
+                    <!-- Search Form (Desktop Only) -->
+                    <form asp-controller="Home" asp-action="Index" method="get" class="d-none d-md-flex align-items-center me-3" style="position: relative;">
+                        <input type="text" name="searchQuery" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 4px 35px 4px 15px; width: 200px; font-size: 0.9rem;" />
+                        <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+
                     <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
                         <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
                         <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
