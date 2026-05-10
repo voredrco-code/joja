@@ -114,13 +114,20 @@
                         }
                     </div>
                     
-                    <!-- Search Form (Desktop Only) -->
-                    <form asp-controller="Home" asp-action="Index" method="get" class="d-none d-md-flex align-items-center me-3" style="position: relative;">
-                        <input type="text" name="searchQuery" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 4px 35px 4px 15px; width: 200px; font-size: 0.9rem;" />
-                        <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">
-                            <i class="fas fa-search"></i>
+                    <!-- Search Toggle (Desktop Only) -->
+                    <div class="d-none d-md-flex align-items-center me-3 position-relative">
+                        <button id="searchToggleBtn" style="background: none; border: none; color: #B7477E; cursor: pointer;">
+                            <i class="fas fa-search" style="font-size: 1.2rem;"></i>
                         </button>
-                    </form>
+                        <form id="searchForm" asp-controller="Home" asp-action="Index" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                            <div class="d-flex align-items-center position-relative">
+                                <input type="text" name="searchQuery" id="searchInput" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
+                                <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
                     <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
                         <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
@@ -162,10 +169,30 @@
         document.addEventListener('click', function(event) {
             const nav = document.getElementById('navLinks');
             const toggle = document.querySelector('.mobile-menu-toggle');
-            if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+            if (nav && toggle && !nav.contains(event.target) && !toggle.contains(event.target)) {
                 nav.classList.remove('active');
             }
         });
+
+        // Search Toggle Logic
+        const searchToggleBtn = document.getElementById('searchToggleBtn');
+        const searchForm = document.getElementById('searchForm');
+        if (searchToggleBtn && searchForm) {
+            searchToggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (searchForm.style.display === 'none') {
+                    searchForm.style.display = 'block';
+                    document.getElementById('searchInput').focus();
+                } else {
+                    searchForm.style.display = 'none';
+                }
+            });
+            document.addEventListener('click', function(e) {
+                if (searchForm.style.display === 'block' && !searchForm.contains(e.target) && !searchToggleBtn.contains(e.target)) {
+                    searchForm.style.display = 'none';
+                }
+            });
+        }
     </script>
 
     <main role="main">
@@ -353,3 +380,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
