@@ -338,6 +338,12 @@
                 renderStars(currentRating);
             });
         });
+
+        // Auto-select first variant if available
+        var firstVariant = document.querySelector('.variant-btn');
+        if (firstVariant) {
+            selectVariant(firstVariant);
+        }
     });
 </script>
 

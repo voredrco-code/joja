@@ -1,4 +1,4 @@
-@model Joja.Api.Models.Order
+﻿@model Joja.Api.Models.Order
 @{
     ViewData["Title"] = "Order Placed Successfully";
 }
@@ -6,15 +6,15 @@
 <div class="container" style="margin-top: 80px; text-align: center;">
     <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 600px;">
         <i class="fas fa-check-circle" style="font-size: 5rem; color: #4CAF50; margin-bottom: 20px;"></i>
-        <h1 class="brand-font" style="color: #333;">شكراً لك!</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 30px;">تم استلام طلبك بنجاح وسنتواصل معك قريباً للتأكيد.</p>
+        <h1 class="brand-font" style="color: #333;">Ø´ÙƒØ±Ø§Ù‹ Ù„Ùƒ!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">ØªÙ… Ø§Ø³ØªÙ„Ø§Ù… Ø·Ù„Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­ ÙˆØ³Ù†ØªÙˆØ§ØµÙ„ Ù…Ø¹Ùƒ Ù‚Ø±ÙŠØ¨Ø§Ù‹ Ù„Ù„ØªØ£ÙƒÙŠØ¯.</p>
         
         <div style="background: #f9f9f9; padding: 20px; border-radius: 4px; margin-bottom: 30px; text-align: left;">
-            <p><strong>رقم الطلب:</strong> #@Model.Id</p>
-            <p><strong>الإجمالي:</strong> @Model.TotalAmount.ToString("0.00") ج.م</p>
+            <p><strong>Ø±Ù‚Ù… Ø§Ù„Ø·Ù„Ø¨:</strong> #@Model.Id</p>
+            <p><strong>Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ:</strong> @Model.TotalAmount.ToString("0.00") Ø¬.Ù…</p>
         </div>
 
-        <a asp-controller="Home" asp-action="Index" class="btn-primary" style="background-color: #333;">العودة للرئيسية</a>
+        <a asp-controller="Home" asp-action="Index" class="btn-primary" style="background-color: #333;">Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ù„Ø±Ø¦ÙŠØ³ÙŠØ©</a>
     </div>
 </div>
 
@@ -30,4 +30,5 @@
   fbq('init', '1136168747656955');
   fbq('track', 'Purchase', {value: @Model.TotalAmount, currency: 'EGP'});
 </script>
+
 
