@@ -312,7 +312,7 @@ footer {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #B7477E;
+    color: #B7477E !important;
 }
 
 .nav-links {
@@ -498,11 +498,11 @@ footer {
    MOBILE RESPONSIVE STYLES
    ======================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 991px) {
 
     /* Mobile Menu Toggle */
     .mobile-menu-toggle {
-        display: block;
+        display: block !important;
     }
 
     /* Hide desktop nav links, show mobile */
