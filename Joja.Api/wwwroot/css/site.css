@@ -900,6 +900,12 @@ footer {
     display: none;
 }
 
+@keyframes bounceWhatsApp {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-15px); }
+    60% { transform: translateY(-7px); }
+}
+
 /* تنسيق زر الواتساب العائم */
 .whatsapp-float {
     position: fixed;
@@ -916,9 +922,11 @@ footer {
     box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     transition: transform 0.3s ease;
+    animation: bounceWhatsApp 2s infinite;
 }
 
 .whatsapp-float:hover {
+    animation-play-state: paused;
     transform: scale(1.1);
     color: white;
 }
