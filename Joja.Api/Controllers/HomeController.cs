@@ -141,12 +141,6 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             query = query.Where(p => p.CategoryId == categoryId.Value);
         }
         
-        if (!string.IsNullOrEmpty(searchQuery))
-        {
-            query = query.Where(p => (p.Name != null && p.Name.Contains(searchQuery)) || 
-                                     (p.NameEn != null && p.NameEn.Contains(searchQuery)));
-            ViewBag.SearchQuery = searchQuery;
-        }
         var products = await query.ToListAsync();
         _localizationService.GetLocalizedProducts(products, language);
         
@@ -199,11 +193,6 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             query = query.Where(p => p.CategoryId == categoryId.Value);
         }
 
-        if (!string.IsNullOrEmpty(searchQuery))
-        {
-            query = query.Where(p => (p.Name != null && p.Name.Contains(searchQuery)) || 
-                                     (p.NameEn != null && p.NameEn.Contains(searchQuery)));
-        }
 
         var products = await query.ToListAsync();
         
@@ -211,6 +200,30 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         _localizationService.GetLocalizedProducts(products, language);
         
         return PartialView("_ProductList", products);
+    }
+
+    public async Task<IActionResult> Search(string? searchQuery)
+    {
+        var language = Request.Cookies["UserLanguage"] ?? "en";
+        ViewBag.CurrentLanguage = language;
+        ViewBag.SearchQuery = searchQuery;
+
+        var query = _context.Products.AsQueryable();
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            query = query.Where(p => (p.Name != null && p.Name.Contains(searchQuery)) || 
+                                     (p.NameEn != null && p.NameEn.Contains(searchQuery)));
+        }
+        
+        var products = await query.ToListAsync();
+        _localizationService.GetLocalizedProducts(products, language);
+        
+        // Pass UI translations to view
+        ViewBag.AddToCart = _localizationService.GetUiText("AddToCart", language);
+        ViewBag.SearchResults = _localizationService.GetUiText("SearchResults", language) ?? "Search Results";
+        ViewBag.NoResults = _localizationService.GetUiText("NoResults", language) ?? "No products found matching your search.";
+
+        return View(products);
     }
 
     public async Task<IActionResult> Details(int id)

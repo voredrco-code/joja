@@ -122,7 +122,7 @@
                         <button id="searchToggleBtn" style="background: none; border: none; color: #B7477E; cursor: pointer;">
                             <i class="fas fa-search" style="font-size: 1.2rem;"></i>
                         </button>
-                        <form id="searchForm" asp-controller="Home" asp-action="Index" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                        <form id="searchForm" asp-controller="Home" asp-action="Search" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">
                             <div class="d-flex align-items-center position-relative">
                                 <input type="text" name="searchQuery" id="searchInput" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
                                 <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">

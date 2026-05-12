@@ -60,7 +60,10 @@ public class LocalizationService : ILocalizationService
                 { "YourName", "Your Name" },
                 { "RatingLbl", "Rating" },
                 { "CommentOptional", "Comment (Optional)" },
-                { "SubmitReview", "Submit Review" }
+                { "SubmitReview", "Submit Review" },
+                { "SearchProducts", "Search products..." },
+                { "SearchResults", "Search Results" },
+                { "NoResults", "No products found matching your search." }
             };
             if (enDict.TryGetValue(key, out var val)) return val;
         }
@@ -96,7 +99,10 @@ public class LocalizationService : ILocalizationService
                 { "YourName", "اسمك" },
                 { "RatingLbl", "التقييم" },
                 { "CommentOptional", "تعليق (اختياري)" },
-                { "SubmitReview", "إرسال التقييم" }
+                { "SubmitReview", "إرسال التقييم" },
+                { "SearchProducts", "ابحث عن المنتجات..." },
+                { "SearchResults", "نتائج البحث" },
+                { "NoResults", "لم يتم العثور على منتجات تطابق بحثك." }
             };
             if (arDict.TryGetValue(key, out var val)) return val;
         }

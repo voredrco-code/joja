@@ -1,0 +1,52 @@
+@model IEnumerable<Joja.Api.Models.Product>
+@{
+    ViewData["Title"] = ViewBag.SearchResults;
+    var currentLang = ViewBag.CurrentLanguage ?? "en";
+}
+
+<div class="container mt-5 mb-5 product-section-clean">
+    <div class="d-flex align-items-center mb-4 gap-3">
+        <h2 style="color: #333; font-weight: 800; font-size: 2.2rem; margin: 0;">@ViewBag.SearchResults</h2>
+        @if (!string.IsNullOrEmpty(ViewBag.SearchQuery))
+        {
+            <span class="badge rounded-pill" style="background-color: #B7477E; padding: 10px 20px; font-size: 1rem;">
+                "@ViewBag.SearchQuery"
+            </span>
+        }
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="desktop-4-grid">
+            @foreach (var item in Model)
+            {
+                <partial name="_ProductGrid" model="item" />
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-search-minus" style="font-size: 4rem; color: #ddd;"></i>
+            </div>
+            <h3 style="color: #666;">@ViewBag.NoResults</h3>
+            <p class="text-muted">Try searching with different keywords or browse our categories.</p>
+            <a asp-action="Index" class="btn-primary mt-3" style="display: inline-block;">Back to Home</a>
+        </div>
+    }
+</div>
+
+<style>
+    .desktop-4-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    @@media (max-width: 991px) {
+        .desktop-4-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @@media (max-width: 768px) {
+        .desktop-4-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
