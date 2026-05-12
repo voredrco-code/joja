@@ -3,7 +3,7 @@ namespace Joja.Api.Models;
 public class AppSettings
 {
     public int Id { get; set; }
-    public string WhatsAppMessageTemplate { get; set; } = @"🛍️ *طلب جديد من Joja Skincare*
+    public string WhatsAppMessageTemplate { get; set; } = @"🛍️ *طلب جديد من Joja*
 
 🔢 *رقم الطلب:* #{OrderId}
 👤 *الاسم:* {CustomerName}
