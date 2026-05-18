@@ -61,6 +61,12 @@ public class CheckoutController : Controller
 
         try
         {
+            await _context.Database.ExecuteSqlRawAsync(@"ALTER TABLE ""Coupons"" ADD COLUMN ""ApplicableProductIds"" TEXT NULL;");
+        }
+        catch { }
+
+        try
+        {
             await _context.Database.ExecuteSqlRawAsync(@"ALTER TABLE ""Orders"" ADD COLUMN ""DiscountAmount"" NUMERIC NOT NULL DEFAULT 0;");
         }
         catch { }
@@ -108,29 +114,46 @@ public class CheckoutController : Controller
         var subtotal = _cartService.Total;
         var itemCount = _cartService.Items.Sum(i => i.Quantity);
 
-        if (coupon.MinOrderPrice.HasValue && subtotal < coupon.MinOrderPrice.Value)
+        var targetSubtotal = subtotal;
+        var targetItemCount = itemCount;
+
+        if (!string.IsNullOrEmpty(coupon.ApplicableProductIds))
         {
-            return Json(new { success = false, message = $"هذا الكوبون يتطلب حد أدنى للشراء بقيمة {coupon.MinOrderPrice.Value} ج.م!" });
+            var applicableIds = coupon.ApplicableProductIds.Split(',').Select(id => id.Trim()).ToList();
+            var applicableItems = _cartService.Items.Where(i => applicableIds.Contains(i.ProductId.ToString())).ToList();
+            
+            if (!applicableItems.Any())
+            {
+                return Json(new { success = false, message = "هذا الكوبون لا يشمل المنتجات الموجودة في سلتك!" });
+            }
+            
+            targetSubtotal = applicableItems.Sum(i => i.UnitPrice * i.Quantity);
+            targetItemCount = applicableItems.Sum(i => i.Quantity);
         }
 
-        if (coupon.MinProductCount.HasValue && itemCount < coupon.MinProductCount.Value)
+        if (coupon.MinOrderPrice.HasValue && targetSubtotal < coupon.MinOrderPrice.Value)
         {
-            return Json(new { success = false, message = $"هذا الكوبون يتطلب عدد منتجات لا يقل عن {coupon.MinProductCount.Value}!" });
+            return Json(new { success = false, message = $"هذا الكوبون يتطلب حد أدنى للمنتجات المشمولة بقيمة {coupon.MinOrderPrice.Value} ج.م!" });
+        }
+
+        if (coupon.MinProductCount.HasValue && targetItemCount < coupon.MinProductCount.Value)
+        {
+            return Json(new { success = false, message = $"هذا الكوبون يتطلب عدد منتجات مشمولة لا يقل عن {coupon.MinProductCount.Value}!" });
         }
 
         decimal discountAmount = 0;
         if (coupon.DiscountType == "Percentage")
         {
-            discountAmount = subtotal * (coupon.DiscountValue / 100m);
+            discountAmount = targetSubtotal * (coupon.DiscountValue / 100m);
         }
         else
         {
             discountAmount = coupon.DiscountValue;
         }
 
-        if (discountAmount > subtotal)
+        if (discountAmount > targetSubtotal)
         {
-            discountAmount = subtotal;
+            discountAmount = targetSubtotal;
         }
 
         return Json(new { 
@@ -166,26 +189,38 @@ public class CheckoutController : Controller
                 {
                     var subtotal = _cartService.Total;
                     var itemCount = _cartService.Items.Sum(i => i.Quantity);
+                    var targetSubtotal = subtotal;
+                    var targetItemCount = itemCount;
+
+                    if (!string.IsNullOrEmpty(coupon.ApplicableProductIds))
+                    {
+                        var applicableIds = coupon.ApplicableProductIds.Split(',').Select(id => id.Trim()).ToList();
+                        var applicableItems = _cartService.Items.Where(i => applicableIds.Contains(i.ProductId.ToString())).ToList();
+                        targetSubtotal = applicableItems.Sum(i => i.UnitPrice * i.Quantity);
+                        targetItemCount = applicableItems.Sum(i => i.Quantity);
+                    }
+
                     bool criteriaMet = true;
 
-                    if (coupon.MinOrderPrice.HasValue && subtotal < coupon.MinOrderPrice.Value) criteriaMet = false;
-                    if (coupon.MinProductCount.HasValue && itemCount < coupon.MinProductCount.Value) criteriaMet = false;
+                    if (targetSubtotal == 0) criteriaMet = false;
+                    if (coupon.MinOrderPrice.HasValue && targetSubtotal < coupon.MinOrderPrice.Value) criteriaMet = false;
+                    if (coupon.MinProductCount.HasValue && targetItemCount < coupon.MinProductCount.Value) criteriaMet = false;
 
                     if (criteriaMet)
                     {
                         appliedCouponCode = coupon.Code;
                         if (coupon.DiscountType == "Percentage")
                         {
-                            discountAmount = subtotal * (coupon.DiscountValue / 100m);
+                            discountAmount = targetSubtotal * (coupon.DiscountValue / 100m);
                         }
                         else
                         {
                             discountAmount = coupon.DiscountValue;
                         }
 
-                        if (discountAmount > subtotal)
+                        if (discountAmount > targetSubtotal)
                         {
-                            discountAmount = subtotal;
+                            discountAmount = targetSubtotal;
                         }
                     }
                 }

@@ -18,5 +18,7 @@ public class Coupon
     
     public int? MinProductCount { get; set; } // Optional minimum items count criteria
     
+    public string? ApplicableProductIds { get; set; } // Comma-separated product IDs (e.g. "1,5,12")
+    
     public bool IsActive { get; set; } = true;
 }

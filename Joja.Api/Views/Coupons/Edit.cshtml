@@ -59,6 +59,27 @@
                 </div>
             </div>
 
+            @{
+                var applicableIds = string.IsNullOrEmpty(Model.ApplicableProductIds) ? new List<string>() : Model.ApplicableProductIds.Split(',').Select(id => id.Trim()).ToList();
+            }
+            <div class="mb-4">
+                <label class="form-label font-weight-bold">المنتجات المشمولة (اختياري)</label>
+                <select name="SelectedProductIds" class="form-select" multiple style="padding: 12px; border-radius: 6px; min-height: 120px;">
+                    @foreach (var product in ViewBag.Products as IEnumerable<Joja.Api.Models.Product> ?? Enumerable.Empty<Joja.Api.Models.Product>())
+                    {
+                        if (applicableIds.Contains(product.Id.ToString()))
+                        {
+                            <option value="@product.Id" selected>@product.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@product.Id">@product.Name</option>
+                        }
+                    }
+                </select>
+                <small class="text-muted" style="margin-top: 5px; display: block;">اتركها فارغة إذا كان الكوبون يطبق على كل المنتجات. (استخدم زر Ctrl أو Shift لاختيار أكثر من منتج).</small>
+            </div>
+
             <div class="mb-4 form-check" style="padding-right: 1.5em; padding-left: 0;">
                 <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveCheck" style="float: right; margin-right: -1.5em; margin-left: 0; width: 1.2em; height: 1.2em; border-color: #B7477E;" />
                 <label class="form-check-label font-weight-bold" for="isActiveCheck" style="margin-right: 10px; font-size: 1.05rem;">

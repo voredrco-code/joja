@@ -32,24 +32,30 @@ public class CouponsController : Controller
     }
 
     // GET: Coupons/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        ViewBag.Products = await _context.Products.ToListAsync();
         return View();
     }
 
     // POST: Coupons/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Coupon coupon)
+    public async Task<IActionResult> Create(Coupon coupon, List<int> SelectedProductIds)
     {
         if (ModelState.IsValid)
         {
+            if (SelectedProductIds != null && SelectedProductIds.Any())
+            {
+                coupon.ApplicableProductIds = string.Join(",", SelectedProductIds);
+            }
             coupon.Code = coupon.Code.Trim();
             _context.Add(coupon);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "تم إضافة الكوبون بنجاح!";
             return RedirectToAction(nameof(Index));
         }
+        ViewBag.Products = await _context.Products.ToListAsync();
         return View(coupon);
     }
 
@@ -61,13 +67,14 @@ public class CouponsController : Controller
         var coupon = await _context.Coupons.FindAsync(id);
         if (coupon == null) return NotFound();
 
+        ViewBag.Products = await _context.Products.ToListAsync();
         return View(coupon);
     }
 
     // POST: Coupons/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Coupon coupon)
+    public async Task<IActionResult> Edit(int id, Coupon coupon, List<int> SelectedProductIds)
     {
         if (id != coupon.Id) return NotFound();
 
@@ -75,6 +82,15 @@ public class CouponsController : Controller
         {
             try
             {
+                if (SelectedProductIds != null && SelectedProductIds.Any())
+                {
+                    coupon.ApplicableProductIds = string.Join(",", SelectedProductIds);
+                }
+                else
+                {
+                    coupon.ApplicableProductIds = null;
+                }
+                
                 coupon.Code = coupon.Code.Trim();
                 _context.Update(coupon);
                 await _context.SaveChangesAsync();
@@ -87,6 +103,7 @@ public class CouponsController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
+        ViewBag.Products = await _context.Products.ToListAsync();
         return View(coupon);
     }
 
@@ -144,5 +161,11 @@ public class CouponsController : Controller
             }
             catch { }
         }
+
+        try
+        {
+            await _context.Database.ExecuteSqlRawAsync(@"ALTER TABLE ""Coupons"" ADD COLUMN ""ApplicableProductIds"" TEXT NULL;");
+        }
+        catch { }
     }
 }
