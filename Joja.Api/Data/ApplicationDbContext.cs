@@ -26,6 +26,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<AnalyticsLog> AnalyticsLogs { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
+    public DbSet<Coupon> Coupons { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

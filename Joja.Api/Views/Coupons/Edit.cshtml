@@ -1,0 +1,84 @@
+@model Joja.Api.Models.Coupon
+@{
+    ViewData["Title"] = "تعديل الكوبون - Joja";
+}
+
+<div class="container" style="margin-top: 50px; max-width: 800px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px;">
+        <h1 class="brand-font" style="margin: 0;">🎫 تعديل كوبون الخصم</h1>
+        <a asp-action="Index" class="btn btn-secondary shadow-sm" style="font-weight: bold; padding: 10px 25px;">
+            رجوع للقائمة
+        </a>
+    </div>
+
+    <div style="background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); padding: 35px; border: 1px solid #eee;">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-4">
+                <label asp-for="Code" class="form-label font-weight-bold" style="font-size: 1.05rem;">كود الكوبون (رمز الكوبون)</label>
+                <input asp-for="Code" class="form-control" placeholder="مثال: JOJA20، SAVE50" style="padding: 12px; border-radius: 6px; text-transform: uppercase;" required />
+                <span asp-validation-for="Code" class="text-danger"></span>
+                <small class="text-muted" style="margin-top: 5px; display: block;">الكود الذي سيكتبه العميل عند إتمام الطلب لتطبيق الخصم.</small>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label asp-for="DiscountType" class="form-label font-weight-bold">نوع الخصم</label>
+                    <select asp-for="DiscountType" class="form-select" style="padding: 12px; border-radius: 6px;" required>
+                        <option value="Percentage">نسبة مئوية (%)</option>
+                        <option value="Fixed">قيمة ثابتة (جنيه)</option>
+                    </select>
+                    <span asp-validation-for="DiscountType" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label asp-for="DiscountValue" class="form-label font-weight-bold">قيمة الخصم</label>
+                    <input asp-for="DiscountValue" type="number" step="0.01" class="form-control" placeholder="مثال: 15 للنسبة أو 50 للجنيه" style="padding: 12px; border-radius: 6px;" required min="0.01" />
+                    <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                </div>
+            </div>
+
+            <hr style="border-top: 1px solid #eee; margin: 30px 0;" />
+            <h4 class="brand-font mb-4" style="color: #666; font-size: 1.2rem;">🛡️ شروط التفعيل (اختياري)</h4>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label asp-for="MinOrderPrice" class="form-label font-weight-bold">الحد الأدنى لسعر الطلب (جنيه)</label>
+                    <input asp-for="MinOrderPrice" type="number" step="0.01" class="form-control" placeholder="اتركه فارغاً إن لم يكن هناك حد أدنى" style="padding: 12px; border-radius: 6px;" min="0" />
+                    <span asp-validation-for="MinOrderPrice" class="text-danger"></span>
+                    <small class="text-muted" style="margin-top: 5px; display: block;">الكوبون سيعمل فقط إذا كان مجموع المنتجات بالسلة أكبر من أو يساوي هذه القيمة.</small>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label asp-for="MinProductCount" class="form-label font-weight-bold">الحد الأدنى لعدد المنتجات</label>
+                    <input asp-for="MinProductCount" type="number" class="form-control" placeholder="اتركه فارغاً إن لم يكن هناك حد أدنى" style="padding: 12px; border-radius: 6px;" min="1" />
+                    <span asp-validation-for="MinProductCount" class="text-danger"></span>
+                    <small class="text-muted" style="margin-top: 5px; display: block;">الكوبون سيعمل فقط إذا كان عدد المنتجات في سلة المشتريات أكبر من أو يساوي هذا العدد.</small>
+                </div>
+            </div>
+
+            <div class="mb-4 form-check" style="padding-right: 1.5em; padding-left: 0;">
+                <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveCheck" style="float: right; margin-right: -1.5em; margin-left: 0; width: 1.2em; height: 1.2em; border-color: #B7477E;" />
+                <label class="form-check-label font-weight-bold" for="isActiveCheck" style="margin-right: 10px; font-size: 1.05rem;">
+                    تفعيل الكوبون الآن
+                </label>
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+
+            <div style="margin-top: 40px; display: flex; gap: 15px;">
+                <button type="submit" class="btn btn-lg shadow" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 12px 35px; flex: 1;">
+                    💾 حفظ التعديلات
+                </button>
+                <a asp-action="Index" class="btn btn-lg btn-outline-secondary" style="border-radius: 8px; font-weight: bold; padding: 12px 35px;">
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

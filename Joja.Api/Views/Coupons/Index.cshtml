@@ -1,0 +1,105 @@
+@model IEnumerable<Joja.Api.Models.Coupon>
+@{
+    ViewData["Title"] = "إدارة كوبونات الخصم - Joja";
+}
+
+<div class="container" style="margin-top: 50px; max-width: 1200px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px;">
+        <h1 class="brand-font" style="margin: 0;">🎫 إدارة كوبونات الخصم</h1>
+        <div style="display: flex; gap: 10px;">
+            <a asp-action="Create" class="btn btn-primary shadow-sm" style="background-color: #B7477E; border-color: #B7477E; font-weight: bold; padding: 10px 25px;">
+                + إضافة كوبون جديد
+            </a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary shadow-sm" style="font-weight: bold; padding: 10px 25px;">
+                الرجوع للوحة التحكم
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-right: 5px solid #4CAF50; border-radius: 8px;">
+            <strong>✓ نجاح:</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div style="background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); padding: 25px; border: 1px solid #eee;">
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; padding: 50px 0; color: #888;">
+                <i class="fas fa-ticket-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+                <h4>لا توجد كوبونات خصم حالياً</h4>
+                <p style="margin-bottom: 25px;">ابدأ بإضافة أول كوبون خصم لتفعيله للمشترين في المتجر.</p>
+                <a asp-action="Create" class="btn-joja-dark" style="background: #B7477E; padding: 12px 30px;">+ أضف أول كوبون</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle" style="width: 100%; border-collapse: collapse;">
+                    <thead class="table-dark" style="background-color: #121212; color: white;">
+                        <tr>
+                            <th style="padding: 15px;">كود الكوبون</th>
+                            <th style="padding: 15px;">نوع الخصم</th>
+                            <th style="padding: 15px;">قيمة الخصم</th>
+                            <th style="padding: 15px;">حد أدنى للسعر</th>
+                            <th style="padding: 15px;">حد أدنى للمنتجات</th>
+                            <th style="padding: 15px;">الحالة</th>
+                            <th style="padding: 15px; text-align: center;">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var coupon in Model)
+                        {
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 15px; font-weight: bold; color: #B7477E; font-size: 1.1rem;">@coupon.Code</td>
+                                <td style="padding: 15px;">
+                                    @if (coupon.DiscountType == "Percentage")
+                                    {
+                                        <span class="badge bg-info text-dark" style="font-size: 0.9rem; padding: 6px 12px;">نسبة مئوية %</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary" style="font-size: 0.9rem; padding: 6px 12px; color: white;">قيمة ثابتة (جنيه)</span>
+                                    }
+                                </td>
+                                <td style="padding: 15px; font-weight: bold;">
+                                    @coupon.DiscountValue.ToString("0.##") @(coupon.DiscountType == "Percentage" ? "%" : "ج.م")
+                                </td>
+                                <td style="padding: 15px;">
+                                    @(coupon.MinOrderPrice.HasValue ? coupon.MinOrderPrice.Value.ToString("0.00") + " ج.م" : "لا يوجد")
+                                </td>
+                                <td style="padding: 15px;">
+                                    @(coupon.MinProductCount.HasValue ? coupon.MinProductCount.Value + " منتجات" : "لا يوجد")
+                                </td>
+                                <td style="padding: 15px;">
+                                    @if (coupon.IsActive)
+                                    {
+                                        <span class="badge bg-success" style="font-size: 0.9rem; padding: 6px 12px;">مفعل ✅</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger" style="font-size: 0.9rem; padding: 6px 12px;">غير مفعل ❌</span>
+                                    }
+                                </td>
+                                <td style="padding: 15px; text-align: center;">
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <a asp-action="Edit" asp-route-id="@coupon.Id" class="btn btn-sm btn-outline-dark" style="font-weight: 600;">
+                                            ✏️ تعديل
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@coupon.Id" method="post" onsubmit="return confirm('هل أنت متأكد من رغبتك في حذف هذا الكوبون؟');" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" style="font-weight: 600;">
+                                                🗑️ حذف
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

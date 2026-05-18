@@ -11,6 +11,9 @@ public class Order
     public decimal TotalAmount { get; set; }
     public string Status { get; set; } = "Pending"; // Pending, Shipped, Delivered, Cancelled
     
+    public string? CouponCode { get; set; }
+    public decimal DiscountAmount { get; set; } = 0;
+    
     // تفاصيل المنتجات داخل الأوردر
     public List<OrderItem> OrderItems { get; set; } = new();
 }

@@ -78,7 +78,13 @@
                         <td style="padding: 12px;">#@order.Id</td>
                         <td style="padding: 12px;">@order.CustomerName <br><small>@order.Phone</small></td>
                         <td style="padding: 12px;">@order.OrderDate.ToShortDateString()</td>
-                        <td style="padding: 12px;">@order.TotalAmount.ToString("C")</td>
+                        <td style="padding: 12px;">
+                            @order.TotalAmount.ToString("C")
+                            @if (!string.IsNullOrEmpty(order.CouponCode))
+                            {
+                                <br/><small style="color: #2E7D32; font-weight: bold;">خصم: -@order.DiscountAmount.ToString("0.00") (@order.CouponCode)</small>
+                            }
+                        </td>
                         <td style="padding: 12px;">
                             <select class="form-select status-dropdown" 
                                     style="padding: 5px; border-radius: 4px;"

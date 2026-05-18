@@ -13,6 +13,7 @@
         <!-- Left Column: Form -->
         <div style="flex: 1; min-width: 300px;">
             <form asp-action="PlaceOrder" method="post" id="checkoutForm">
+                <input type="hidden" asp-for="CouponCode" id="hiddenCouponCode" />
                 <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
                     <h3 style="margin-bottom: 20px; color: #333;">@(isAr ? "بيانات التواصل" : "Contact Information")</h3>
                     
@@ -124,6 +125,12 @@
                     <span>@(isAr ? "المجموع الفرعي" : "Subtotal")</span>
                     <span>@(Model?.Cart?.Total.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
                 </div>
+                
+                <div id="discountRow" style="display: none; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #4CAF50; font-weight: bold;">
+                    <span>@(isAr ? "الخصم" : "Discount")</span>
+                    <span id="discountDisplay">-0.00 @(isAr ? "ج.م" : "EGP")</span>
+                </div>
+
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                     <span>@(isAr ? "الشحن" : "Shipping")</span>
                     <span id="shippingDisplay">@(Model?.ShippingCost.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
@@ -131,9 +138,23 @@
                 
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
                 
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px;">
                     <span>@(isAr ? "الإجمالي" : "Total")</span>
                     <span id="totalDisplay">@(Model?.TotalWithShipping.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
+                </div>
+
+                <!-- Premium Coupon Input Field -->
+                <div style="background: #fff; padding: 15px; border-radius: 6px; border: 1px dashed #B7477E; margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.85rem; color: #555;">
+                        @(isAr ? "هل لديك كوبون خصم؟" : "Have a discount coupon?")
+                    </label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="couponCodeInput" class="form-control" placeholder="@(isAr ? "رمز الكوبون" : "Coupon code")" style="padding: 8px 12px; font-size: 0.9rem; text-transform: uppercase; border: 1px solid #ddd; border-radius: 4px;" />
+                        <button type="button" onclick="applyCouponCode()" style="background-color: #B7477E; color: white; font-weight: bold; border: none; padding: 8px 15px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#9E3668'" onmouseout="this.style.background='#B7477E'">
+                            @(isAr ? "تطبيق" : "Apply")
+                        </button>
+                    </div>
+                    <div id="couponStatusMessage" style="margin-top: 8px; font-size: 0.85rem; font-weight: bold; display: none;"></div>
                 </div>
             </div>
         </div>
@@ -141,6 +162,75 @@
 </div>
 
 <script>
+    var discountAmount = 0.00;
+
+    function applyCouponCode() {
+        var code = document.getElementById('couponCodeInput').value.trim();
+        var statusMsg = document.getElementById('couponStatusMessage');
+        
+        if (!code) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.color = '#d9534f';
+            statusMsg.innerText = "@(isAr ? "يرجى كتابة رمز الكوبون أولاً!" : "Please enter a coupon code first!")";
+            return;
+        }
+
+        statusMsg.style.display = 'block';
+        statusMsg.style.color = '#666';
+        statusMsg.innerText = "@(isAr ? "جاري التحقق..." : "Validating...")";
+
+        // Perform AJAX verification
+        fetch('/Checkout/ApplyCoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'code=' + encodeURIComponent(code)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                discountAmount = parseFloat(data.discountAmount);
+                document.getElementById('hiddenCouponCode').value = data.code;
+                
+                statusMsg.style.color = '#4CAF50';
+                statusMsg.innerText = data.message;
+                
+                var currency = "@(isAr ? "ج.م" : "EGP")";
+                document.getElementById('discountDisplay').innerText = "-" + discountAmount.toFixed(2) + " " + currency;
+                document.getElementById('discountRow').style.display = 'flex';
+                
+                recalculateGrandTotal();
+            } else {
+                discountAmount = 0.00;
+                document.getElementById('hiddenCouponCode').value = '';
+                document.getElementById('discountRow').style.display = 'none';
+                
+                statusMsg.style.color = '#d9534f';
+                statusMsg.innerText = data.message;
+                
+                recalculateGrandTotal();
+            }
+        })
+        .catch(err => {
+            statusMsg.style.color = '#d9534f';
+            statusMsg.innerText = "@(isAr ? "حدث خطأ أثناء تطبيق الكوبون!" : "Error applying coupon!")";
+        });
+    }
+
+    function recalculateGrandTotal() {
+        var select = document.getElementById('citySelect');
+        var selectedOption = select.options[select.selectedIndex];
+        var shippingPrice = parseFloat(selectedOption.getAttribute('data-price') || "0");
+        var subtotal = parseFloat("@(Model?.Cart?.Total ?? 0)");
+        
+        var finalTotal = subtotal + shippingPrice - discountAmount;
+        if (finalTotal < 0) finalTotal = 0;
+        
+        var currency = "@(isAr ? "ج.م" : "EGP")";
+        document.getElementById('totalDisplay').innerText = finalTotal.toFixed(2) + " " + currency;
+    }
+
     function togglePaymentInfo() {
         var method = document.querySelector('input[name="PaymentMethod"]:checked').value;
         var instructions = document.getElementById('paymentInstructions');
@@ -156,11 +246,10 @@
         var select = document.getElementById('citySelect');
         var selectedOption = select.options[select.selectedIndex];
         var shippingPrice = parseFloat(selectedOption.getAttribute('data-price') || "0");
-        var subtotal = parseFloat("@(Model?.Cart?.Total ?? 0)");
         
         var currency = "@(isAr ? "ج.م" : "EGP")";
-        
         document.getElementById('shippingDisplay').innerText = shippingPrice.toFixed(2) + " " + currency;
-        document.getElementById('totalDisplay').innerText = (subtotal + shippingPrice).toFixed(2) + " " + currency;
+        
+        recalculateGrandTotal();
     }
 </script>

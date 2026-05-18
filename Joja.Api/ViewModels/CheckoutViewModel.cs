@@ -58,6 +58,7 @@ public class CheckoutViewModel
     // Order Details
     public string PaymentMethod { get; set; } = "CashOnDelivery"; // CashOnDelivery, InstaPay, Wallet
     public string? Notes { get; set; }
+    public string? CouponCode { get; set; }
     
     // Read-only for display
     public CartService? Cart { get; set; }

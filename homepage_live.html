@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - JOJA</title>
+    
+    <!-- Performance & SEO -->
+    <meta name="description" content="JOJA - Natural skincare products for your beauty" />
+    <meta name="theme-color" content="#F3E9E2" />
+    
+    
+    <link rel="stylesheet" href="/css/site.css?v=bp_kNT2h3K0shgvcgO3w1H9TqwBI-WBGm3ezWtGwO3o" />
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <!-- Add FontAwesome for icons (non-blocking) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+</head>
+<body>
+    <header>
+        <!-- Top Bar (Old) -->
+             <div class="top-bar" style="background-color: #B7477E; color: #ffffff; text-align: center; padding: 8px 0; font-size: 0.9rem; font-weight: 500;">
+                 <div class="container">
+                     Free shipping for orders more than 800 EGP
+                 </div>
+             </div>
+        
+        <!-- Dynamic Header Announcement -->
+        <nav class="navbar">
+            <div class="container nav-container">
+                <!-- Logo Left -->
+                <a class="navbar-brand" href="/">
+                    <img src="/images/logo.webp" alt="JOJA" class="logo-img" />
+                </a>
+
+                <!-- Nav Center -->
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#shop-section">Shop</a></li>
+                    <li><a href="/?categoryId=2">Hair Care</a></li>
+                    <li><a href="/?categoryId=1">Skin Care</a></li>
+                    <li><a href="/?categoryId=3">Natural Oils</a></li>
+                    <li><a href="#about-us">About Us</a></li>
+                </ul>
+
+                <!-- Icons Right -->
+                <div class="nav-icons d-flex align-items-center">
+                    <!-- Language Switcher - Moved to front -->
+                    <div class="language-switcher me-2 d-flex align-items-center">
+                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=%2F" class="btn rounded-pill px-2 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.8rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                                <i class="fas fa-globe"></i> AR
+                            </a>
+                    </div>
+                    
+                    <!-- Search Toggle (Desktop Only) -->
+                    <div class="d-none d-md-flex align-items-center me-3 position-relative">
+                        <button id="searchToggleBtn" style="background: none; border: none; color: #B7477E; cursor: pointer;">
+                            <i class="fas fa-search" style="font-size: 1.2rem;"></i>
+                        </button>
+                        <form id="searchForm" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;" action="/Home/Search">
+                            <div class="d-flex align-items-center position-relative">
+                                <input type="text" name="searchQuery" id="searchInput" placeholder="Search products..." class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
+                                <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <a class="nav-link position-relative d-inline-block" href="/Cart">
+                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            0
+                        </span>
+                    </a>
+
+                    <!-- Mobile Menu Toggle - Moved inside icons for far-right positioning -->
+                    <button class="mobile-menu-toggle ms-2" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <!-- Mobile Menu Backdrop -->
+                    <div id="mobileBackdrop" class="mobile-menu-backdrop" onclick="toggleMobileMenu()"></div>
+                    
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+            document.getElementById('mobileBackdrop').classList.toggle('active');
+            document.body.style.overflow = document.getElementById('navLinks').classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('navLinks');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (nav && toggle && nav.classList.contains('active') && !nav.contains(event.target) && !toggle.contains(event.target)) {
+                toggleMobileMenu();
+            }
+        });
+
+        // Close mobile menu when a link inside is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (document.getElementById('navLinks').classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+
+        // Search Toggle Logic
+        const searchToggleBtn = document.getElementById('searchToggleBtn');
+        const searchForm = document.getElementById('searchForm');
+        if (searchToggleBtn && searchForm) {
+            searchToggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (searchForm.style.display === 'none') {
+                    searchForm.style.display = 'block';
+                    document.getElementById('searchInput').focus();
+                } else {
+                    searchForm.style.display = 'none';
+                }
+            });
+            document.addEventListener('click', function(e) {
+                if (searchForm.style.display === 'block' && !searchForm.contains(e.target) && !searchToggleBtn.contains(e.target)) {
+                    searchForm.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <main role="main">
+        
+
+<!-- Hero Section -->
+<!-- Hero Section -->
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <section class="hero-section" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://res.cloudinary.com/dgnvkond5/image/upload/v1775063368/qg213eup42jcscyc7i67.webp');">
+                        <div class="container hero-content">
+                            <h1>Joja natural products</h1>
+                            <p> </p>
+                            <a href="#" class="btn-primary">Shop Now</a>
+                        </div>
+                    </section>
+                </div>
+        </div>
+    </div>
+
+<!-- Video Reels Section -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <section class="joja-reels-section">
+        <div class="container">
+            <h2 class="section-title brand-font" style="text-align:center; margin-bottom:30px; font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: 2px;">🎬 JOJA REELS</h2>
+        </div>
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
+            .joja-reels-ticker-container {
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                padding: 20px 0;
+                position: relative;
+                background-color: transparent;
+                direction: ltr !important;
+            }
+            .joja-reels-ticker-track {
+                display: inline-block;
+                white-space: nowrap;
+                font-size: 0; /* Remove whitespace gap between inline-block elements to sync speed perfectly */
+                animation: scrollVideos 25s linear infinite;
+            }
+            .joja-reels-ticker-track:hover, .joja-reels-ticker-track.paused {
+                animation-play-state: paused;
+            }
+            .joja-reel-card-ticker {
+                display: inline-block;
+                width: 250px;
+                height: 400px;
+                margin-right: 15px;
+                border-radius: 12px;
+                overflow: hidden;
+                position: relative;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                vertical-align: top;
+                font-size: 1rem; /* Restore font size */
+                font-family: 'Tajawal', sans-serif; /* Force same font to match Arabic exactly */
+            }
+            @media (max-width: 768px) {
+                .joja-reel-card-ticker {
+                    width: 180px;
+                    height: 320px;
+                    margin-right: 10px;
+                }
+            }
+            .joja-reel-card-ticker video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            @keyframes scrollVideos {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
+        </style>
+        <div class="joja-reels-ticker-container">
+            <div class="joja-reels-ticker-track">
+                <!-- We duplicate the list 4 times so it fills large screens perfectly -->
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098205/joja/video_banners/t7tmok0n08pfvk2exfdy.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099752/joja/video_banners/yyvdy4trailt0ta2e3gi.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Serum</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099895/joja/video_banners/g8yqjaeewkxzqbqmg8fz.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Aloe Vera Gel</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778100216/joja/video_banners/liincfqbm6g5pjcgjprw.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Normal to dry skin cleanser</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098236/joja/video_banners/y21cafmtcvagvof8xpuv.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Velvet Touch Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099468/joja/video_banners/yq6j9altmwclcyzwcitf.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Lipcare bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098205/joja/video_banners/t7tmok0n08pfvk2exfdy.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099752/joja/video_banners/yyvdy4trailt0ta2e3gi.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Serum</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099895/joja/video_banners/g8yqjaeewkxzqbqmg8fz.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Aloe Vera Gel</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778100216/joja/video_banners/liincfqbm6g5pjcgjprw.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Normal to dry skin cleanser</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098236/joja/video_banners/y21cafmtcvagvof8xpuv.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Velvet Touch Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099468/joja/video_banners/yq6j9altmwclcyzwcitf.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Lipcare bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098205/joja/video_banners/t7tmok0n08pfvk2exfdy.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099752/joja/video_banners/yyvdy4trailt0ta2e3gi.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Serum</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099895/joja/video_banners/g8yqjaeewkxzqbqmg8fz.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Aloe Vera Gel</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778100216/joja/video_banners/liincfqbm6g5pjcgjprw.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Normal to dry skin cleanser</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098236/joja/video_banners/y21cafmtcvagvof8xpuv.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Velvet Touch Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099468/joja/video_banners/yq6j9altmwclcyzwcitf.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Lipcare bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098205/joja/video_banners/t7tmok0n08pfvk2exfdy.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099752/joja/video_banners/yyvdy4trailt0ta2e3gi.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Glow Serum</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099895/joja/video_banners/g8yqjaeewkxzqbqmg8fz.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Aloe Vera Gel</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778100216/joja/video_banners/liincfqbm6g5pjcgjprw.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Normal to dry skin cleanser</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778098236/joja/video_banners/y21cafmtcvagvof8xpuv.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Velvet Touch Bundle</div>
+                        </div>
+                        <div class="joja-reel-card-ticker">
+                            <video class="joja-reel-video" 
+                                   autoplay loop muted playsinline 
+                                   preload="auto">
+                                <source src="https://res.cloudinary.com/dgnvkond5/video/upload/v1778099468/joja/video_banners/yq6j9altmwclcyzwcitf.mp4">
+                            </video>
+                                <div class="joja-reel-caption">Lipcare bundle</div>
+                        </div>
+            </div>
+        </div>
+    </section>
+
+<style>
+    .joja-strict-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* إجبار 4 منتجات في الديسك توب */
+        gap: 20px;
+        justify-items: center;
+    }
+    @media (max-width: 991px) {
+        .joja-strict-grid { grid-template-columns: repeat(3, 1fr); justify-items: center; } /* 3 في التابلت */
+    }
+    @media (max-width: 768px) {
+        .joja-strict-grid { grid-template-columns: repeat(2, 1fr); justify-items: center; } /* 2 في الموبايل */
+    }
+</style>
+
+<div id="shop-section" class="container mt-5 mb-5 product-section-clean">
+    <h2 class="text-center mb-4" style="color: #333; font-weight: 800; font-size: 2.2rem;">Our Products</h2>
+    
+    <!-- Filter Buttons -->
+    <div class="filter-buttons filter-list my-4 d-flex justify-content-center flex-wrap gap-2">
+        <button class="btn-filter active" onclick="filter(null)">All</button>
+            <button class="btn-filter" onclick="filter(4)">Bundles</button>
+            <button class="btn-filter" onclick="filter(5)">Lip care</button>
+            <button class="btn-filter" onclick="filter(1)">Body care</button>
+            <button class="btn-filter" onclick="filter(2)">Facial care</button>
+            <button class="btn-filter" onclick="filter(3)">Hair care</button>
+    </div>
+
+    <div class="desktop-4-grid" id="product-container">
+        
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/5">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775065242/nweby8lzssybgdqhqad9.webp" class="product-img" alt="Hair Wax">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/5">
+                        <h5 class="product-title">Hair Wax</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">330 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/9">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775330077/uahyw7xhcxvayguyl4qa.webp" class="product-img" alt="Aloe Vera Gel ">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/9">
+                        <h5 class="product-title">Aloe Vera Gel </h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">240 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/20">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1777142897/tio9pc39djxh8r1tbbus.webp" class="product-img" alt="Body Scrub ">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/20">
+                        <h5 class="product-title">Body Scrub </h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">285 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/16">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775336060/zrvlj8miwviaohm0rv8z.webp" class="product-img" alt="Lip mask">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/16">
+                        <h5 class="product-title">Lip mask</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">135 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/18">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775339301/ivpgxmvgtwkgpyfuj9gx.webp" class="product-img" alt="Body Splash ">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/18">
+                        <h5 class="product-title">Body Splash </h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">290 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/17">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775338495/xqt9raodsnawso6xvcv8.webp" class="product-img" alt="Lip Scrub">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/17">
+                        <h5 class="product-title">Lip Scrub</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">120 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/6">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775065608/w70zmczdmsfze7pataf0.webp" class="product-img" alt="Mini Hair Wax">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/6">
+                        <h5 class="product-title">Mini Hair Wax</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">200 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/22">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775341733/n4f7repcf6tg0j6ynag2.webp" class="product-img" alt="Body Butter ">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/22">
+                        <h5 class="product-title">Body Butter </h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">265 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/7">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775065831/zzagialblktqads2ux0x.webp" class="product-img" alt="Body Lotion">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/7">
+                        <h5 class="product-title">Body Lotion</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">160 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/1">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775065061/tkxeywfa8lzac1osq6cu.webp" class="product-img" alt="Body Yogurt">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/1">
+                        <h5 class="product-title">Body Yogurt</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">260 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/11">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775331332/qeshgafcjmlesr4galdv.webp" class="product-img" alt="Faisal Cleanser For Oily to Combination Skin">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/11">
+                        <h5 class="product-title">Faisal Cleanser For Oily to Combination Skin</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">280 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/15">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775334371/ql6z9nmmlfpwy5a6jcsn.webp" class="product-img" alt="Lip balm">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/15">
+                        <h5 class="product-title">Lip balm</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">100 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/13">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1775332384/iun8hkhenp4actbavbx7.webp" class="product-img" alt="Faisal Cleanser For Normal to Dry Skin">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/13">
+                        <h5 class="product-title">Faisal Cleanser For Normal to Dry Skin</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">280 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/24">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1777139095/p9lofmsewzavvmxfngod.webp" class="product-img" alt="Glow Serum">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/24">
+                        <h5 class="product-title">Glow Serum</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                        <span class="new-price">290 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="product-card">
+                
+                <div class="image-box">
+                    <a href="/Home/Details/25">
+                        <img src="https://res.cloudinary.com/dgnvkond5/image/upload/v1777216549/ukogkwb0ckps1i3kkogw.jpg" class="product-img" alt="Glow Bundle">
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <a href="/Home/Details/25">
+                        <h5 class="product-title">Glow Bundle</h5>
+                    </a>
+                    
+                    <div class="product-price">
+                            <span class="old-price">800 EGP</span>
+                        <span class="new-price">650 EGP</span>
+                    </div>
+                </div>
+                
+            </div>
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    </main>
+
+    <footer>
+        <style>
+            footer, footer h3, footer p, footer .copyright { color: #ffffff !important; }
+            footer a { color: #ffffff !important; transition: 0.3s; }
+            footer a:hover { opacity: 0.8; }
+        </style>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>About JOJA</h3>
+                    <p>Natural skincare products formulated with care &amp; science</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Shop</a></li>
+                        <li><a href="#">Best Sellers</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/joja.organic.skincare" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/joja.natural_skincare/" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <a style="font-size: 0.8rem; opacity: 0.7;" href="/Admin">Admin Access</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-contact-info" style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem;">
+                <a href="https://wa.me/201055737759" target="_blank" style="text-decoration: none;">
+                    <i class="fab fa-whatsapp"></i> 201055737759
+                </a>
+                <span style="margin: 0 10px; opacity: 0.8;">،</span>
+                <a href="mailto:joja.organic@gmail.com" style="text-decoration: none;">
+                    <i class="fas fa-envelope"></i> joja.organic@gmail.com
+                </a>
+            </div>
+            <div class="copyright" style="margin-top: 15px;">
+                &copy; 2026 JOJA Skincare. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Newsletter Modal -->
+    <div id="newsletterModal" class="joja-modal">
+        <div class="modal-content">
+            <span class="close-modal" style="position:absolute; right:20px; top:10px; cursor:pointer; font-size:24px;">&times;</span>
+            <h2 class="brand-font">Join the Club</h2>
+            <p>Subscribe to get exclusive skincare tips and offers.</p>
+            <input type="email" id="subscriberEmail" placeholder="Enter your email" />
+            <button onclick="submitSubscription()" class="btn-joja-dark">Subscribe</button>
+        </div>
+    </div>
+
+    <a href="https://wa.me/201055737759" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js?v=TjrFY_XHFL5RSJszAzteuk7K4KG46kETYm-TV1Zdb78"></script>
+    <script>
+        // Modal Logic
+        document.addEventListener("DOMContentLoaded", function() {
+            // Show modal after 5 seconds if not seen before (and not subscribed)
+            if (!localStorage.getItem('joja_popup_seen') && !localStorage.getItem('joja_subscribed')) {
+                setTimeout(function() {
+                    document.getElementById('newsletterModal').style.display = 'flex';
+                }, 5000);
+            }
+
+            document.querySelector('.close-modal').onclick = function() {
+                document.getElementById('newsletterModal').style.display = 'none';
+                // Mark as seen so it doesn't show again
+                localStorage.setItem('joja_popup_seen', 'true');
+            }
+        });
+
+        function submitSubscription() {
+            var email = document.getElementById('subscriberEmail').value;
+            if(email) {
+                fetch('/Home/SubscribeNewsletter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'email=' + encodeURIComponent(email)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        alert(data.message);
+                        document.getElementById('newsletterModal').style.display = 'none';
+                        localStorage.setItem('joja_subscribed', 'true');
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        // Analytics Logic
+        document.addEventListener("DOMContentLoaded", function() {
+            // Track Visit (Once per session)
+            if (!sessionStorage.getItem('joja_visit_logged')) {
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        logEvent('Visit', null, data.country_name, data.city);
+                        sessionStorage.setItem('joja_visit_logged', 'true');
+                    })
+                    .catch(() => {
+                        logEvent('Visit', null, 'Unknown', 'Unknown');
+                        sessionStorage.setItem('joja_visit_logged', 'true');
+                    });
+            }
+        });
+
+        function logEvent(eventType, product = null, country = null, city = null) {
+            fetch('/api/Analytics/LogEvent', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    eventType: eventType,
+                    page: window.location.pathname,
+                    product: product,
+                    country: country || 'Unknown',
+                    city: city || 'Unknown',
+                    device: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
+                })
+            }).catch(e => console.error("Analytics Error:", e));
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function addToCartAjax(productId, qtyOverride, variantId) {
+            let qty = qtyOverride || 1;
+            let qtyInput = document.getElementById('qtyInput');
+            if(!qtyOverride && qtyInput) { qty = qtyInput.value; }
+            
+            let bodyData = 'productId=' + productId + '&quantity=' + qty;
+            if (variantId) {
+                bodyData += '&variantId=' + variantId;
+            }
+
+            fetch('/Cart/AddToCartAjax', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: bodyData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    let badge = document.getElementById('cart-badge');
+                    if(badge) badge.innerText = data.cartCount;
+                    
+                    Swal.fire({
+                        toast: true, position: 'bottom-end', showConfirmButton: false,
+                        timer: 3000, timerProgressBar: true, icon: 'success',
+                        title: 'Product added to cart successfully 🛒'
+                    });
+                }
+            });
+        }
+    </script>
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function openVideo(videoUrl, productName) {
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('modalVideo');
+        const name = document.getElementById('videoProductName');
+
+        video.src = videoUrl;
+        name.innerText = productName;
+        
+        $(modal).fadeIn(300);
+        video.play();
+    }
+
+    function closeVideo() {
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('modalVideo');
+        
+        $(modal).fadeOut(300, function() {
+            video.pause();
+            video.src = "";
+        });
+    }
+
+    function filter(catId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('searchQuery');
+        
+        $.get("/Home/FilterProducts", { categoryId: catId, searchQuery: searchQuery }, function(data) {
+            $("#product-container").html(data);
+        });
+        // Toggle active class
+        $(".btn-filter").removeClass("active");
+        event.target.classList.add("active");
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Ticker Videos Hover/Touch to Unmute
+        const tickerVideos = document.querySelectorAll('.joja-reel-video');
+        const tickerTrack = document.querySelector('.joja-reels-ticker-track');
+        
+        tickerVideos.forEach(video => {
+            // Desktop hover
+            video.addEventListener('mouseenter', function() {
+                this.muted = false;
+            });
+            
+            video.addEventListener('mouseleave', function() {
+                this.muted = true;
+            });
+            
+            // Mobile touch
+            video.addEventListener('touchstart', function(e) {
+                e.stopPropagation(); // Stop from bubbling to document
+                if (this.muted) {
+                    // Mute all other videos first
+                    tickerVideos.forEach(v => v.muted = true);
+                    this.muted = false;
+                    tickerTrack.classList.add('paused');
+                } else {
+                    this.muted = true;
+                    tickerTrack.classList.remove('paused');
+                }
+            }, { passive: false });
+        });
+
+        // Global touch to resume scrolling when tapping anywhere else
+        document.addEventListener('touchstart', function() {
+            tickerVideos.forEach(v => v.muted = true);
+            if (tickerTrack) {
+                tickerTrack.classList.remove('paused');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
