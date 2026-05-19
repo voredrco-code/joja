@@ -111,24 +111,25 @@ public class CheckoutController : Controller
             return Json(new { success = false, message = "الكوبون غير صحيح أو منتهي الصلاحية!" });
         }
 
-        var subtotal = _cartService.Total;
         var itemCount = _cartService.Items.Sum(i => i.Quantity);
+        var allCartUnits = _cartService.Items.SelectMany(i => Enumerable.Repeat(i, i.Quantity)).ToList();
+        var secondCartUnit = allCartUnits.Skip(1).FirstOrDefault();
 
-        var targetSubtotal = subtotal;
+        if (secondCartUnit == null)
+        {
+            return Json(new { success = false, message = "هذا العرض يتطلب إضافة منتجين على الأقل في السلة لتطبيقه كـ Upsell!" });
+        }
+
+        var targetSubtotal = secondCartUnit.UnitPrice;
         var targetItemCount = itemCount;
 
         if (!string.IsNullOrEmpty(coupon.ApplicableProductIds))
         {
             var applicableIds = coupon.ApplicableProductIds.Split(',').Select(id => id.Trim()).ToList();
-            var applicableItems = _cartService.Items.Where(i => applicableIds.Contains(i.ProductId.ToString())).ToList();
-            
-            if (!applicableItems.Any())
+            if (!applicableIds.Contains(secondCartUnit.ProductId.ToString()))
             {
-                return Json(new { success = false, message = "هذا الكوبون لا يشمل المنتجات الموجودة في سلتك!" });
+                return Json(new { success = false, message = "المنتج الثاني في السلة لا يشمله هذا العرض!" });
             }
-            
-            targetSubtotal = applicableItems.Sum(i => i.UnitPrice * i.Quantity);
-            targetItemCount = applicableItems.Sum(i => i.Quantity);
         }
 
         if (coupon.MinOrderPrice.HasValue && targetSubtotal < coupon.MinOrderPrice.Value)
@@ -187,17 +188,20 @@ public class CheckoutController : Controller
 
                 if (coupon != null)
                 {
-                    var subtotal = _cartService.Total;
                     var itemCount = _cartService.Items.Sum(i => i.Quantity);
-                    var targetSubtotal = subtotal;
+                    var allCartUnits = _cartService.Items.SelectMany(i => Enumerable.Repeat(i, i.Quantity)).ToList();
+                    var secondCartUnit = allCartUnits.Skip(1).FirstOrDefault();
+
+                    var targetSubtotal = secondCartUnit != null ? secondCartUnit.UnitPrice : 0;
                     var targetItemCount = itemCount;
 
-                    if (!string.IsNullOrEmpty(coupon.ApplicableProductIds))
+                    if (!string.IsNullOrEmpty(coupon.ApplicableProductIds) && secondCartUnit != null)
                     {
                         var applicableIds = coupon.ApplicableProductIds.Split(',').Select(id => id.Trim()).ToList();
-                        var applicableItems = _cartService.Items.Where(i => applicableIds.Contains(i.ProductId.ToString())).ToList();
-                        targetSubtotal = applicableItems.Sum(i => i.UnitPrice * i.Quantity);
-                        targetItemCount = applicableItems.Sum(i => i.Quantity);
+                        if (!applicableIds.Contains(secondCartUnit.ProductId.ToString()))
+                        {
+                            targetSubtotal = 0; // Not applicable
+                        }
                     }
 
                     bool criteriaMet = true;
