@@ -42,7 +42,7 @@ else
         <div class="container hero-content">
             <h1>@(ViewBag.HeroTitle ?? "Natural Beauty for You")</h1>
             <p>@(ViewBag.HeroSubtitle ?? "Discover our natural collection")</p>
-            <a href="#" class="btn-primary">@(ViewBag.ShopNow ?? "Shop Now")</a>
+            <a href="/#shop-section" class="btn-primary">@(ViewBag.ShopNow ?? "Shop Now")</a>
         </div>
     </section>
 }
@@ -168,7 +168,7 @@ else
                 
                 <div class="image-box">
                     <a href="/Home/Details/@item.Id">
-                        <img src="@item.MainImageUrl" class="product-img" alt="@item.Name">
+                        <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
                     </a>
                 </div>
 

@@ -1,0 +1,89 @@
+@model Joja.Api.Models.Order
+@{
+    ViewData["Title"] = "Track Your Order";
+}
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-box-open mb-3" style="font-size: 3rem; color: #B7477E;"></i>
+                    <h2 class="fw-bold" style="color: #B7477E;">Track Your Order</h2>
+                    <p class="text-muted">Enter your Order ID and Phone Number below to check the status.</p>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger rounded-3">
+                        <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.Error
+                    </div>
+                }
+
+                @if (Model == null)
+                {
+                    <form asp-action="TrackOrder" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Order ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-hashtag text-muted"></i></span>
+                                <input type="number" name="orderId" class="form-control bg-light border-start-0" required placeholder="e.g. 1042" />
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-phone text-muted"></i></span>
+                                <input type="text" name="phone" class="form-control bg-light border-start-0" required placeholder="01xxxxxxxxx" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn w-100 rounded-pill text-white py-2" style="background-color: #B7477E; font-weight: 500;">
+                            Track Order <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="order-status-details">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">Order #@Model.Id</h5>
+                                <small class="text-muted">Placed on @Model.OrderDate.ToString("dd MMM yyyy, HH:mm")</small>
+                            </div>
+                            <span class="badge rounded-pill bg-light text-dark border px-3 py-2" style="font-size: 0.9rem;">
+                                @if (Model.Status == "Pending")
+                                {
+                                    <i class="fas fa-clock text-warning me-1"></i>
+                                }
+                                else if (Model.Status == "Shipped" || Model.Status == "Delivered")
+                                {
+                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                }
+                                @Model.Status
+                            </span>
+                        </div>
+
+                        <div class="bg-light p-3 rounded-3 mb-4">
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <small class="text-muted d-block">Customer</small>
+                                    <strong>@Model.CustomerName</strong>
+                                </div>
+                                <div class="col-6 mb-2 text-end">
+                                    <small class="text-muted d-block">Total Amount</small>
+                                    <strong class="text-success">@Model.TotalAmount LE</strong>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <small class="text-muted d-block">Shipping Address</small>
+                                    <span>@Model.Address</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="/Home/TrackOrder" class="btn btn-outline-secondary w-100 rounded-pill">Track Another Order</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

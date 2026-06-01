@@ -5,6 +5,7 @@ using Joja.Api.Data;
 using Joja.Api.ViewModels;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Joja.Api.Controllers;
 
@@ -15,14 +16,16 @@ public class HomeController : Controller
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IConfiguration _configuration;
     private readonly Services.ILocalizationService _localizationService;
+    private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, Services.ILocalizationService localizationService)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, Services.ILocalizationService localizationService, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
     {
         _logger = logger;
         _context = context;
         _webHostEnvironment = webHostEnvironment;
         _configuration = configuration;
         _localizationService = localizationService;
+        _cache = cache;
     }
 
     // Checkout Action (WhatsApp + Email)
@@ -130,8 +133,12 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         var language = Request.Cookies["UserLanguage"] ?? "en";
         ViewBag.CurrentLanguage = language;
         
-        // Get categories (always all for filter bar)
-        var categories = await _context.Categories.AsNoTracking().ToListAsync();
+        // Get categories from cache or DB
+        var categories = await _cache.GetOrCreateAsync("CategoriesCache", async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await _context.Categories.AsNoTracking().ToListAsync();
+        });
+        
         _localizationService.GetLocalizedCategories(categories, language);
 
         // Get products (filtered if categoryId is present)
@@ -144,13 +151,16 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         var products = await query.ToListAsync();
         _localizationService.GetLocalizedProducts(products, language);
         
-        // Get banners and video banners
-        var banners = await _context.Banners.AsNoTracking().OrderBy(b => b.DisplayOrder).ToListAsync();
-        var videoBanners = await _context.VideoBanners
-            .AsNoTracking()
-            .Where(v => v.IsActive)
-            .OrderBy(v => v.DisplayOrder)
-            .ToListAsync();
+        // Get banners and video banners from cache or DB
+        var banners = await _cache.GetOrCreateAsync("BannersCache", async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await _context.Banners.AsNoTracking().OrderBy(b => b.DisplayOrder).ToListAsync();
+        });
+
+        var videoBanners = await _cache.GetOrCreateAsync("VideoBannersCache", async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await _context.VideoBanners.AsNoTracking().Where(v => v.IsActive).OrderBy(v => v.DisplayOrder).ToListAsync();
+        });
         
         var viewModel = new ViewModels.HomeViewModel
         {
@@ -227,6 +237,27 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return View(products);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> SearchAjax(string? query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return Json(new List<object>());
+
+        var products = await _context.Products.AsNoTracking()
+            .Where(p => (p.Name != null && p.Name.Contains(query)) || 
+                        (p.NameEn != null && p.NameEn.Contains(query)))
+            .Take(5)
+            .Select(p => new {
+                id = p.Id,
+                name = Request.Cookies["UserLanguage"] == "ar" ? p.Name : (p.NameEn ?? p.Name),
+                price = p.Price,
+                imageUrl = p.MainImageUrl
+            })
+            .ToListAsync();
+
+        return Json(products);
+    }
+
     public async Task<IActionResult> Details(int id)
     {
         var product = await _context.Products
@@ -238,6 +269,25 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             .FirstOrDefaultAsync(m => m.Id == id);
             
         if (product == null) return NotFound();
+
+        // SEO Open Graph Tags
+        var language = Request.Cookies["UserLanguage"] ?? "en";
+        var prodName = language == "ar" ? product.Name : (product.NameEn ?? product.Name);
+        var prodDesc = language == "ar" ? product.Description : (product.DescriptionEn ?? product.Description);
+        
+        ViewBag.OgTitle = prodName;
+        ViewBag.OgDescription = prodDesc?.Length > 150 ? prodDesc.Substring(0, 150) + "..." : prodDesc;
+        ViewBag.OgImage = $"{Request.Scheme}://{Request.Host}{product.MainImageUrl}";
+
+        // Related Products
+        var relatedProducts = await _context.Products
+            .AsNoTracking()
+            .Where(p => p.CategoryId == product.CategoryId && p.Id != product.Id)
+            .Take(4)
+            .ToListAsync();
+            
+        _localizationService.GetLocalizedProducts(relatedProducts, language);
+        ViewBag.RelatedProducts = relatedProducts;
 
         return View(product);
     }
@@ -318,6 +368,35 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             .ToListAsync();
 
         return View(orders);
+    }
+
+    // New: Track Order
+    [HttpGet]
+    public IActionResult TrackOrder()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> TrackOrder(int orderId, string phone)
+    {
+        if (orderId <= 0 || string.IsNullOrEmpty(phone))
+        {
+            ViewBag.Error = "Please enter both Order ID and Phone Number.";
+            return View();
+        }
+
+        var order = await _context.Orders
+            .Include(o => o.OrderItems)
+            .FirstOrDefaultAsync(o => o.Id == orderId && o.Phone == phone);
+
+        if (order == null)
+        {
+            ViewBag.Error = "Order not found. Please verify your details.";
+            return View();
+        }
+
+        return View(order);
     }
 
     // Admin: Manage Orders

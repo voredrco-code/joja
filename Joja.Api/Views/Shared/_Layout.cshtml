@@ -12,6 +12,10 @@
     var appSettings = await _context.AppSettings.FirstOrDefaultAsync();
     var fbLink = appSettings?.FacebookLink ?? "#";
     var instaLink = appSettings?.InstagramLink ?? "#";
+    
+    // Fetch Categories for Nav
+    var navCategories = await _context.Categories.AsNoTracking().ToListAsync();
+    _localizationService.GetLocalizedCategories(navCategories, currentLang);
 }
 <!DOCTYPE html>
 <html lang="@currentLang" dir="@direction">
@@ -19,6 +23,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - JOJA</title>
+
+    <!-- Open Graph SEO Meta Tags -->
+    @if (ViewBag.OgTitle != null)
+    {
+        <meta property="og:title" content="@ViewBag.OgTitle" />
+        <meta property="og:description" content="@ViewBag.OgDescription" />
+        <meta property="og:image" content="@ViewBag.OgImage" />
+        <meta property="og:type" content="product" />
+        <meta name="twitter:card" content="summary_large_image">
+    }
+    else
+    {
+        <meta property="og:title" content="JOJA - Your Beauty Store" />
+        <meta property="og:description" content="Discover the best skincare and haircare products at JOJA." />
+        <meta property="og:type" content="website" />
+    }
     
     <!-- Performance & SEO -->
     <meta name="description" content="JOJA - Natural skincare products for your beauty" />
@@ -54,7 +74,9 @@
     @if (currentLang == "ar") {
         <link rel="stylesheet" href="~/css/rtl.css" asp-append-version="true" />
     }
-    <link rel="icon" type="image/png" href="~/images/favicon.png" />
+    <link rel="icon" type="image/png" href="~/images/favicon.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="~/images/favicon.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="~/images/favicon.png" />
     <!-- Add FontAwesome for icons (non-blocking) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
@@ -93,9 +115,10 @@
                 <ul class="nav-links" id="navLinks">
                     <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
                     <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
-                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="2">@_localizationService.GetUiText("NavHairCare", currentLang)</a></li>
-                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="1">@_localizationService.GetUiText("NavSkinCare", currentLang)</a></li>
-                    <li><a asp-controller="Home" asp-action="Index" asp-route-categoryId="3">@_localizationService.GetUiText("NavNaturalOils", currentLang)</a></li>
+                    @foreach (var cat in navCategories)
+                    {
+                        <li><a href="/?categoryId=@cat.Id#shop-section">@cat.Name</a></li>
+                    }
                     <li><a href="#about-us">@_localizationService.GetUiText("NavAboutUs", currentLang)</a></li>
                 </ul>
 
@@ -124,15 +147,23 @@
                         </button>
                         <form id="searchForm" asp-controller="Home" asp-action="Search" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">
                             <div class="d-flex align-items-center position-relative">
-                                <input type="text" name="searchQuery" id="searchInput" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
+                                <input type="text" autocomplete="off" name="searchQuery" id="searchInput" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
                                 <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
+                            <div id="searchResults" class="position-absolute w-100 bg-white shadow rounded mt-1" style="display: none; max-height: 300px; overflow-y: auto; z-index: 1001; left: 0;"></div>
                         </form>
                     </div>
 
-                    <a asp-controller="Cart" asp-action="Index" class="nav-link position-relative d-inline-block">
+                    <a href="#" class="nav-link position-relative d-inline-block me-3" onclick="showWishlistModal(event)">
+                        <i class="fas fa-heart" style="font-size: 1.2rem; color: #B7477E;"></i>
+                        <span id="wishlist-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                            0
+                        </span>
+                    </a>
+                    
+                    <a href="#" class="nav-link position-relative d-inline-block" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                         <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
                         <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             0
@@ -216,7 +247,7 @@
         @RenderBody()
     </main>
 
-    <footer>
+    <footer id="about-us">
         <style>
             footer, footer h3, footer p, footer .copyright { color: #ffffff !important; }
             footer a { color: #ffffff !important; transition: 0.3s; }
@@ -235,9 +266,9 @@
                 <div class="footer-col">
                     <h3>@_localizationService.GetUiText("QuickLinks", currentLang)</h3>
                     <ul>
-                        <li><a href="#">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
-                        <li><a href="#">@_localizationService.GetUiText("BestSellers", currentLang)</a></li>
-                        <li><a href="#">@_localizationService.GetUiText("NavContactUs", currentLang)</a></li>
+                        <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
+                        <li><a href="/#shop-section">@_localizationService.GetUiText("BestSellers", currentLang)</a></li>
+                        <li><a href="#about-us">@_localizationService.GetUiText("NavContactUs", currentLang)</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -363,8 +394,132 @@
             }).catch(e => console.error("Analytics Error:", e));
         }
     </script>
+    <div class="offcanvas offcanvas-end shadow" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+        <!-- Content loaded dynamically via AJAX -->
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var cartOffcanvasElement = document.getElementById('cartOffcanvas');
+            if (cartOffcanvasElement) {
+                cartOffcanvasElement.addEventListener('show.bs.offcanvas', function () {
+                    fetch('/Cart/GetCartAjax')
+                        .then(response => response.text())
+                        .then(html => {
+                            cartOffcanvasElement.innerHTML = html;
+                        });
+                });
+            }
+
+            // Live Search Autocomplete
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            let timeoutId;
+
+            if (searchInput && searchResults) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(timeoutId);
+                    const query = this.value.trim();
+
+                    if (query.length < 2) {
+                        searchResults.style.display = 'none';
+                        return;
+                    }
+
+                    timeoutId = setTimeout(() => {
+                        fetch(`/Home/SearchAjax?query=${encodeURIComponent(query)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.length > 0) {
+                                    searchResults.innerHTML = data.map(p => `
+                                        <a href="/Home/Details/${p.id}" class="d-flex align-items-center p-2 text-decoration-none border-bottom" style="color: inherit;">
+                                            <img src="${p.imageUrl}" alt="${p.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
+                                            <div>
+                                                <div class="fw-bold" style="font-size: 0.9rem;">${p.name}</div>
+                                                <div class="text-muted" style="font-size: 0.8rem;">${p.price} LE</div>
+                                            </div>
+                                        </a>
+                                    `).join('');
+                                    searchResults.style.display = 'block';
+                                } else {
+                                    searchResults.innerHTML = '<div class="p-3 text-muted text-center">No results found</div>';
+                                    searchResults.style.display = 'block';
+                                }
+                            });
+                    }, 300);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Wishlist Logic
+        function getWishlist() {
+            let wl = localStorage.getItem('joja_wishlist');
+            return wl ? JSON.parse(wl) : [];
+        }
+        function saveWishlist(wl) {
+            localStorage.setItem('joja_wishlist', JSON.stringify(wl));
+            updateWishlistBadge();
+        }
+        function updateWishlistBadge() {
+            let wl = getWishlist();
+            let badge = document.getElementById('wishlist-badge');
+            if (badge) {
+                if (wl.length > 0) {
+                    badge.innerText = wl.length;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+            // Update all hearts
+            document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                let id = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
+                if (wl.includes(id)) {
+                    btn.style.color = '#B7477E';
+                } else {
+                    btn.style.color = '#ccc';
+                }
+            });
+        }
+        function toggleWishlist(e, id, btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            let wl = getWishlist();
+            if (wl.includes(id)) {
+                wl = wl.filter(x => x !== id);
+                btn.style.color = '#ccc';
+                Swal.fire({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 2000, icon: 'info', title: 'Removed from wishlist' });
+            } else {
+                wl.push(id);
+                btn.style.color = '#B7477E';
+                Swal.fire({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 2000, icon: 'success', title: 'Added to wishlist ❤️' });
+            }
+            saveWishlist(wl);
+        }
+        function showWishlistModal(e) {
+            e.preventDefault();
+            let wl = getWishlist();
+            if (wl.length === 0) {
+                Swal.fire('Wishlist', 'Your wishlist is empty!', 'info');
+            } else {
+                Swal.fire('Wishlist', 'You have ' + wl.length + ' items in your wishlist. Go to the products to view them!', 'info');
+                // In a full implementation, this could fetch products by ID and display them in a modal.
+            }
+        }
+        document.addEventListener('DOMContentLoaded', updateWishlistBadge);
+
         function addToCartAjax(productId, qtyOverride, variantId) {
             let qty = qtyOverride || 1;
             let qtyInput = document.getElementById('qtyInput');
@@ -386,11 +541,26 @@
                     let badge = document.getElementById('cart-badge');
                     if(badge) badge.innerText = data.cartCount;
                     
-                    Swal.fire({
-                        toast: true, position: 'bottom-end', showConfirmButton: false,
-                        timer: 3000, timerProgressBar: true, icon: 'success',
-                        title: 'Product added to cart successfully 🛒'
-                    });
+                    var cartOffcanvasElement = document.getElementById('cartOffcanvas');
+                    if (cartOffcanvasElement && typeof bootstrap !== 'undefined') {
+                        var bsOffcanvas = bootstrap.Offcanvas.getInstance(cartOffcanvasElement);
+                        if (!bsOffcanvas) {
+                            bsOffcanvas = new bootstrap.Offcanvas(cartOffcanvasElement);
+                        }
+                        fetch('/Cart/GetCartAjax')
+                            .then(response => response.text())
+                            .then(html => {
+                                cartOffcanvasElement.innerHTML = html;
+                                bsOffcanvas.show();
+                            });
+                    }
+                    else {
+                        Swal.fire({
+                            toast: true, position: 'bottom-end', showConfirmButton: false,
+                            timer: 3000, timerProgressBar: true, icon: 'success',
+                            title: 'Product added to cart successfully 🛒'
+                        });
+                    }
                 }
             });
         }

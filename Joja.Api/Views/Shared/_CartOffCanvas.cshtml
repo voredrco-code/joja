@@ -1,0 +1,50 @@
+@model Joja.Api.Services.CartService
+
+<div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="cartOffcanvasLabel">🛒 My Cart</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body">
+    @if (Model.Items.Count == 0)
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-bag text-muted mb-3" style="font-size: 3rem;"></i>
+            <h5 class="text-muted">Your cart is empty</h5>
+            <a href="/" class="btn rounded-pill text-white mt-3" style="background-color: #B7477E;">Continue Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-items-container mb-4">
+            @foreach (var item in Model.Items)
+            {
+                var variantsDict = string.IsNullOrEmpty(item.SelectedVariantsJson) ? null : System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
+                var displayImage = variantsDict != null && variantsDict.ContainsKey("_ImageUrl") ? variantsDict["_ImageUrl"] : item.Product.MainImageUrl;
+                <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                    <img src="@displayImage" alt="@item.Product.Name" class="rounded" style="width: 60px; height: 60px; object-fit: cover;" />
+                    <div class="ms-3 flex-grow-1">
+                        <h6 class="mb-1" style="font-size: 0.95rem;">@(Context.Request.Cookies["UserLanguage"] == "ar" ? item.Product.Name : (item.Product.NameEn ?? item.Product.Name))</h6>
+                        <small class="text-muted d-block mb-1">
+                            @item.Quantity x @item.UnitPrice.ToString("0.00") LE
+                            @if (variantsDict != null)
+                            {
+                                @foreach (var v in variantsDict.Where(kv => kv.Key != "_ImageUrl"))
+                                {
+                                    <span class="badge bg-light text-dark border me-1">@v.Value</span>
+                                }
+                            }
+                        </small>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="border-top pt-3 mt-auto">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="fw-bold">Total:</span>
+                <span class="fw-bold text-success" style="font-size: 1.1rem;">@Model.Total.ToString("0.00") LE</span>
+            </div>
+            <a href="/Cart" class="btn btn-outline-secondary w-100 mb-2 rounded-pill">View Cart</a>
+            <a href="/Checkout" class="btn w-100 rounded-pill text-white" style="background-color: #B7477E;">Checkout</a>
+        </div>
+    }
+</div>

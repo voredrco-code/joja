@@ -24,6 +24,7 @@ builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
 builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 104857600; });
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddMemoryCache();
 
 // إعداد ضغط الاستجابة المتقدم (Brotli + Gzip) لتحسين سرعة تحميل الصفحات
 builder.Services.AddResponseCompression(options =>

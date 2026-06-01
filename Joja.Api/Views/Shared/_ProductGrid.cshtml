@@ -2,9 +2,14 @@
 <div class="product-card-wrap">
     <div class="product-card h-100 d-flex flex-column">
         
-        <div class="image-box">
+        <div class="image-box position-relative">
+            <button class="btn wishlist-btn position-absolute top-0 end-0 m-2 rounded-circle shadow-sm" 
+                    style="width: 35px; height: 35px; background: white; border: 1px solid #eee; z-index: 10; display: flex; align-items: center; justify-content: center; color: #ccc; transition: all 0.3s;"
+                    onclick="toggleWishlist(event, @Model.Id, this)">
+                <i class="fas fa-heart"></i>
+            </button>
             <a href="/Home/Details/@Model.Id">
-                <img src="@Model.MainImageUrl" class="product-img" alt="@Model.Name">
+                <img src="@Model.MainImageUrl" class="product-img" loading="lazy" alt="@Model.Name">
             </a>
         </div>
 

@@ -137,4 +137,10 @@ public class CartController : Controller
         _cartService.RemoveItem(productId);
         return RedirectToAction("Index");
     }
+
+    [HttpGet]
+    public IActionResult GetCartAjax()
+    {
+        return PartialView("~/Views/Shared/_CartOffCanvas.cshtml", _cartService);
+    }
 }
