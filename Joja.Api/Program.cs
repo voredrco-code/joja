@@ -16,9 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 // 2. جلب رابط الاتصال (مثبت لتفادي المتغيرات الخاطئة في لوحة تحكم Render)
 var connectionString = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_OSj2pWmgUv7J;SslMode=Require;TrustServerCertificate=true;";
 
-// 3. إعداد الداتابيز (استخدام DbContext Connection Pooling لتحسين الأداء والكفاءة)
+// 3. إعداد الداتابيز (استخدام DbContext Connection Pooling مع إعادة المحاولة التلقائية عند الأخطاء المؤقتة)
 builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, sqlOptions => 
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorCodesToAdd: null)));
 
 // 4. الخدمات الأساسية
 builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 104857600; });
