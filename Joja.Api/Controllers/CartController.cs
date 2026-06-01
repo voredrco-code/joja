@@ -110,7 +110,27 @@ public class CartController : Controller
         return Json(new { success = false, message = "Product not found" });
     }
 
+    [HttpPost]
+    public IActionResult UpdateQuantityAjax(int productId, string? selectedVariantsJson, int quantity)
+    {
+        _cartService.UpdateQuantity(productId, selectedVariantsJson, quantity);
+        return Json(new { 
+            success = true, 
+            cartCount = _cartService.Items.Sum(i => i.Quantity),
+            cartTotal = _cartService.Total
+        });
+    }
 
+    [HttpPost]
+    public IActionResult RemoveAjax(int productId, string? selectedVariantsJson)
+    {
+        _cartService.RemoveItem(productId, selectedVariantsJson);
+        return Json(new { 
+            success = true, 
+            cartCount = _cartService.Items.Sum(i => i.Quantity),
+            cartTotal = _cartService.Total
+        });
+    }
 
     public IActionResult Remove(int productId)
     {

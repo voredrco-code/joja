@@ -91,39 +91,58 @@
                 <h3 style="margin-bottom: 20px;">@(isAr ? "ملخص الطلب" : "Order Summary")</h3>
                 
                 @if (Model.Cart != null) {
-                    @foreach (var item in Model.Cart.Items)
-                    {
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; flex-wrap: wrap;">
-                            <div style="flex: 1;">
-                                <strong>@(!isAr && !string.IsNullOrEmpty(item.Product.NameEn) ? item.Product.NameEn : item.Product.Name) x @item.Quantity</strong>
-                                @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
-                                {
-                                    var variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
-                                    if (variants != null)
-                                    {
-                                        var displayVariants = variants.Where(v => v.Key != "_ImageUrl").ToList();
-                                        if (displayVariants.Any())
+                    <div id="cartItemsList">
+                        @foreach (var item in Model.Cart.Items)
+                        {
+                            <div class="cart-item-row" data-product-id="@item.ProductId" data-variants="@item.SelectedVariantsJson" data-unit-price="@item.UnitPrice" style="margin-bottom: 20px; border-bottom: 1px dashed #eee; padding-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                    <div style="flex: 1; padding-right: 10px;">
+                                        <strong style="color: #333; font-size: 0.95rem; display: block;">@(!isAr && !string.IsNullOrEmpty(item.Product.NameEn) ? item.Product.NameEn : item.Product.Name)</strong>
+                                        @if (!string.IsNullOrEmpty(item.SelectedVariantsJson))
                                         {
-                                            <div style="font-size: 0.8rem; color: #666; margin-top: 2px;">
-                                                @foreach (var v in displayVariants)
+                                            var variants = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(item.SelectedVariantsJson);
+                                            if (variants != null)
+                                            {
+                                                var displayVariants = variants.Where(v => v.Key != "_ImageUrl").ToList();
+                                                if (displayVariants.Any())
                                                 {
-                                                    <span>@v.Key: @v.Value</span>@if (v.Key != displayVariants.Last().Key) { <span>, </span> }
+                                                    <div style="font-size: 0.8rem; color: #777; margin-top: 2px;">
+                                                        @foreach (var v in displayVariants)
+                                                        {
+                                                            <span>@v.Key: @v.Value</span>@if (v.Key != displayVariants.Last().Key) { <span>, </span> }
+                                                        }
+                                                    </div>
                                                 }
-                                            </div>
+                                            }
                                         }
-                                    }
-                                }
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span class="item-total-price-display" style="font-weight: bold; color: #B7477E; font-size: 0.95rem;">@((item.UnitPrice * item.Quantity).ToString("0.00")) @(isAr ? "ج.م" : "EGP")</span>
+                                        <div style="font-size: 0.75rem; color: #999;">@item.UnitPrice.ToString("0.00") x <span class="item-qty-text">@item.Quantity</span></div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <!-- Branded Mini Quantity Selector -->
+                                    <div style="display: flex; align-items: center; border: 1.5px solid #B7477E; border-radius: 20px; background: #fff; height: 32px; overflow: hidden; padding: 0 5px;">
+                                        <button type="button" class="btn btn-sm" onclick="changeQty(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))', -1)" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1rem; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 100%;">-</button>
+                                        <span class="item-qty-display" style="min-width: 20px; text-align: center; font-weight: 800; color: #B7477E; font-size: 0.9rem; display: inline-block;">@item.Quantity</span>
+                                        <button type="button" class="btn btn-sm" onclick="changeQty(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))', 1)" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1rem; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 100%;">+</button>
+                                    </div>
+                                    <!-- Remove Button -->
+                                    <button type="button" onclick="removeCartItem(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))')" style="background: none; border: none; color: #dc3545; font-size: 0.9rem; cursor: pointer; padding: 5px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px; transition: background 0.2s;" onmouseover="this.style.background='#fff0f1'" onmouseout="this.style.background='none'">
+                                        <i class="fas fa-trash-alt"></i> @(isAr ? "حذف" : "Remove")
+                                    </button>
+                                </div>
                             </div>
-                            <div style="font-weight: bold;">@((item.UnitPrice * item.Quantity).ToString("0.00")) @(isAr ? "ج.م" : "EGP")</div>
-                        </div>
-                    }
+                        }
+                    </div>
                 }
                 
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;" />
 
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem;">
                     <span>@(isAr ? "المجموع الفرعي" : "Subtotal")</span>
-                    <span>@(Model?.Cart?.Total.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
+                    <span id="checkoutSubtotalDisplay">@(Model?.Cart?.Total.ToString("0.00") ?? "0") @(isAr ? "ج.م" : "EGP")</span>
                 </div>
                 
                 <div id="discountRow" style="display: none; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #4CAF50; font-weight: bold;">
@@ -163,6 +182,7 @@
 
 <script>
     var discountAmount = 0.00;
+    var cartSubtotal = parseFloat("@(Model?.Cart?.Total ?? 0)");
 
     function applyCouponCode() {
         var code = document.getElementById('couponCodeInput').value.trim();
@@ -179,7 +199,12 @@
         statusMsg.style.color = '#666';
         statusMsg.innerText = "@(isAr ? "جاري التحقق..." : "Validating...")";
 
-        // Perform AJAX verification
+        reapplyCoupon(code);
+    }
+
+    function reapplyCoupon(code) {
+        var statusMsg = document.getElementById('couponStatusMessage');
+        
         fetch('/Checkout/ApplyCoupon', {
             method: 'POST',
             headers: {
@@ -193,14 +218,12 @@
                 discountAmount = parseFloat(data.discountAmount);
                 document.getElementById('hiddenCouponCode').value = data.code;
                 
-                statusMsg.style.color = '#4CAF50';
-                statusMsg.innerText = data.message;
-                
                 var currency = "@(isAr ? "ج.م" : "EGP")";
                 document.getElementById('discountDisplay').innerText = "-" + discountAmount.toFixed(2) + " " + currency;
                 document.getElementById('discountRow').style.display = 'flex';
                 
-                recalculateGrandTotal();
+                statusMsg.style.color = '#4CAF50';
+                statusMsg.innerText = data.message;
             } else {
                 discountAmount = 0.00;
                 document.getElementById('hiddenCouponCode').value = '';
@@ -208,13 +231,13 @@
                 
                 statusMsg.style.color = '#d9534f';
                 statusMsg.innerText = data.message;
-                
-                recalculateGrandTotal();
             }
+            recalculateGrandTotal();
         })
         .catch(err => {
             statusMsg.style.color = '#d9534f';
             statusMsg.innerText = "@(isAr ? "حدث خطأ أثناء تطبيق الكوبون!" : "Error applying coupon!")";
+            recalculateGrandTotal();
         });
     }
 
@@ -222,9 +245,8 @@
         var select = document.getElementById('citySelect');
         var selectedOption = select.options[select.selectedIndex];
         var shippingPrice = parseFloat(selectedOption.getAttribute('data-price') || "0");
-        var subtotal = parseFloat("@(Model?.Cart?.Total ?? 0)");
         
-        var finalTotal = subtotal + shippingPrice - discountAmount;
+        var finalTotal = cartSubtotal + shippingPrice - discountAmount;
         if (finalTotal < 0) finalTotal = 0;
         
         var currency = "@(isAr ? "ج.م" : "EGP")";
@@ -251,5 +273,115 @@
         document.getElementById('shippingDisplay').innerText = shippingPrice.toFixed(2) + " " + currency;
         
         recalculateGrandTotal();
+    }
+
+    // === Interactive Cart JS Functions ===
+    function findItemRow(productId, variantsJson) {
+        var rows = document.querySelectorAll('.cart-item-row');
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            if (row.getAttribute('data-product-id') == productId && 
+                (row.getAttribute('data-variants') || '') == (variantsJson || '')) {
+                return row;
+            }
+        }
+        return null;
+    }
+
+    function changeQty(productId, variantsJson, delta) {
+        var row = findItemRow(productId, variantsJson);
+        if (!row) return;
+        var qtySpan = row.querySelector('.item-qty-display');
+        var currentQty = parseInt(qtySpan.innerText);
+        var newQty = currentQty + delta;
+        if (newQty <= 0) {
+            removeCartItem(productId, variantsJson);
+            return;
+        }
+        
+        updateCartOnServer(productId, variantsJson, newQty);
+    }
+
+    function removeCartItem(productId, variantsJson) {
+        var confirmation = confirm("@(isAr ? "هل أنت متأكد من رغبتك في حذف هذا المنتج من السلة؟" : "Are you sure you want to remove this item from your cart?")");
+        if (!confirmation) return;
+        
+        fetch('/Cart/RemoveAjax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'productId=' + productId + '&selectedVariantsJson=' + encodeURIComponent(variantsJson)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.cartCount === 0) {
+                    alert("@(isAr ? "السلة فارغة الآن، سيتم تحويلك للرئيسية!" : "Your cart is now empty, redirecting to homepage!")");
+                    window.location.href = '/';
+                    return;
+                }
+                
+                var row = findItemRow(productId, variantsJson);
+                if (row) {
+                    row.remove();
+                }
+                
+                updateCartTotals(data.cartTotal);
+            } else {
+                alert(data.message || 'Error updating cart');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Connection error');
+        });
+    }
+
+    function updateCartOnServer(productId, variantsJson, newQty) {
+        fetch('/Cart/UpdateQuantityAjax', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'productId=' + productId + '&selectedVariantsJson=' + encodeURIComponent(variantsJson) + '&quantity=' + newQty
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                var row = findItemRow(productId, variantsJson);
+                if (row) {
+                    row.querySelector('.item-qty-display').innerText = newQty;
+                    row.querySelector('.item-qty-text').innerText = newQty;
+                    
+                    var unitPrice = parseFloat(row.getAttribute('data-unit-price') || "0");
+                    var itemTotal = unitPrice * newQty;
+                    var currency = "@(isAr ? "ج.م" : "EGP")";
+                    row.querySelector('.item-total-price-display').innerText = itemTotal.toFixed(2) + " " + currency;
+                }
+                
+                updateCartTotals(data.cartTotal);
+            } else {
+                alert(data.message || 'Error updating cart');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Connection error');
+        });
+    }
+
+    function updateCartTotals(subtotal) {
+        cartSubtotal = subtotal;
+        var currency = "@(isAr ? "ج.م" : "EGP")";
+        
+        document.getElementById('checkoutSubtotalDisplay').innerText = cartSubtotal.toFixed(2) + " " + currency;
+        
+        var couponCode = document.getElementById('hiddenCouponCode').value;
+        if (couponCode) {
+            reapplyCoupon(couponCode);
+        } else {
+            recalculateGrandTotal();
+        }
     }
 </script>

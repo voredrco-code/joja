@@ -66,6 +66,31 @@ public class CartService
         }
     }
 
+    public void RemoveItem(int productId, string? selectedVariantsJson)
+    {
+        var item = Items.FirstOrDefault(i => i.ProductId == productId && i.SelectedVariantsJson == selectedVariantsJson);
+        if (item != null)
+        {
+            Items.Remove(item);
+        }
+    }
+
+    public void UpdateQuantity(int productId, string? selectedVariantsJson, int newQuantity)
+    {
+        var item = Items.FirstOrDefault(i => i.ProductId == productId && i.SelectedVariantsJson == selectedVariantsJson);
+        if (item != null)
+        {
+            if (newQuantity <= 0)
+            {
+                Items.Remove(item);
+            }
+            else
+            {
+                item.Quantity = newQuantity;
+            }
+        }
+    }
+
     public void Clear() => Items.Clear();
     
     public decimal Total => Items.Sum(i => i.UnitPrice * i.Quantity);
