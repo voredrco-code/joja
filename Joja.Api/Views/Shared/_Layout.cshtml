@@ -113,14 +113,14 @@
 
                 <!-- Nav Center -->
                 <ul class="nav-links" id="navLinks">
-                    <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
-                    <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
                     @{
                         var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home" &&
                                          ViewContext.RouteData.Values["action"]?.ToString() == "Index";
                     }
                     @if (isHomePage)
                     {
+                        <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
+                        <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
                         @foreach (var cat in navCategories)
                         {
                             <li><a href="/?categoryId=@cat.Id#shop-section">@cat.Name</a></li>
