@@ -4,6 +4,8 @@ using Joja.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 // 1. إعدادات PostgreSQL
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -12,17 +14,36 @@ AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // 2. جلب رابط الاتصال
-var connectionString = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_OSj2pWmgUv7J;SslMode=Require;TrustServerCertificate=true;";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_OSj2pWmgUv7J;SslMode=Require;TrustServerCertificate=true;";
 
-// 3. إعداد الداتابيز
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// 3. إعداد الداتابيز (استخدام DbContext Connection Pooling لتحسين الأداء والكفاءة)
+builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // 4. الخدمات الأساسية
 builder.Services.Configure<FormOptions>(options => { options.MultipartBodyLengthLimit = 104857600; });
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
+
+// إعداد ضغط الاستجابة المتقدم (Brotli + Gzip) لتحسين سرعة تحميل الصفحات
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<Joja.Api.Services.CartService>();
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
@@ -59,7 +80,15 @@ var app = builder.Build();
 // 6. إعدادات التشغيل (بدون مسح داتابيز)
 app.UseDeveloperExceptionPage();
 app.UseResponseCompression();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        const int durationInSeconds = 60 * 60 * 24 * 30; // 30 days
+        ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] =
+            "public,max-age=" + durationInSeconds;
+    }
+});
 
 app.UseAuthentication(); // 👈 ده الجديد
 app.UseAuthorization();

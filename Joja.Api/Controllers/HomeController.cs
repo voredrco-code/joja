@@ -131,11 +131,11 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         ViewBag.CurrentLanguage = language;
         
         // Get categories (always all for filter bar)
-        var categories = await _context.Categories.ToListAsync();
+        var categories = await _context.Categories.AsNoTracking().ToListAsync();
         _localizationService.GetLocalizedCategories(categories, language);
 
         // Get products (filtered if categoryId is present)
-        var query = _context.Products.AsQueryable();
+        var query = _context.Products.AsNoTracking().AsQueryable();
         if (categoryId.HasValue)
         {
             query = query.Where(p => p.CategoryId == categoryId.Value);
@@ -145,8 +145,9 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         _localizationService.GetLocalizedProducts(products, language);
         
         // Get banners and video banners
-        var banners = await _context.Banners.OrderBy(b => b.DisplayOrder).ToListAsync();
+        var banners = await _context.Banners.AsNoTracking().OrderBy(b => b.DisplayOrder).ToListAsync();
         var videoBanners = await _context.VideoBanners
+            .AsNoTracking()
             .Where(v => v.IsActive)
             .OrderBy(v => v.DisplayOrder)
             .ToListAsync();
@@ -186,7 +187,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         // Get user language from cookie
         var language = Request.Cookies["UserLanguage"] ?? "en";
         
-        var query = _context.Products.AsQueryable();
+        var query = _context.Products.AsNoTracking().AsQueryable();
 
         if (categoryId.HasValue)
         {
@@ -208,7 +209,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         ViewBag.CurrentLanguage = language;
         ViewBag.SearchQuery = searchQuery;
 
-        var query = _context.Products.AsQueryable();
+        var query = _context.Products.AsNoTracking().AsQueryable();
         if (!string.IsNullOrEmpty(searchQuery))
         {
             query = query.Where(p => (p.Name != null && p.Name.Contains(searchQuery)) || 
@@ -229,6 +230,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
     public async Task<IActionResult> Details(int id)
     {
         var product = await _context.Products
+            .AsNoTracking()
             .Include(p => p.Category)
             .Include(p => p.GalleryImages)
             .Include(p => p.Variants)

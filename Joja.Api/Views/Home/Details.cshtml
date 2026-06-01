@@ -83,9 +83,28 @@
             }
 
                 <input type="hidden" id="selectedVariantId" value="" />
-                <button type="button" onclick="addToCartWithVariant(@Model.Id)" class="btn flex-grow-1" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
-                    @_localizationService.GetUiText("AddToCart", language)
-                </button>
+            
+                <!-- Branded Quantity Selector -->
+                <div class="product-quantity mb-4 d-flex align-items-center gap-3">
+                    <label class="fw-bold" style="font-size: 1.1rem; color: #444; margin: 0; font-family: 'Montserrat', sans-serif;">@(isAr ? "الكمية:" : "Quantity:")</label>
+                    <div class="d-flex align-items-center" style="border: 2px solid #B7477E; border-radius: 30px; overflow: hidden; background: #fff;">
+                        <button type="button" class="btn btn-sm px-3 py-2" onclick="decrementQty()" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1.2rem; font-family: 'Montserrat', sans-serif;">-</button>
+                        <input type="number" id="qtyInput" value="1" min="1" style="width: 50px; border: none; text-align: center; font-weight: 800; outline: none; -moz-appearance: textfield; font-size: 1.1rem; background: transparent; color: #B7477E; font-family: 'Montserrat', sans-serif;" readonly />
+                        <button type="button" class="btn btn-sm px-3 py-2" onclick="incrementQty()" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1.2rem; font-family: 'Montserrat', sans-serif;">+</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Stack -->
+                <div class="d-flex flex-column gap-2 mb-4 w-100">
+                    <!-- Add to Cart -->
+                    <button type="button" onclick="addToCartWithVariant(@Model.Id)" class="btn w-100" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s; font-family: 'Montserrat', sans-serif;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
+                        @_localizationService.GetUiText("AddToCart", language)
+                    </button>
+                    <!-- Buy Now -->
+                    <button type="button" onclick="buyNowWithVariant(@Model.Id)" class="btn w-100" style="background-color: #121212; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Montserrat', sans-serif;" onmouseover="this.style.backgroundColor='#B7477E'" onmouseout="this.style.backgroundColor='#121212'">
+                        <i class="fas fa-bolt"></i> @_localizationService.GetUiText("BuyNow", language)
+                    </button>
+                </div>
             </div>
 
             <div class="product-description mb-4" style="color: #555; line-height: 1.8; font-size: 1.05rem;">
@@ -292,9 +311,89 @@
         }
     }
 
+    function incrementQty() {
+        let input = document.getElementById('qtyInput');
+        if (input) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+
+    function decrementQty() {
+        let input = document.getElementById('qtyInput');
+        if (input && parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    // === Meta Pixel Event Tracking ===
+    function trackAddToCartPixel(productId, productName, price, qty) {
+        if (typeof fbq === 'function') {
+            fbq('track', 'AddToCart', {
+                content_name: productName,
+                content_ids: [productId.toString()],
+                content_type: 'product',
+                value: parseFloat(price) * qty,
+                currency: 'EGP'
+            });
+        }
+        // Also call global analytics logging
+        if (typeof logEvent === 'function') {
+            logEvent('AddToCart', productName);
+        }
+    }
+
+    function trackInitiateCheckoutPixel(productId, productName, price, qty) {
+        if (typeof fbq === 'function') {
+            fbq('track', 'InitiateCheckout', {
+                content_name: productName,
+                content_ids: [productId.toString()],
+                content_type: 'product',
+                value: parseFloat(price) * qty,
+                currency: 'EGP'
+            });
+        }
+    }
+
     function addToCartWithVariant(productId) {
         let variantId = document.getElementById('selectedVariantId')?.value;
-        addToCartAjax(productId, 1, variantId);
+        let qty = parseInt(document.getElementById('qtyInput')?.value || 1);
+        
+        // Track AddToCart in Meta Pixel & Local Analytics
+        trackAddToCartPixel(productId, '@Html.Raw(Model.Name)', '@Model.Price', qty);
+        
+        addToCartAjax(productId, qty, variantId);
+    }
+
+    function buyNowWithVariant(productId) {
+        let variantId = document.getElementById('selectedVariantId')?.value;
+        let qty = parseInt(document.getElementById('qtyInput')?.value || 1);
+        
+        // Track AddToCart & InitiateCheckout in Meta Pixel & Local Analytics
+        trackAddToCartPixel(productId, '@Html.Raw(Model.Name)', '@Model.Price', qty);
+        trackInitiateCheckoutPixel(productId, '@Html.Raw(Model.Name)', '@Model.Price', qty);
+        
+        let bodyData = 'productId=' + productId + '&quantity=' + qty;
+        if (variantId) {
+            bodyData += '&variantId=' + variantId;
+        }
+
+        fetch('/Cart/AddToCartAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: bodyData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/Checkout';
+            } else {
+                alert(data.message || 'Error adding product to cart');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            window.location.href = '/Checkout';
+        });
     }
 
     // === Reviews Toggle ===

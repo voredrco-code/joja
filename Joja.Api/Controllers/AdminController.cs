@@ -46,6 +46,8 @@ public class AdminController : Controller
                     new UiTranslation { Key = "FilterAll", Language = "ar", Value = "الكل" },
                     new UiTranslation { Key = "AddToCart", Language = "en", Value = "Add To Cart" },
                     new UiTranslation { Key = "AddToCart", Language = "ar", Value = "أضف للسلة 🛒" },
+                    new UiTranslation { Key = "BuyNow", Language = "en", Value = "Buy Now ⚡" },
+                    new UiTranslation { Key = "BuyNow", Language = "ar", Value = "اشتري الآن ⚡" },
                     new UiTranslation { Key = "Checkout", Language = "en", Value = "Checkout" },
                     new UiTranslation { Key = "Checkout", Language = "ar", Value = "إتمام الطلب" },
                     new UiTranslation { Key = "NavHome", Language = "en", Value = "Home" },
