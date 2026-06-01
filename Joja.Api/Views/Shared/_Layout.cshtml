@@ -115,11 +115,17 @@
                 <ul class="nav-links" id="navLinks">
                     <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
                     <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
-                    @foreach (var cat in navCategories)
-                    {
-                        <li><a href="/?categoryId=@cat.Id#shop-section">@cat.Name</a></li>
+                    @{
+                        var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home" &&
+                                         ViewContext.RouteData.Values["action"]?.ToString() == "Index";
                     }
-                    <li><a href="#about-us">@_localizationService.GetUiText("NavAboutUs", currentLang)</a></li>
+                    @if (isHomePage)
+                    {
+                        @foreach (var cat in navCategories)
+                        {
+                            <li><a href="/?categoryId=@cat.Id#shop-section">@cat.Name</a></li>
+                        }
+                    }
                 </ul>
 
                 <!-- Icons Right -->
@@ -268,7 +274,10 @@
                     <ul>
                         <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
                         <li><a href="/#shop-section">@_localizationService.GetUiText("BestSellers", currentLang)</a></li>
-                        <li><a href="#about-us">@_localizationService.GetUiText("NavContactUs", currentLang)</a></li>
+                        @{
+                            var waNumForFooter = siteSettingFooter?.WhatsAppNumber ?? "201090428764";
+                        }
+                        <li><a href="https://wa.me/@waNumForFooter" target="_blank">@_localizationService.GetUiText("NavContactUs", currentLang)</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
