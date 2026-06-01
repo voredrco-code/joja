@@ -13,9 +13,8 @@ AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. جلب رابط الاتصال
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_OSj2pWmgUv7J;SslMode=Require;TrustServerCertificate=true;";
+// 2. جلب رابط الاتصال (مثبت لتفادي المتغيرات الخاطئة في لوحة تحكم Render)
+var connectionString = "Host=ep-orange-breeze-alu59609-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_OSj2pWmgUv7J;SslMode=Require;TrustServerCertificate=true;";
 
 // 3. إعداد الداتابيز (استخدام DbContext Connection Pooling لتحسين الأداء والكفاءة)
 builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
