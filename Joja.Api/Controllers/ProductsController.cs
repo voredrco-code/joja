@@ -171,6 +171,9 @@ namespace Joja.Api.Controllers
             if (product == null) product = new Product();
             if (id != product.Id) return NotFound();
 
+            // Clear ModelState to bypass validation errors from complex model binding
+            ModelState.Clear();
+
             product.Name = product.Name ?? " ";
             product.Description = product.Description ?? " ";
             product.DescriptionEn = product.DescriptionEn ?? " ";
