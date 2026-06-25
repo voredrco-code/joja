@@ -213,17 +213,13 @@
                         <div class="d-flex flex-wrap gap-3 mb-3">
                             @foreach (var img in Model.GalleryImages)
                             {
-                                <div style="position: relative; display: inline-block;">
-                                    <img src="@img.ImageUrl" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #eee;" />
-                                    <form method="post" asp-action="DeleteGalleryImage" asp-controller="Products" style="margin: 0;">
-                                        <input type="hidden" name="imageId" value="@img.Id" />
-                                        <input type="hidden" name="productId" value="@Model.Id" />
-                                        <button type="submit" onclick="return confirm('Delete this image?')" 
+                                    <div style="position: relative; display: inline-block;" id="gallery-img-@img.Id">
+                                        <img src="@img.ImageUrl" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #eee;" />
+                                        <button type="button" onclick="deleteGalleryImage(@img.Id, @Model.Id)" 
                                             style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; line-height: 1; display: flex; align-items: center; justify-content: center;">
                                             ✕
                                         </button>
-                                    </form>
-                                </div>
+                                    </div>
                             }
                         </div>
                         <hr />
@@ -301,6 +297,34 @@
             `;
             container.appendChild(row);
             variantIndex++;
+        }
+
+        function deleteGalleryImage(imageId, productId) {
+            if (confirm('Delete this image?')) {
+                // We create a temporary form and submit it to keep the existing POST logic
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '/Products/DeleteGalleryImage';
+                
+                // Add AntiForgeryToken
+                const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]').cloneNode();
+                form.appendChild(tokenInput);
+
+                const inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'imageId';
+                inputId.value = imageId;
+                form.appendChild(inputId);
+
+                const inputProdId = document.createElement('input');
+                inputProdId.type = 'hidden';
+                inputProdId.name = 'productId';
+                inputProdId.value = productId;
+                form.appendChild(inputProdId);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
         }
     </script>
 }

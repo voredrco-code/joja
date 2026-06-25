@@ -166,6 +166,18 @@ public class CheckoutController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> CheckFirstOrderDiscount(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return Json(new { isFirstOrder = false });
+        }
+
+        var hasOrders = await _context.Orders.AnyAsync(o => o.Phone == phone.Trim());
+        return Json(new { isFirstOrder = !hasOrders });
+    }
+
+    [HttpPost]
     public async Task<IActionResult> PlaceOrder(CheckoutViewModel model)
     {
         if (_cartService.Items.Count == 0)
@@ -226,6 +238,19 @@ public class CheckoutController : Controller
                         {
                             discountAmount = targetSubtotal;
                         }
+                    }
+                }
+            }
+            else
+            {
+                // No coupon applied, check for first-order automatic discount (20%)
+                if (!string.IsNullOrWhiteSpace(model.Phone))
+                {
+                    var hasOrders = await _context.Orders.AnyAsync(o => o.Phone == model.Phone.Trim());
+                    if (!hasOrders)
+                    {
+                        var cartSubtotal = _cartService.Total;
+                        discountAmount = cartSubtotal * 0.20m;
                     }
                 }
             }

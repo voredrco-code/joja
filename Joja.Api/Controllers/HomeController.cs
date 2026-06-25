@@ -142,14 +142,27 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         _localizationService.GetLocalizedCategories(categories, language);
 
         // Get products (filtered if categoryId is present)
-        var query = _context.Products.AsNoTracking().AsQueryable();
+        List<Product> products;
         if (categoryId.HasValue)
         {
-            query = query.Where(p => p.CategoryId == categoryId.Value);
+            products = await _context.Products.AsNoTracking().Where(p => p.CategoryId == categoryId.Value).ToListAsync();
         }
-        
-        var products = await query.ToListAsync();
-        _localizationService.GetLocalizedProducts(products, language);
+        else
+        {
+            products = await _cache.GetOrCreateAsync("HomeProductsCache", async entry => {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                return await _context.Products.AsNoTracking().ToListAsync();
+            }) ?? new List<Product>();
+        }
+
+        // Clone the list to prevent modifying the cached instances during localization
+        var localizedProducts = products.Select(p => new Product 
+        { 
+            Id = p.Id, Name = p.Name, NameEn = p.NameEn, Description = p.Description, DescriptionEn = p.DescriptionEn,
+            Price = p.Price, OriginalPrice = p.OriginalPrice, MainImageUrl = p.MainImageUrl, CategoryId = p.CategoryId
+        }).ToList();
+
+        _localizationService.GetLocalizedProducts(localizedProducts, language);
         
         // Get banners and video banners from cache or DB
         var banners = await _cache.GetOrCreateAsync("BannersCache", async entry => {
@@ -164,7 +177,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         
         var viewModel = new ViewModels.HomeViewModel
         {
-            Products = products,
+            Products = localizedProducts,
             Categories = categories,
             Banners = banners,
             VideoBanners = videoBanners
@@ -260,13 +273,17 @@ _تم إرسال هذا الطلب في: {OrderDate}_
 
     public async Task<IActionResult> Details(int id)
     {
-        var product = await _context.Products
-            .AsNoTracking()
-            .Include(p => p.Category)
-            .Include(p => p.GalleryImages)
-            .Include(p => p.Variants)
-            .Include(p => p.Reviews)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var cacheKey = $"ProductDetails_{id}";
+        var product = await _cache.GetOrCreateAsync(cacheKey, async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
+            return await _context.Products
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.GalleryImages)
+                .Include(p => p.Variants)
+                .Include(p => p.Reviews)
+                .FirstOrDefaultAsync(m => m.Id == id);
+        });
             
         if (product == null) return NotFound();
 
@@ -280,11 +297,15 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         ViewBag.OgImage = $"{Request.Scheme}://{Request.Host}{product.MainImageUrl}";
 
         // Related Products
-        var relatedProducts = await _context.Products
-            .AsNoTracking()
-            .Where(p => p.CategoryId == product.CategoryId && p.Id != product.Id)
-            .Take(4)
-            .ToListAsync();
+        var relatedCacheKey = $"RelatedProducts_{product.CategoryId}_{product.Id}";
+        var relatedProducts = await _cache.GetOrCreateAsync(relatedCacheKey, async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
+            return await _context.Products
+                .AsNoTracking()
+                .Where(p => p.CategoryId == product.CategoryId && p.Id != product.Id)
+                .Take(4)
+                .ToListAsync();
+        });
             
         _localizationService.GetLocalizedProducts(relatedProducts, language);
         ViewBag.RelatedProducts = relatedProducts;

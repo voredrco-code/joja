@@ -1,7 +1,9 @@
 @using Joja.Api.Data
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Caching.Memory
 @inject ApplicationDbContext _context
 @inject Joja.Api.Services.ILocalizationService _localizationService
+@inject Microsoft.Extensions.Caching.Memory.IMemoryCache _cache
 @{
     // قراءة الكوكي مباشرةً - يشتغل على كل الصفحات
     var currentLang = Context.Request.Cookies["UserLanguage"] ?? "en";
@@ -9,13 +11,27 @@
     var direction = "ltr";
     
     // Fetch Settings
-    var appSettings = await _context.AppSettings.FirstOrDefaultAsync();
+    var appSettings = await _cache.GetOrCreateAsync("LayoutAppSettings", async entry => {
+        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+        return await _context.AppSettings.AsNoTracking().FirstOrDefaultAsync();
+    });
     var fbLink = appSettings?.FacebookLink ?? "#";
     var instaLink = appSettings?.InstagramLink ?? "#";
     
     // Fetch Categories for Nav
-    var navCategories = await _context.Categories.AsNoTracking().ToListAsync();
-    _localizationService.GetLocalizedCategories(navCategories, currentLang);
+    var navCategories = await _cache.GetOrCreateAsync("LayoutCategories", async entry => {
+        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+        return await _context.Categories.AsNoTracking().ToListAsync();
+    });
+    // We clone the list so we don't modify the cached instance language translations
+    var localizedNavCategories = navCategories?.Select(c => new Category { Id = c.Id, Name = c.Name, NameEn = c.NameEn }).ToList() ?? new List<Category>();
+    _localizationService.GetLocalizedCategories(localizedNavCategories, currentLang);
+    
+    // Fetch SiteSettings for Header/Footer Announcements
+    var siteSettings = await _cache.GetOrCreateAsync("LayoutSiteSettings", async entry => {
+        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+        return await _context.SiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    });
 }
 <!DOCTYPE html>
 <html lang="@currentLang" dir="@direction">
@@ -95,8 +111,7 @@
         
         <!-- Dynamic Header Announcement -->
         @{
-            var siteSettingHeader = _context.SiteSettings.FirstOrDefault();
-            var headerText = siteSettingHeader?.HeaderAnnouncementText;
+            var headerText = siteSettings?.HeaderAnnouncementText;
         }
         @if (!string.IsNullOrEmpty(headerText))
         {
@@ -121,7 +136,7 @@
                     {
                         <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
                         <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
-                        @foreach (var cat in navCategories)
+                        @foreach (var cat in localizedNavCategories)
                         {
                             <li><a href="/?categoryId=@cat.Id#shop-section">@cat.Name</a></li>
                         }
@@ -260,8 +275,7 @@
             footer a:hover { opacity: 0.8; }
         </style>
         @{
-            var siteSettingFooter = _context.SiteSettings.FirstOrDefault();
-            var footerText = siteSettingFooter?.FooterAboutText ?? "Natural skincare products formulated with care & science";
+            var footerText = siteSettings?.FooterAboutText ?? "Natural skincare products formulated with care & science";
         }
         <div class="container">
             <div class="footer-grid">
@@ -275,7 +289,7 @@
                         <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
                         <li><a href="/#shop-section">@_localizationService.GetUiText("BestSellers", currentLang)</a></li>
                         @{
-                            var waNumForFooter = siteSettingFooter?.WhatsAppNumber ?? "201090428764";
+                            var waNumForFooter = siteSettings?.WhatsAppNumber ?? "201090428764";
                         }
                         <li><a href="https://wa.me/@waNumForFooter" target="_blank">@_localizationService.GetUiText("NavContactUs", currentLang)</a></li>
                     </ul>
@@ -294,8 +308,8 @@
             </div>
             <div class="footer-contact-info" style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem;">
                 @{
-                    var contactEmail = siteSettingFooter?.ContactEmail ?? "joja.organic@gmail.com";
-                    var whatsappNumFooter = siteSettingFooter?.WhatsAppNumber ?? "201090428764";
+                    var contactEmail = siteSettings?.ContactEmail ?? "joja.organic@gmail.com";
+                    var whatsappNumFooter = siteSettings?.WhatsAppNumber ?? "201090428764";
                 }
                 <a href="https://wa.me/@whatsappNumFooter" target="_blank" style="text-decoration: none;">
                     <i class="fab fa-whatsapp"></i> @whatsappNumFooter
@@ -323,8 +337,7 @@
     </div>
 
     @{
-        var siteSetting = _context.SiteSettings.FirstOrDefault();
-        var whatsappNum = siteSetting?.WhatsAppNumber ?? "201000000000"; 
+        var whatsappNum = siteSettings?.WhatsAppNumber ?? "201000000000"; 
     }
     <a href="https://wa.me/@whatsappNum" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
         <i class="fab fa-whatsapp"></i>

@@ -24,7 +24,8 @@
 
                     <div style="margin-bottom: 15px;">
                         <label asp-for="Phone" style="display: block; margin-bottom: 5px; font-weight: bold;">@(isAr ? "رقم الهاتف" : "Phone Number")</label>
-                        <input asp-for="Phone" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required />
+                        <input asp-for="Phone" id="phoneInput" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required onblur="checkFirstOrderDiscount()" />
+                        <div id="firstOrderMessage" style="display: none; color: #4CAF50; font-size: 0.85rem; font-weight: bold; margin-top: 5px;">@(isAr ? "تهانينا! خصم 20% على طلبك الأول 🎉" : "Congratulations! 20% discount on your first order 🎉")</div>
                     </div>
 
                     <div style="margin-bottom: 15px;">
@@ -182,7 +183,44 @@
 
 <script>
     var discountAmount = 0.00;
+    var firstOrderDiscountAmount = 0.00;
     var cartSubtotal = parseFloat("@(Model?.Cart?.Total ?? 0)");
+    var isFirstOrder = false;
+
+    function checkFirstOrderDiscount() {
+        var phone = document.getElementById('phoneInput').value.trim();
+        if (!phone) {
+            isFirstOrder = false;
+            updateFirstOrderDiscount();
+            return;
+        }
+
+        fetch('/Checkout/CheckFirstOrderDiscount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'phone=' + encodeURIComponent(phone)
+        })
+        .then(response => response.json())
+        .then(data => {
+            isFirstOrder = data.isFirstOrder;
+            updateFirstOrderDiscount();
+        })
+        .catch(err => console.error(err));
+    }
+
+    function updateFirstOrderDiscount() {
+        var couponCode = document.getElementById('hiddenCouponCode').value;
+        if (isFirstOrder && !couponCode) {
+            firstOrderDiscountAmount = cartSubtotal * 0.20;
+            document.getElementById('firstOrderMessage').style.display = 'block';
+        } else {
+            firstOrderDiscountAmount = 0;
+            document.getElementById('firstOrderMessage').style.display = 'none';
+        }
+        recalculateGrandTotal();
+    }
 
     function applyCouponCode() {
         var code = document.getElementById('couponCodeInput').value.trim();
@@ -232,11 +270,13 @@
                 statusMsg.style.color = '#d9534f';
                 statusMsg.innerText = data.message;
             }
+            updateFirstOrderDiscount(); // Re-evaluate first order discount
             recalculateGrandTotal();
         })
         .catch(err => {
             statusMsg.style.color = '#d9534f';
             statusMsg.innerText = "@(isAr ? "حدث خطأ أثناء تطبيق الكوبون!" : "Error applying coupon!")";
+            updateFirstOrderDiscount(); // Re-evaluate first order discount
             recalculateGrandTotal();
         });
     }
@@ -246,10 +286,19 @@
         var selectedOption = select.options[select.selectedIndex];
         var shippingPrice = parseFloat(selectedOption.getAttribute('data-price') || "0");
         
-        var finalTotal = cartSubtotal + shippingPrice - discountAmount;
+        var activeDiscount = discountAmount > 0 ? discountAmount : firstOrderDiscountAmount;
+        var finalTotal = cartSubtotal + shippingPrice - activeDiscount;
         if (finalTotal < 0) finalTotal = 0;
         
         var currency = "@(isAr ? "ج.م" : "EGP")";
+        
+        if (activeDiscount > 0) {
+            document.getElementById('discountDisplay').innerText = "-" + activeDiscount.toFixed(2) + " " + currency;
+            document.getElementById('discountRow').style.display = 'flex';
+        } else {
+            document.getElementById('discountRow').style.display = 'none';
+        }
+
         document.getElementById('totalDisplay').innerText = finalTotal.toFixed(2) + " " + currency;
     }
 
@@ -381,6 +430,7 @@
         if (couponCode) {
             reapplyCoupon(couponCode);
         } else {
+            updateFirstOrderDiscount();
             recalculateGrandTotal();
         }
     }

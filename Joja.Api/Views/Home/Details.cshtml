@@ -1,6 +1,12 @@
 @model Joja.Api.Models.Product
 @inject Joja.Api.Data.ApplicationDbContext _context
 @inject Joja.Api.Services.ILocalizationService _localizationService
+@functions {
+    public string GetThumbnailUrl(string url, int size = 160) {
+        if (string.IsNullOrEmpty(url) || !url.Contains("cloudinary.com") || url.Contains("w_") || url.Contains("h_")) return url;
+        return url.Replace("/upload/", $"/upload/w_{size},h_{size},c_fill,q_auto,f_auto/");
+    }
+}
 @{
     ViewData["Title"] = Model.Name;
     var language = Context.Request.Cookies["UserLanguage"] ?? "en";
@@ -18,10 +24,10 @@
             @if (Model.GalleryImages != null && Model.GalleryImages.Any())
             {
                 <div class="thumbnails-container d-flex gap-2 mt-3" style="overflow-x: auto;">
-                    <img src="@Model.MainImageUrl" class="thumbnail-img" onclick="changeMainImage('@Model.MainImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid #B7477E; padding: 5px; background: #fff;" />
+                    <img src="@GetThumbnailUrl(Model.MainImageUrl)" loading="lazy" class="thumbnail-img" onclick="changeMainImage('@Model.MainImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid #B7477E; padding: 5px; background: #fff;" />
                     @foreach (var img in Model.GalleryImages)
                     {
-                        <img src="@img.ImageUrl" class="thumbnail-img" onclick="changeMainImage('@img.ImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid transparent; padding: 5px; background: #fff;" />
+                        <img src="@GetThumbnailUrl(img.ImageUrl)" loading="lazy" class="thumbnail-img" onclick="changeMainImage('@img.ImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid transparent; padding: 5px; background: #fff;" />
                     }
                 </div>
             }
@@ -73,7 +79,7 @@
                                 data-id="@variant.Id" data-image="@variantImg" data-variantprice="@(priceAdj.ToString(System.Globalization.CultureInfo.InvariantCulture))" onclick="selectVariant(this)">
                                 @if (!string.IsNullOrEmpty(variant.ImageUrl))
                                 {
-                                    <img src="@variant.ImageUrl" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
+                                    <img src="@GetThumbnailUrl(variant.ImageUrl, 60)" loading="lazy" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;" />
                                 }
                                 <span style="font-weight: 600;">@variant.Name</span>
                             </button>
