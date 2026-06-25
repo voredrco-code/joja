@@ -331,6 +331,19 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         _context.ProductReviews.Add(review);
         await _context.SaveChangesAsync();
 
+        // Update Product aggregates
+        var product = await _context.Products.Include(p => p.Reviews).FirstOrDefaultAsync(p => p.Id == productId);
+        if (product != null)
+        {
+            product.ReviewersCount = product.Reviews.Count;
+            product.Rating = product.Reviews.Any() ? product.Reviews.Average(r => r.Rating) : 5.0;
+            _context.Update(product);
+            await _context.SaveChangesAsync();
+            
+            // Invalidate the cache for this product so the new review shows up immediately
+            _cache.Remove($"ProductDetails_{productId}");
+        }
+
         return RedirectToAction(nameof(Details), new { id = productId });
     }
 
