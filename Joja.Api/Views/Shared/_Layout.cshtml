@@ -102,7 +102,7 @@
         <!-- Top Bar (Old) -->
         @if (!string.IsNullOrEmpty(appSettings?.TopBarText))
         {
-             <div class="top-bar" style="background-color: #B7477E; color: #ffffff; text-align: center; padding: 8px 0; font-size: 0.9rem; font-weight: 500;">
+             <div class="top-bar" style="background-color: #78233d; color: #C5A059; text-align: center; padding: 8px 0; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.5px;">
                  <div class="container">
                      @appSettings.TopBarText
                  </div>
@@ -115,7 +115,7 @@
         }
         @if (!string.IsNullOrEmpty(headerText))
         {
-            <div class="announcement-bar" style="background-color: #B7477E; color: #ffffff; text-align: center; padding: 8px 0; font-weight: bold; font-size: 0.9rem;">
+            <div class="announcement-bar" style="background-color: #78233d; color: #C5A059; text-align: center; padding: 8px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px;">
                 @headerText
             </div>
         }
@@ -149,13 +149,13 @@
                     <div class="language-switcher me-2 d-flex align-items-center">
                         @if (currentLang == "ar")
                         {
-                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.8rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #C5A059; color: #C5A059; font-size: 0.8rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#C5A059'; this.style.color='#78233d';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#C5A059';">
                                 <i class="fas fa-globe"></i> EN
                             </a>
                         }
                         else
                         {
-                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #B7477E; color: #B7477E; font-size: 0.8rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#B7477E'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#B7477E';">
+                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #C5A059; color: #C5A059; font-size: 0.8rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#C5A059'; this.style.color='#78233d';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#C5A059';">
                                 <i class="fas fa-globe"></i> AR
                             </a>
                         }
@@ -163,13 +163,13 @@
                     
                     <!-- Search Toggle (Desktop Only) -->
                     <div class="d-none d-md-flex align-items-center me-3 position-relative">
-                        <button id="searchToggleBtn" style="background: none; border: none; color: #B7477E; cursor: pointer;">
+                        <button id="searchToggleBtn" style="background: none; border: none; color: #C5A059; cursor: pointer;">
                             <i class="fas fa-search" style="font-size: 1.2rem;"></i>
                         </button>
                         <form id="searchForm" asp-controller="Home" asp-action="Search" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">
                             <div class="d-flex align-items-center position-relative">
-                                <input type="text" autocomplete="off" name="searchQuery" id="searchInput" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #B7477E; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
-                                <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #B7477E; cursor: pointer;">
+                                <input type="text" autocomplete="off" name="searchQuery" id="searchInput" value="@ViewBag.SearchQuery" placeholder="@(_localizationService.GetUiText("SearchProducts", currentLang) ?? "Search products...")" class="form-control rounded-pill" style="border: 1px solid #78233d; padding: 6px 35px 6px 15px; width: 250px; font-size: 0.9rem;" />
+                                <button type="submit" style="position: absolute; right: 10px; background: none; border: none; color: #78233d; cursor: pointer;">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -178,21 +178,21 @@
                     </div>
 
                     <a href="#" class="nav-link position-relative d-inline-block me-3" onclick="showWishlistModal(event)">
-                        <i class="fas fa-heart" style="font-size: 1.2rem; color: #B7477E;"></i>
-                        <span id="wishlist-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                        <i class="fas fa-heart" style="font-size: 1.2rem; color: #C5A059;"></i>
+                        <span id="wishlist-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display: none; background-color: #C5A059; color: #78233d;">
                             0
                         </span>
                     </a>
                     
                     <a href="#" class="nav-link position-relative d-inline-block" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #B7477E;"></i>
-                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #C5A059;"></i>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: #C5A059; color: #78233d;">
                             0
                         </span>
                     </a>
 
                     <!-- Mobile Menu Toggle - Moved inside icons for far-right positioning -->
-                    <button class="mobile-menu-toggle ms-2" onclick="toggleMobileMenu()">
+                    <button class="mobile-menu-toggle ms-2" onclick="toggleMobileMenu()" style="color: #C5A059 !important;">
                         <i class="fas fa-bars"></i>
                     </button>
                     
@@ -270,9 +270,10 @@
 
     <footer id="about-us">
         <style>
-            footer, footer h3, footer p, footer .copyright { color: #ffffff !important; }
-            footer a { color: #ffffff !important; transition: 0.3s; }
-            footer a:hover { opacity: 0.8; }
+            footer, footer h3 { color: #C5A059 !important; }
+            footer p, footer .copyright { color: rgba(197,160,89,0.8) !important; }
+            footer a { color: rgba(197,160,89,0.85) !important; transition: 0.3s; }
+            footer a:hover { color: #C5A059 !important; opacity: 0.85; }
         </style>
         @{
             var footerText = siteSettings?.FooterAboutText ?? "Natural skincare products formulated with care & science";
@@ -281,6 +282,7 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <h3>@_localizationService.GetUiText("AboutJoja", currentLang)</h3>
+                    <p class="footer-slogan"><em>Where luxury meets nature</em></p>
                     <p>@footerText</p>
                 </div>
                 <div class="footer-col">
@@ -509,7 +511,7 @@
             document.querySelectorAll('.wishlist-btn').forEach(btn => {
                 let id = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
                 if (wl.includes(id)) {
-                    btn.style.color = '#B7477E';
+                    btn.style.color = '#78233d';
                 } else {
                     btn.style.color = '#ccc';
                 }
@@ -525,7 +527,7 @@
                 Swal.fire({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 2000, icon: 'info', title: 'Removed from wishlist' });
             } else {
                 wl.push(id);
-                btn.style.color = '#B7477E';
+                btn.style.color = '#78233d';
                 Swal.fire({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 2000, icon: 'success', title: 'Added to wishlist ❤️' });
             }
             saveWishlist(wl);

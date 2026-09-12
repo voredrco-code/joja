@@ -139,24 +139,17 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             return await _context.Categories.AsNoTracking().ToListAsync();
         });
         
-        _localizationService.GetLocalizedCategories(categories, language);
+        var localizedCats = categories?.Select(c => new Category { Id = c.Id, Name = c.Name, NameEn = c.NameEn }).ToList() ?? new List<Category>();
+        _localizationService.GetLocalizedCategories(localizedCats, language);
 
-        // Get products (filtered if categoryId is present)
-        List<Product> products;
-        if (categoryId.HasValue)
-        {
-            products = await _context.Products.AsNoTracking().Where(p => p.CategoryId == categoryId.Value).ToListAsync();
-        }
-        else
-        {
-            products = await _cache.GetOrCreateAsync("HomeProductsCache", async entry => {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
-                return await _context.Products.AsNoTracking().ToListAsync();
-            }) ?? new List<Product>();
-        }
+        // Always load all products for homepage sections
+        var allProducts = await _cache.GetOrCreateAsync("HomeProductsCache", async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await _context.Products.AsNoTracking().ToListAsync();
+        }) ?? new List<Product>();
 
         // Clone the list to prevent modifying the cached instances during localization
-        var localizedProducts = products.Select(p => new Product 
+        var localizedProducts = allProducts.Select(p => new Product 
         { 
             Id = p.Id, Name = p.Name, NameEn = p.NameEn, Description = p.Description, DescriptionEn = p.DescriptionEn,
             Price = p.Price, OriginalPrice = p.OriginalPrice, MainImageUrl = p.MainImageUrl, CategoryId = p.CategoryId
@@ -164,7 +157,7 @@ _تم إرسال هذا الطلب في: {OrderDate}_
 
         _localizationService.GetLocalizedProducts(localizedProducts, language);
         
-        // Get banners and video banners from cache or DB
+        // Get banners from cache or DB
         var banners = await _cache.GetOrCreateAsync("BannersCache", async entry => {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
             return await _context.Banners.AsNoTracking().OrderBy(b => b.DisplayOrder).ToListAsync();
@@ -174,18 +167,39 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
             return await _context.VideoBanners.AsNoTracking().Where(v => v.IsActive).OrderBy(v => v.DisplayOrder).ToListAsync();
         });
-        
+
+        // Build Recent Offers: products with a discount (OriginalPrice > Price)
+        var recentOffers = localizedProducts
+            .Where(p => p.OriginalPrice.HasValue && p.OriginalPrice > p.Price)
+            .Take(8)
+            .ToList();
+
+        // Build Category Sections: group products by their category, ordered by category
+        var categorySections = localizedCats
+            .Select(cat => new ViewModels.CategorySection
+            {
+                CategoryId = cat.Id,
+                CategoryName = cat.Name,
+                Products = localizedProducts
+                    .Where(p => p.CategoryId == cat.Id)
+                    .Take(8)
+                    .ToList()
+            })
+            .Where(s => s.Products.Any())
+            .ToList();
+
         var viewModel = new ViewModels.HomeViewModel
         {
             Products = localizedProducts,
-            Categories = categories,
+            Categories = localizedCats,
             Banners = banners,
-            VideoBanners = videoBanners
+            VideoBanners = videoBanners,
+            RecentOffers = recentOffers,
+            CategorySections = categorySections
         };
 
         if (!viewModel.Categories.Any())
         {
-            // Seed temp categories if empty for UI check
             viewModel.Categories = new List<Category> 
             { 
                 new Category { Id = 1, Name = "Skin Care" }, 

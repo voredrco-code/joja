@@ -3,8 +3,9 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- Hero Section -->
-<!-- Hero Section -->
+<!-- ========================
+     Hero Carousel Section
+     ======================== -->
 @if (Model.Banners != null && Model.Banners.Any())
 {
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -13,12 +14,12 @@
             {
                 var banner = Model.Banners.ElementAt(i);
                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                    <section class="hero-section" style="background-image: url('@banner.ImageUrl');">
+                    <div class="hero-section" style="background-image: url('@banner.ImageUrl');">
                         <div class="container hero-content">
                             <h1>@banner.Title</h1>
                             <p>@banner.Subtitle</p>
                         </div>
-                    </section>
+                    </div>
                 </div>
             }
         </div>
@@ -37,239 +38,170 @@
 }
 else
 {
-    <section class="hero-section" style="background-image: url('/images/logo.webp');">
+    <div class="hero-section" style="background-image: url('/images/logo.webp');">
         <div class="container hero-content">
             <h1>@(ViewBag.HeroTitle ?? "Natural Beauty for You")</h1>
             <p>@(ViewBag.HeroSubtitle ?? "Discover our natural collection")</p>
         </div>
-    </section>
+    </div>
 }
 
-<!-- Video Reels Section -->
-@if (Model.VideoBanners != null && Model.VideoBanners.Any())
+<!-- ========================
+     Recent Offers Section
+     ======================== -->
+@if (Model.RecentOffers != null && Model.RecentOffers.Any())
 {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-    <section class="joja-reels-section">
+    <div class="home-section" id="recent-offers">
         <div class="container">
-            <h2 class="section-title brand-font" style="text-align:center; margin-bottom:30px; font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: 2px;">🎬 JOJA REELS</h2>
-        </div>
-
-        <style>
-            @@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
-
-            .joja-reels-ticker-container {
-                width: 100%;
-                overflow: hidden;
-                white-space: nowrap;
-                padding: 20px 0;
-                position: relative;
-                background-color: transparent;
-                direction: ltr !important;
-            }
-            .joja-reels-ticker-track {
-                display: inline-block;
-                white-space: nowrap;
-                font-size: 0; /* Remove whitespace gap between inline-block elements to sync speed perfectly */
-                animation: scrollVideos 25s linear infinite;
-            }
-            .joja-reels-ticker-track:hover, .joja-reels-ticker-track.paused {
-                animation-play-state: paused;
-            }
-            .joja-reel-card-ticker {
-                display: inline-block;
-                width: 250px;
-                height: 400px;
-                margin-right: 15px;
-                border-radius: 12px;
-                overflow: hidden;
-                position: relative;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                vertical-align: top;
-                font-size: 1rem; /* Restore font size */
-                font-family: 'Tajawal', sans-serif; /* Force same font to match Arabic exactly */
-            }
-            @@media (max-width: 768px) {
-                .joja-reel-card-ticker {
-                    width: 180px;
-                    height: 320px;
-                    margin-right: 10px;
-                }
-            }
-            .joja-reel-card-ticker video {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-            @@keyframes scrollVideos {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-            }
-        </style>
-        <div class="joja-reels-ticker-container">
-            <div class="joja-reels-ticker-track">
-                <!-- We duplicate the list 4 times so it fills large screens perfectly -->
-                @for (int i = 0; i < 4; i++)
+            <div class="home-section-header">
+                <div class="home-section-title-group">
+                    <span class="home-section-label">✨ Limited Time</span>
+                    <h2 class="home-section-title">Recent Offers</h2>
+                </div>
+                <a href="/#shop-section" class="home-section-view-all">View All &rarr;</a>
+            </div>
+            <div class="product-row-grid">
+                @foreach (var item in Model.RecentOffers)
                 {
-                    @foreach (var vid in Model.VideoBanners)
-                    {
-                        <div class="joja-reel-card-ticker">
-                            <video class="joja-reel-video" 
-                                   autoplay loop muted playsinline 
-                                   preload="none">
-                                <source src="@vid.VideoUrl">
-                            </video>
-                            @if (!string.IsNullOrEmpty(vid.Title))
+                    <div class="product-card">
+                        <div class="image-box">
+                            <a href="/Home/Details/@item.Id">
+                                <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
+                            </a>
+                            @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
                             {
-                                <div class="joja-reel-caption">@vid.Title</div>
+                                var discPct = (int)Math.Round((1 - (double)item.Price / (double)item.OriginalPrice.Value) * 100);
+                                <span class="discount-badge">-@discPct%</span>
                             }
                         </div>
-                    }
+                        <div class="product-info">
+                            <a href="/Home/Details/@item.Id">
+                                <h5 class="product-title">@item.Name</h5>
+                            </a>
+                            <div class="product-price">
+                                @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                {
+                                    <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                                }
+                                <span class="new-price">@item.Price EGP</span>
+                            </div>
+                        </div>
+                    </div>
                 }
             </div>
         </div>
-    </section>
-
+    </div>
 }
 
-<style>
-    .joja-strict-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr); /* إجبار 4 منتجات في الديسك توب */
-        gap: 20px;
-        justify-items: center;
-    }
-    @@media (max-width: 991px) {
-        .joja-strict-grid { grid-template-columns: repeat(3, 1fr); justify-items: center; } /* 3 في التابلت */
-    }
-    @@media (max-width: 768px) {
-        .joja-strict-grid { grid-template-columns: repeat(2, 1fr); justify-items: center; } /* 2 في الموبايل */
-    }
-</style>
-
-<div id="shop-section" class="container mt-5 mb-5 product-section-clean">
-    <h2 class="text-center mb-4" style="color: #333; font-weight: 800; font-size: 2.2rem;">Our Products</h2>
-    
-    <!-- Filter Buttons -->
-    <div class="filter-buttons filter-list my-4 d-flex justify-content-center flex-wrap gap-2">
-        <button class="btn-filter active" onclick="filter(null)">@(ViewBag.FilterAll ?? "All")</button>
-        @foreach(var cat in Model.Categories) {
-            <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>
-        }
-    </div>
-
-    <div class="desktop-4-grid" id="product-container">
-        
-        @foreach (var item in Model.Products) 
-        {
-            <div class="product-card">
-                
-                <div class="image-box">
-                    <a href="/Home/Details/@item.Id">
-                        <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
-                    </a>
+<!-- ========================
+     Category Sections
+     ======================== -->
+@if (Model.CategorySections != null && Model.CategorySections.Any())
+{
+    @foreach (var catSection in Model.CategorySections)
+    {
+        <div class="home-section" id="category-@catSection.CategoryId">
+            <div class="container">
+                <div class="home-section-header">
+                    <div class="home-section-title-group">
+                        <span class="home-section-label">Our Collection</span>
+                        <h2 class="home-section-title">@catSection.CategoryName</h2>
+                    </div>
+                    <a href="/?categoryId=@catSection.CategoryId#shop-section" class="home-section-view-all">View All &rarr;</a>
                 </div>
+                <div class="product-row-grid">
+                    @foreach (var item in catSection.Products)
+                    {
+                        <div class="product-card">
+                            <div class="image-box">
+                                <a href="/Home/Details/@item.Id">
+                                    <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
+                                </a>
+                                @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                {
+                                    var discPct2 = (int)Math.Round((1 - (double)item.Price / (double)item.OriginalPrice.Value) * 100);
+                                    <span class="discount-badge">-@discPct2%</span>
+                                }
+                            </div>
+                            <div class="product-info">
+                                <p class="product-category-label">@catSection.CategoryName</p>
+                                <a href="/Home/Details/@item.Id">
+                                    <h5 class="product-title">@item.Name</h5>
+                                </a>
+                                <div class="product-price">
+                                    @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                    {
+                                        <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                                    }
+                                    <span class="new-price">@item.Price EGP</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <!-- Fallback: All Products with Filter Buttons -->
+    <div id="shop-section" class="container mt-5 mb-5">
+        <h2 class="text-center mb-4" style="color: #333; font-weight: 800; font-size: 2.2rem;">Our Products</h2>
 
-                <div class="product-info">
-                    <a href="/Home/Details/@item.Id">
-                        <h5 class="product-title">@item.Name</h5>
-                    </a>
-                    
-                    <div class="product-price">
+        <div class="filter-buttons filter-list my-4 d-flex justify-content-center flex-wrap gap-2">
+            <button class="btn-filter active" onclick="filter(null)">@(ViewBag.FilterAll ?? "All")</button>
+            @foreach (var cat in Model.Categories)
+            {
+                <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>
+            }
+        </div>
+
+        <div class="desktop-4-grid" id="product-container">
+            @foreach (var item in Model.Products)
+            {
+                <div class="product-card">
+                    <div class="image-box">
+                        <a href="/Home/Details/@item.Id">
+                            <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
+                        </a>
                         @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
                         {
-                            <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                            var discPct3 = (int)Math.Round((1 - (double)item.Price / (double)item.OriginalPrice.Value) * 100);
+                            <span class="discount-badge">-@discPct3%</span>
                         }
-                        <span class="new-price">@item.Price EGP</span>
+                    </div>
+                    <div class="product-info">
+                        <a href="/Home/Details/@item.Id">
+                            <h5 class="product-title">@item.Name</h5>
+                        </a>
+                        <div class="product-price">
+                            @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                            {
+                                <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                            }
+                            <span class="new-price">@item.Price EGP</span>
+                        </div>
                     </div>
                 </div>
-                
-            </div>
-        }
-        
+            }
+        </div>
     </div>
-</div>
+}
 
-
-
-
-
+<!-- anchor for nav links -->
+<div id="shop-section" style="position:relative; top:-80px; visibility:hidden;"></div>
 
 @section Scripts {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    function openVideo(videoUrl, productName) {
-        const modal = document.getElementById('videoModal');
-        const video = document.getElementById('modalVideo');
-        const name = document.getElementById('videoProductName');
-
-        video.src = videoUrl;
-        name.innerText = productName;
-        
-        $(modal).fadeIn(300);
-        video.play();
-    }
-
-    function closeVideo() {
-        const modal = document.getElementById('videoModal');
-        const video = document.getElementById('modalVideo');
-        
-        $(modal).fadeOut(300, function() {
-            video.pause();
-            video.src = "";
-        });
-    }
-
     function filter(catId) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchQuery = urlParams.get('searchQuery');
-        
+        var searchQuery = new URLSearchParams(window.location.search).get('searchQuery');
         $.get("/Home/FilterProducts", { categoryId: catId, searchQuery: searchQuery }, function(data) {
             $("#product-container").html(data);
         });
-        // Toggle active class
         $(".btn-filter").removeClass("active");
         event.target.classList.add("active");
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Ticker Videos Hover/Touch to Unmute
-        const tickerVideos = document.querySelectorAll('.joja-reel-video');
-        const tickerTrack = document.querySelector('.joja-reels-ticker-track');
-        
-        tickerVideos.forEach(video => {
-            // Desktop hover
-            video.addEventListener('mouseenter', function() {
-                this.muted = false;
-            });
-            
-            video.addEventListener('mouseleave', function() {
-                this.muted = true;
-            });
-            
-            // Mobile touch
-            video.addEventListener('touchstart', function(e) {
-                e.stopPropagation(); // Stop from bubbling to document
-                if (this.muted) {
-                    // Mute all other videos first
-                    tickerVideos.forEach(v => v.muted = true);
-                    this.muted = false;
-                    tickerTrack.classList.add('paused');
-                } else {
-                    this.muted = true;
-                    tickerTrack.classList.remove('paused');
-                }
-            }, { passive: false });
-        });
-
-        // Global touch to resume scrolling when tapping anywhere else
-        document.addEventListener('touchstart', function() {
-            tickerVideos.forEach(v => v.muted = true);
-            if (tickerTrack) {
-                tickerTrack.classList.remove('paused');
-            }
-        });
-    });
 </script>
 }
-
