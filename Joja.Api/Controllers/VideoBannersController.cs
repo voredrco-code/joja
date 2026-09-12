@@ -49,18 +49,35 @@ public class VideoBannersController : Controller
         {
             if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
             using var stream = VideoFile.OpenReadStream();
-            var uploadParams = new VideoUploadParams()
+            
+            var ext = System.IO.Path.GetExtension(VideoFile.FileName).ToLowerInvariant();
+            var isImage = VideoFile.ContentType.StartsWith("image/") || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".webp" || ext == ".gif";
+            
+            if (isImage)
             {
-                File = new FileDescription(VideoFile.FileName, stream),
-                Folder = "joja/video_banners"
-            };
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(VideoFile.FileName, stream),
+                    Folder = "joja/customer_feedback"
+                };
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
+            }
+            else
+            {
+                var uploadParams = new VideoUploadParams()
+                {
+                    File = new FileDescription(VideoFile.FileName, stream),
+                    Folder = "joja/customer_feedback"
+                };
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
+            }
         }
 
         if (string.IsNullOrEmpty(videoBanner.VideoUrl))
         {
-            ModelState.AddModelError("VideoUrl", "Please provide a Video URL or upload a video file.");
+            ModelState.AddModelError("VideoUrl", "Please provide a URL or upload an image/video file.");
             return View(videoBanner);
         }
 
@@ -93,17 +110,34 @@ public class VideoBannersController : Controller
             {
                 if (_cloudinary == null) throw new Exception("Cloudinary not configured.");
                 using var stream = VideoFile.OpenReadStream();
-                var uploadParams = new VideoUploadParams()
+                
+                var ext = System.IO.Path.GetExtension(VideoFile.FileName).ToLowerInvariant();
+                var isImage = VideoFile.ContentType.StartsWith("image/") || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".webp" || ext == ".gif";
+                
+                if (isImage)
                 {
-                    File = new FileDescription(VideoFile.FileName, stream),
-                    Folder = "joja/video_banners"
-                };
-                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(VideoFile.FileName, stream),
+                        Folder = "joja/customer_feedback"
+                    };
+                    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                    videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
+                }
+                else
+                {
+                    var uploadParams = new VideoUploadParams()
+                    {
+                        File = new FileDescription(VideoFile.FileName, stream),
+                        Folder = "joja/customer_feedback"
+                    };
+                    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                    videoBanner.VideoUrl = uploadResult.SecureUrl.ToString();
+                }
             }
             else
             {
-                // Keep existing video
+                // Keep existing media URL
                 var existing = await _context.VideoBanners.AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
                 if (existing != null) videoBanner.VideoUrl = existing.VideoUrl;
             }

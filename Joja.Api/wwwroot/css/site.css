@@ -575,11 +575,13 @@ footer .footer-col p, footer .footer-col a {
 footer a:hover { color: var(--joja-gold) !important; opacity: 0.85; }
 
 .footer-slogan {
-    font-family: 'Tajawal', 'Montserrat', sans-serif !important;
-    font-size: 0.95rem;
-    color: rgba(197,160,89,0.9) !important;
-    margin-top: 6px;
-    letter-spacing: 0.5px;
+    font-family: inherit !important;
+    font-size: 1rem !important;
+    font-style: normal !important;
+    color: rgba(197,160,89,0.85) !important;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    letter-spacing: normal !important;
 }
 
 .footer-grid {
