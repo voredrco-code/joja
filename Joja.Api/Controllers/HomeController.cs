@@ -219,6 +219,46 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return View(viewModel);
     }
 
+    public async Task<IActionResult> Shop(int? categoryId)
+    {
+        var language = Request.Cookies["UserLanguage"] ?? "en";
+        
+        var categories = await _cache.GetOrCreateAsync("AllCategoriesCache", async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await _context.Categories.AsNoTracking().ToListAsync();
+        });
+        
+        var localizedCats = categories.Select(c => new Category { Id = c.Id, Name = c.Name, NameEn = c.NameEn }).ToList();
+        _localizationService.GetLocalizedCategories(localizedCats, language);
+
+        var allProducts = await _cache.GetOrCreateAsync("AllProductsCache", async entry => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await _context.Products.AsNoTracking().Include(p => p.Category).ToListAsync();
+        });
+
+        var localizedProducts = allProducts.Select(p => new Product 
+        { 
+            Id = p.Id, Name = p.Name, NameEn = p.NameEn, Description = p.Description, DescriptionEn = p.DescriptionEn,
+            Price = p.Price, OriginalPrice = p.OriginalPrice, MainImageUrl = p.MainImageUrl, CategoryId = p.CategoryId,
+            Category = p.Category
+        }).ToList();
+
+        _localizationService.GetLocalizedProducts(localizedProducts, language);
+
+        var filteredProducts = localizedProducts;
+        if (categoryId.HasValue)
+        {
+            filteredProducts = localizedProducts.Where(p => p.CategoryId == categoryId.Value).ToList();
+        }
+
+        ViewBag.SelectedCategoryId = categoryId;
+        ViewBag.Categories = localizedCats;
+        ViewBag.FilterAll = _localizationService.GetUiText("FilterAll", language) ?? "All";
+        ViewBag.AddToCart = _localizationService.GetUiText("AddToCart", language) ?? "Add to Cart";
+
+        return View(filteredProducts);
+    }
+
     public async Task<IActionResult> FilterProducts(int? categoryId, string? searchQuery)
     {
         // Get user language from cookie

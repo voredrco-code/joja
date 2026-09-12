@@ -1,0 +1,79 @@
+@model IEnumerable<Joja.Api.Models.Product>
+@{
+    ViewData["Title"] = "Shop All";
+    var categories = ViewBag.Categories as List<Joja.Api.Models.Category> ?? new List<Joja.Api.Models.Category>();
+    int? selectedCatId = ViewBag.SelectedCategoryId as int?;
+}
+
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <h1 class="brand-font" style="color: #78233d; font-size: 2.5rem; font-weight: 800;">Our Collection</h1>
+        <p class="text-muted">Explore our complete range of natural skincare & beauty products</p>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="filter-buttons filter-list my-4 d-flex justify-content-center flex-wrap gap-2">
+        <button class="btn-filter @(selectedCatId == null ? "active" : "")" onclick="filterCategory(null, this)">
+            @(ViewBag.FilterAll ?? "All")
+        </button>
+        @foreach (var cat in categories)
+        {
+            <button class="btn-filter @(selectedCatId == cat.Id ? "active" : "")" onclick="filterCategory(@cat.Id, this)">
+                @cat.Name
+            </button>
+        }
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-row-grid" id="shop-product-container">
+        @foreach (var item in Model)
+        {
+            <div class="product-card">
+                <div class="image-box">
+                    <a href="/Home/Details/@item.Id">
+                        <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
+                    </a>
+                    @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                    {
+                        var discPct = (int)Math.Round((1 - (double)item.Price / (double)item.OriginalPrice.Value) * 100);
+                        <span class="discount-badge">-@discPct%</span>
+                    }
+                </div>
+                <div class="product-info">
+                    <a href="/Home/Details/@item.Id">
+                        <h5 class="product-title">@item.Name</h5>
+                    </a>
+                    <div class="product-price">
+                        @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                        {
+                            <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                        }
+                        <span class="new-price">@item.Price EGP</span>
+                    </div>
+                    <div class="product-card-actions">
+                        <button type="button" class="btn-add-to-cart-card" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')">
+                            <i class="fas fa-shopping-bag me-1"></i> ADD TO CART
+                        </button>
+                        <button type="button" class="btn-wishlist-card" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function filterCategory(catId, btnElement) {
+        $(".btn-filter").removeClass("active");
+        if (btnElement) $(btnElement).addClass("active");
+        
+        $.get("/Home/FilterProducts", { categoryId: catId }, function(data) {
+            $("#shop-product-container").html(data);
+        });
+    }
+</script>
+}

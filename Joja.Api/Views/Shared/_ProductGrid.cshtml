@@ -1,32 +1,34 @@
 @model Joja.Api.Models.Product
-<div class="product-card-wrap">
-    <div class="product-card h-100 d-flex flex-column">
-        
-        <div class="image-box position-relative">
-            <button class="btn wishlist-btn position-absolute top-0 end-0 m-2 rounded-circle shadow-sm" 
-                    style="width: 35px; height: 35px; background: white; border: 1px solid #eee; z-index: 10; display: flex; align-items: center; justify-content: center; color: #ccc; transition: all 0.3s;"
-                    onclick="toggleWishlist(event, @Model.Id, this)">
-                <i class="fas fa-heart"></i>
-            </button>
-            <a href="/Home/Details/@Model.Id">
-                <img src="@Model.MainImageUrl" class="product-img" loading="lazy" alt="@Model.Name">
-            </a>
-        </div>
 
-        <div class="product-info text-center mt-2 flex-grow-1">
-            <a href="/Home/Details/@Model.Id" style="text-decoration: none;">
-                <h5 class="product-title" title="@Model.Name">@Model.Name</h5>
-            </a>
-            
-            <div class="product-price mt-1">
-                @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
-                {
-                    <span class="old-price">@Model.OriginalPrice.Value EGP</span>
-                }
-                <span class="new-price">@Model.Price EGP</span>
-            </div>
+<div class="product-card">
+    <div class="image-box">
+        <a href="/Home/Details/@Model.Id">
+            <img src="@Model.MainImageUrl" class="product-img" loading="lazy" alt="@Model.Name">
+        </a>
+        @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+        {
+            var discPct = (int)Math.Round((1 - (double)Model.Price / (double)Model.OriginalPrice.Value) * 100);
+            <span class="discount-badge">-@discPct%</span>
+        }
+    </div>
+    <div class="product-info">
+        <a href="/Home/Details/@Model.Id">
+            <h5 class="product-title">@Model.Name</h5>
+        </a>
+        <div class="product-price">
+            @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+            {
+                <span class="old-price">@Model.OriginalPrice.Value EGP</span>
+            }
+            <span class="new-price">@Model.Price EGP</span>
         </div>
-        
+        <div class="product-card-actions">
+            <button type="button" class="btn-add-to-cart-card" onclick="addToCart(@Model.Id, '@Model.Name.Replace("'", "\\'")', @Model.Price, '@Model.MainImageUrl')">
+                <i class="fas fa-shopping-bag me-1"></i> ADD TO CART
+            </button>
+            <button type="button" class="btn-wishlist-card" onclick="toggleWishlist(@Model.Id, '@Model.Name.Replace("'", "\\'")', @Model.Price, '@Model.MainImageUrl', this)" title="Add to Wishlist">
+                <i class="far fa-heart"></i>
+            </button>
+        </div>
     </div>
 </div>
-

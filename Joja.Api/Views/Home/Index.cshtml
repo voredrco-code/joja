@@ -58,7 +58,7 @@ else
                     <span class="home-section-label">✨ Limited Time</span>
                     <h2 class="home-section-title">Recent Offers</h2>
                 </div>
-                <a href="/#shop-section" class="home-section-view-all">View All &rarr;</a>
+                <a href="/Home/Shop" class="home-section-view-all">View All &rarr;</a>
             </div>
             <div class="product-row-grid">
                 @foreach (var item in Model.RecentOffers)
@@ -85,6 +85,14 @@ else
                                 }
                                 <span class="new-price">@item.Price EGP</span>
                             </div>
+                            <div class="product-card-actions">
+                                <button type="button" class="btn-add-to-cart-card" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')">
+                                    <i class="fas fa-shopping-bag me-1"></i> ADD TO CART
+                                </button>
+                                <button type="button" class="btn-wishlist-card" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 }
@@ -107,7 +115,7 @@ else
                         <span class="home-section-label">Our Collection</span>
                         <h2 class="home-section-title">@catSection.CategoryName</h2>
                     </div>
-                    <a href="/?categoryId=@catSection.CategoryId#shop-section" class="home-section-view-all">View All &rarr;</a>
+                    <a href="/Home/Shop?categoryId=@catSection.CategoryId" class="home-section-view-all">View All &rarr;</a>
                 </div>
                 <div class="product-row-grid">
                     @foreach (var item in catSection.Products)
@@ -124,7 +132,6 @@ else
                                 }
                             </div>
                             <div class="product-info">
-                                <p class="product-category-label">@catSection.CategoryName</p>
                                 <a href="/Home/Details/@item.Id">
                                     <h5 class="product-title">@item.Name</h5>
                                 </a>
@@ -135,6 +142,14 @@ else
                                     }
                                     <span class="new-price">@item.Price EGP</span>
                                 </div>
+                                <div class="product-card-actions">
+                                    <button type="button" class="btn-add-to-cart-card" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')">
+                                        <i class="fas fa-shopping-bag me-1"></i> ADD TO CART
+                                    </button>
+                                    <button type="button" class="btn-wishlist-card" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     }
@@ -143,65 +158,69 @@ else
         </div>
     }
 }
-else
-{
-    <!-- Fallback: All Products with Filter Buttons -->
-    <div id="shop-section" class="container mt-5 mb-5">
-        <h2 class="text-center mb-4" style="color: #333; font-weight: 800; font-size: 2.2rem;">Our Products</h2>
 
-        <div class="filter-buttons filter-list my-4 d-flex justify-content-center flex-wrap gap-2">
-            <button class="btn-filter active" onclick="filter(null)">@(ViewBag.FilterAll ?? "All")</button>
-            @foreach (var cat in Model.Categories)
-            {
-                <button class="btn-filter" onclick="filter(@cat.Id)">@cat.Name</button>
-            }
+<!-- ========================
+     Customer Feedback Section
+     ======================== -->
+<div class="feedback-section py-5" id="customer-feedback">
+    <div class="container text-center">
+        <h2 class="feedback-title">CUSTOMER FEEDBACK</h2>
+        <div class="feedback-stars my-2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
         </div>
-
-        <div class="desktop-4-grid" id="product-container">
-            @foreach (var item in Model.Products)
+        <div class="feedback-slider mt-4">
+            @if (Model.VideoBanners != null && Model.VideoBanners.Any())
             {
-                <div class="product-card">
-                    <div class="image-box">
-                        <a href="/Home/Details/@item.Id">
-                            <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
-                        </a>
-                        @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                foreach (var item in Model.VideoBanners)
+                {
+                    <div class="feedback-card">
+                        @if (item.VideoUrl.EndsWith(".mp4") || item.VideoUrl.EndsWith(".webm"))
                         {
-                            var discPct3 = (int)Math.Round((1 - (double)item.Price / (double)item.OriginalPrice.Value) * 100);
-                            <span class="discount-badge">-@discPct3%</span>
+                            <video src="@item.VideoUrl" controls class="feedback-img"></video>
+                        }
+                        else
+                        {
+                            <img src="@item.VideoUrl" class="feedback-img" alt="@item.Title" />
                         }
                     </div>
-                    <div class="product-info">
-                        <a href="/Home/Details/@item.Id">
-                            <h5 class="product-title">@item.Name</h5>
-                        </a>
-                        <div class="product-price">
-                            @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
-                            {
-                                <span class="old-price">@item.OriginalPrice.Value EGP</span>
-                            }
-                            <span class="new-price">@item.Price EGP</span>
+                }
+            }
+            else
+            {
+                <!-- Sample Customer Feedback Screenshots -->
+                <div class="feedback-card">
+                    <div class="feedback-chat-box p-4 d-flex flex-column justify-content-between h-100" style="background: #111b21; color: #e9edef; font-family: 'Tajawal', sans-serif; border-radius: 16px; text-align: right; direction: rtl;">
+                        <div class="chat-bubble p-3 rounded-3" style="background: #005c4b; color: #fff; max-width: 90%; align-self: flex-start; line-height: 1.6;">
+                            "مساء النور.. الـ body spray حلو قوي وريحته رقيقة جداً شكراً ليكوا 🙏"
                         </div>
+                        <div class="chat-time text-muted mt-2" style="font-size: 0.8rem;">2:17 pm</div>
+                    </div>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-chat-box p-4 d-flex flex-column justify-content-between h-100" style="background: #111b21; color: #e9edef; font-family: 'Tajawal', sans-serif; border-radius: 16px; text-align: right; direction: rtl;">
+                        <div class="chat-bubble p-3 rounded-3" style="background: #005c4b; color: #fff; max-width: 90%; align-self: flex-start; line-height: 1.6;">
+                            "ايوه وصل تسلمي وتوحفة، الاسبلاشر تحفه تحفه ❤️"
+                        </div>
+                        <div class="chat-time text-muted mt-2" style="font-size: 0.8rem;">2:44 pm</div>
+                    </div>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-chat-box p-4 d-flex flex-column justify-content-between h-100" style="background: #111b21; color: #e9edef; font-family: 'Tajawal', sans-serif; border-radius: 16px; text-align: right; direction: rtl;">
+                        <div class="chat-bubble p-3 rounded-3" style="background: #005c4b; color: #fff; max-width: 90%; align-self: flex-start; line-height: 1.6;">
+                            "المنتجات بجد فوق الوصف.. البودي زبدة بتسيب الجسم ناعم وريحته تحفة ثابتة طول اليوم! ✨"
+                        </div>
+                        <div class="chat-time text-muted mt-2" style="font-size: 0.8rem;">4:12 pm</div>
                     </div>
                 </div>
             }
         </div>
     </div>
-}
-
-<!-- anchor for nav links -->
-<div id="shop-section" style="position:relative; top:-80px; visibility:hidden;"></div>
+</div>
 
 @section Scripts {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function filter(catId) {
-        var searchQuery = new URLSearchParams(window.location.search).get('searchQuery');
-        $.get("/Home/FilterProducts", { categoryId: catId, searchQuery: searchQuery }, function(data) {
-            $("#product-container").html(data);
-        });
-        $(".btn-filter").removeClass("active");
-        event.target.classList.add("active");
-    }
-</script>
 }

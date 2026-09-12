@@ -132,14 +132,11 @@
                         var isHomePage = ViewContext.RouteData.Values["controller"]?.ToString() == "Home" &&
                                          ViewContext.RouteData.Values["action"]?.ToString() == "Index";
                     }
-                    @if (isHomePage)
+                    <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
+                    <li><a href="/Home/Shop">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
+                    @foreach (var cat in localizedNavCategories)
                     {
-                        <li><a asp-controller="Home" asp-action="Index">@_localizationService.GetUiText("NavHome", currentLang)</a></li>
-                        <li><a href="/#shop-section">@_localizationService.GetUiText("NavShop", currentLang)</a></li>
-                        @foreach (var cat in localizedNavCategories)
-                        {
-                            <li><a href="/?categoryId=@cat.Id#shop-section">@cat.Name</a></li>
-                        }
+                        <li><a href="/Home/Shop?categoryId=@cat.Id">@cat.Name</a></li>
                     }
                 </ul>
 
@@ -149,13 +146,13 @@
                     <div class="language-switcher me-2 d-flex align-items-center">
                         @if (currentLang == "ar")
                         {
-                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #C5A059; color: #C5A059; font-size: 0.8rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#C5A059'; this.style.color='#78233d';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#C5A059';">
+                            <a href="/Home/SetLanguage?culture=en-US&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #78233d; color: #78233d; font-size: 0.8rem; font-weight: bold; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#78233d'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#78233d';">
                                 <i class="fas fa-globe"></i> EN
                             </a>
                         }
                         else
                         {
-                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #C5A059; color: #C5A059; font-size: 0.8rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#C5A059'; this.style.color='#78233d';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#C5A059';">
+                            <a href="/Home/SetLanguage?culture=ar-EG&returnUrl=@System.Net.WebUtility.UrlEncode(Context.Request.Path)" class="btn rounded-pill px-2 py-1" style="border: 1px solid #78233d; color: #78233d; font-size: 0.8rem; font-weight: bold; text-decoration: none; font-family: 'Tajawal', sans-serif; transition: all 0.3s;" onmouseover="this.style.backgroundColor='#78233d'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#78233d';">
                                 <i class="fas fa-globe"></i> AR
                             </a>
                         }
@@ -163,7 +160,7 @@
                     
                     <!-- Search Toggle (Desktop Only) -->
                     <div class="d-none d-md-flex align-items-center me-3 position-relative">
-                        <button id="searchToggleBtn" style="background: none; border: none; color: #C5A059; cursor: pointer;">
+                        <button id="searchToggleBtn" style="background: none; border: none; color: #78233d; cursor: pointer;">
                             <i class="fas fa-search" style="font-size: 1.2rem;"></i>
                         </button>
                         <form id="searchForm" asp-controller="Home" asp-action="Search" method="get" class="position-absolute" style="display: none; top: 100%; right: 0; margin-top: 10px; z-index: 1000; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">
@@ -178,21 +175,21 @@
                     </div>
 
                     <a href="#" class="nav-link position-relative d-inline-block me-3" onclick="showWishlistModal(event)">
-                        <i class="fas fa-heart" style="font-size: 1.2rem; color: #C5A059;"></i>
-                        <span id="wishlist-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display: none; background-color: #C5A059; color: #78233d;">
+                        <i class="fas fa-heart" style="font-size: 1.2rem; color: #78233d;"></i>
+                        <span id="wishlist-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display: none; background-color: #78233d; color: #ffffff;">
                             0
                         </span>
                     </a>
                     
                     <a href="#" class="nav-link position-relative d-inline-block" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #C5A059;"></i>
-                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: #C5A059; color: #78233d;">
+                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: #78233d;"></i>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background-color: #78233d; color: #ffffff;">
                             0
                         </span>
                     </a>
 
                     <!-- Mobile Menu Toggle - Moved inside icons for far-right positioning -->
-                    <button class="mobile-menu-toggle ms-2" onclick="toggleMobileMenu()" style="color: #C5A059 !important;">
+                    <button class="mobile-menu-toggle ms-2" onclick="toggleMobileMenu()" style="color: #78233d !important;">
                         <i class="fas fa-bars"></i>
                     </button>
                     
