@@ -24,7 +24,7 @@
             @if (Model.GalleryImages != null && Model.GalleryImages.Any())
             {
                 <div class="thumbnails-container d-flex gap-2 mt-3" style="overflow-x: auto;">
-                    <img src="@GetThumbnailUrl(Model.MainImageUrl)" loading="lazy" class="thumbnail-img" onclick="changeMainImage('@Model.MainImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid #B7477E; padding: 5px; background: #fff;" />
+                    <img src="@GetThumbnailUrl(Model.MainImageUrl)" loading="lazy" class="thumbnail-img" onclick="changeMainImage('@Model.MainImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid #78233d; padding: 5px; background: #fff;" />
                     @foreach (var img in Model.GalleryImages)
                     {
                         <img src="@GetThumbnailUrl(img.ImageUrl)" loading="lazy" class="thumbnail-img" onclick="changeMainImage('@img.ImageUrl', this)" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; cursor: pointer; border: 2px solid transparent; padding: 5px; background: #fff;" />
@@ -34,7 +34,7 @@
         </div>
 
         <div class="col-12 col-md-6">
-            <h1 style="color: #000; font-weight: 800; font-size: 2.2rem; margin-bottom: 5px;">@Model.Name</h1>
+            <h1 class="brand-font" style="color: var(--joja-black); font-weight: 700; font-size: 2.2rem; margin-bottom: 8px; font-family: 'Playfair Display', 'Tajawal', serif;">@Model.Name</h1>
             
             <div class="d-flex align-items-center mb-3">
                 @{
@@ -64,9 +64,9 @@
             <div class="price-section mb-4">
                 @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
                 {
-                    <span id="original-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px;" data-base-original="@Model.OriginalPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.OriginalPrice.Value EGP</span>
+                    <span id="original-price" style="text-decoration: line-through; color: #a0a0a0; font-size: 1.1rem; margin-right: 10px; font-family: 'Montserrat', sans-serif;" data-base-original="@Model.OriginalPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.OriginalPrice.Value EGP</span>
                 }
-                <span id="current-price" style="color: #B7477E; font-weight: 800; font-size: 1.7rem; text-shadow: 0 0 12px rgba(183, 71, 126, 0.3);" data-base-price="@Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.Price EGP</span>
+                <span id="current-price" style="color: var(--joja-brand); font-weight: 800; font-size: 1.8rem; font-family: 'Montserrat', sans-serif;" data-base-price="@Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.Price EGP</span>
             </div>
 
             @if (Model.Variants != null && Model.Variants.Any())
@@ -97,21 +97,21 @@
                 <!-- Branded Quantity Selector -->
                 <div class="product-quantity mb-4 d-flex align-items-center gap-3">
                     <label class="fw-bold" style="font-size: 1.1rem; color: #444; margin: 0; font-family: 'Montserrat', sans-serif;">@(isAr ? "الكمية:" : "Quantity:")</label>
-                    <div class="d-flex align-items-center" style="border: 2px solid #B7477E; border-radius: 30px; overflow: hidden; background: #fff;">
-                        <button type="button" class="btn btn-sm px-3 py-2" onclick="decrementQty()" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1.2rem; font-family: 'Montserrat', sans-serif;">-</button>
-                        <input type="number" id="qtyInput" value="1" min="1" style="width: 50px; border: none; text-align: center; font-weight: 800; outline: none; -moz-appearance: textfield; font-size: 1.1rem; background: transparent; color: #B7477E; font-family: 'Montserrat', sans-serif;" readonly />
-                        <button type="button" class="btn btn-sm px-3 py-2" onclick="incrementQty()" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1.2rem; font-family: 'Montserrat', sans-serif;">+</button>
+                    <div class="d-flex align-items-center" style="border: 2px solid #78233d; border-radius: 30px; overflow: hidden; background: #fff;">
+                        <button type="button" class="btn btn-sm px-3 py-2" onclick="decrementQty()" style="border: none; background: transparent; font-weight: bold; color: #78233d; font-size: 1.2rem; font-family: 'Montserrat', sans-serif;">-</button>
+                        <input type="number" id="qtyInput" value="1" min="1" style="width: 50px; border: none; text-align: center; font-weight: 800; outline: none; -moz-appearance: textfield; font-size: 1.1rem; background: transparent; color: #78233d; font-family: 'Montserrat', sans-serif;" readonly />
+                        <button type="button" class="btn btn-sm px-3 py-2" onclick="incrementQty()" style="border: none; background: transparent; font-weight: bold; color: #78233d; font-size: 1.2rem; font-family: 'Montserrat', sans-serif;">+</button>
                     </div>
                 </div>
 
                 <!-- Action Buttons Stack -->
-                <div class="d-flex flex-column gap-2 mb-4 w-100">
+                <div class="d-flex flex-column gap-3 mb-4 w-100">
                     <!-- Add to Cart -->
-                    <button type="button" onclick="addToCartWithVariant(@Model.Id)" class="btn w-100" style="background-color: #B7477E; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: background 0.3s; font-family: 'Montserrat', sans-serif;" onmouseover="this.style.backgroundColor='#9a3b69'" onmouseout="this.style.backgroundColor='#B7477E'">
+                    <button type="button" onclick="addToCartWithVariant(@Model.Id)" class="btn btn-joja-primary w-100" style="padding: 15px; font-size: 1.1rem; font-weight: 700; border-radius: 6px; font-family: 'Montserrat', 'Tajawal', sans-serif; letter-spacing: 1px;">
                         @_localizationService.GetUiText("AddToCart", language)
                     </button>
                     <!-- Buy Now -->
-                    <button type="button" onclick="buyNowWithVariant(@Model.Id)" class="btn w-100" style="background-color: #121212; color: white; border-radius: 8px; font-weight: bold; padding: 15px; font-size: 1.2rem; border: none; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Montserrat', sans-serif;" onmouseover="this.style.backgroundColor='#B7477E'" onmouseout="this.style.backgroundColor='#121212'">
+                    <button type="button" onclick="buyNowWithVariant(@Model.Id)" class="btn btn-joja-secondary w-100" style="padding: 15px; font-size: 1.1rem; font-weight: 700; border-radius: 6px; font-family: 'Montserrat', 'Tajawal', sans-serif; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i class="fas fa-bolt"></i> @_localizationService.GetUiText("BuyNow", language)
                     </button>
                 </div>
@@ -128,7 +128,7 @@
                 <div class="accordion" id="productAccordion">
                     <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                         <h2 class="accordion-header" id="headingIngredients">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="true" aria-controls="collapseIngredients" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngredients" aria-expanded="true" aria-controls="collapseIngredients" style="background-color: #f9f9f9; color: #78233d; font-weight: bold; font-size: 1.1rem;">
                                 @_localizationService.GetUiText("IngredientsLbl", language)
                             </button>
                         </h2>
@@ -147,7 +147,7 @@
                     </div>
                     <div class="accordion-item" style="border: 1px solid #f1f1f1; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
                         <h2 class="accordion-header" id="headingUsage">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsage" aria-expanded="false" aria-controls="collapseUsage" style="background-color: #f9f9f9; color: #B7477E; font-weight: bold; font-size: 1.1rem;">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsage" aria-expanded="false" aria-controls="collapseUsage" style="background-color: #f9f9f9; color: #78233d; font-weight: bold; font-size: 1.1rem;">
                                 @_localizationService.GetUiText("UsageInstructionsLbl", language)
                             </button>
                         </h2>
@@ -178,12 +178,12 @@
                     @_localizationService.GetUiText("CustomerReviews", language)
                     @if (Model.Reviews != null && Model.Reviews.Any())
                     {
-                        <span style="font-size: 1rem; color: #B7477E; font-weight: 600; margin-left: 8px;">(@Model.Reviews.Count)</span>
+                        <span style="font-size: 1rem; color: #78233d; font-weight: 600; margin-left: 8px;">(@Model.Reviews.Count)</span>
                     }
                 </h3>
                 <button type="button" id="toggleReviewsBtn" onclick="toggleReviews()" 
-                    style="background: #B7477E; color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.3s;"
-                    onmouseover="this.style.background='#9a3b69'" onmouseout="this.style.background='#B7477E'">
+                    style="background: #78233d; color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.3s;"
+                    onmouseover="this.style.background='#5e1a2f'" onmouseout="this.style.background='#78233d'">
                     <i class="far fa-comment-dots" id="reviewsIcon"></i>&nbsp; <span id="reviewsBtnText">@_localizationService.GetUiText("ShowReviews", language)</span>
                 </button>
             </div>
@@ -230,8 +230,8 @@
                 }
 
                 <!-- Public Review Submit Form -->
-                <div style="background: #fdf2f7; border: 1px solid #f1e0ea; border-radius: 12px; padding: 28px; margin-top: 10px;">
-                    <h5 style="color: #B7477E; font-weight: 700; margin-bottom: 20px;">✍️ @_localizationService.GetUiText("LeaveReview", language)</h5>
+                <div style="background: #FBF1F6; border: 1px solid #f1e0ea; border-radius: 12px; padding: 28px; margin-top: 10px;">
+                    <h5 style="color: #78233d; font-weight: 700; margin-bottom: 20px;">✍️ @_localizationService.GetUiText("LeaveReview", language)</h5>
                     <form method="post" asp-controller="Home" asp-action="SubmitReview">
                         <input type="hidden" name="productId" value="@Model.Id" />
                         <div class="row">
@@ -259,8 +259,8 @@
                                 placeholder="Share your experience with this product..."></textarea>
                         </div>
                         <button type="submit"
-                            style="background: #B7477E; color: white; border: none; border-radius: 8px; padding: 12px 30px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.3s;"
-                            onmouseover="this.style.background='#9a3b69'" onmouseout="this.style.background='#B7477E'">
+                            style="background: #78233d; color: white; border: none; border-radius: 8px; padding: 12px 30px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.3s;"
+                            onmouseover="this.style.background='#5e1a2f'" onmouseout="this.style.background='#78233d'">
                             @_localizationService.GetUiText("SubmitReview", language) 🌟
                         </button>
                     </form>
@@ -273,20 +273,18 @@
     {
         <div class="row mt-5">
             <div class="col-12 mb-4">
-                <h3 style="color: #B7477E; font-weight: 800; font-size: 1.8rem; border-bottom: 2px solid #f1e0ea; padding-bottom: 12px;">
+                <h2 class="home-section-title" style="font-size: 1.8rem; border-bottom: 2px solid #f1e0ea; padding-bottom: 12px;">
                     @{
                         var relatedTitle = _localizationService.GetUiText("RelatedProducts", language);
                         @(string.IsNullOrEmpty(relatedTitle) ? (isAr ? "منتجات مشابهة" : "Related Products") : relatedTitle)
                     }
-                </h3>
+                </h2>
             </div>
             <div class="col-12">
-                <div class="row row-cols-2 row-cols-md-4 g-4">
+                <div class="product-row-grid">
                     @foreach (var related in (IEnumerable<Joja.Api.Models.Product>)ViewBag.RelatedProducts)
                     {
-                        <div class="col">
-                            <partial name="_ProductGrid" model="related" />
-                        </div>
+                        <partial name="_ProductGrid" model="related" />
                     }
                 </div>
             </div>
@@ -299,7 +297,7 @@
         if(newSrc) document.getElementById('main-product-image').src = newSrc;
         if(element && element.classList.contains('thumbnail-img')) {
             document.querySelectorAll('.thumbnail-img').forEach(el => el.style.borderColor = 'transparent');
-            element.style.borderColor = '#B7477E';
+            element.style.borderColor = '#78233d';
         }
     }
     function selectVariant(button) {
@@ -309,9 +307,9 @@
             btn.style.color = '#333';
             btn.classList.remove('selected-variant');
         });
-        button.style.borderColor = '#B7477E';
-        button.style.backgroundColor = '#fdf2f7';
-        button.style.color = '#B7477E';
+        button.style.borderColor = '#78233d';
+        button.style.backgroundColor = '#FBF1F6';
+        button.style.color = '#78233d';
         button.classList.add('selected-variant');
 
         var newImageUrl = button.getAttribute('data-image');

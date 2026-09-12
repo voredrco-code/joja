@@ -7,7 +7,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px;">
         <h1 class="brand-font" style="margin: 0;">🎫 إدارة كوبونات الخصم</h1>
         <div style="display: flex; gap: 10px;">
-            <a asp-action="Create" class="btn btn-primary shadow-sm" style="background-color: #B7477E; border-color: #B7477E; font-weight: bold; padding: 10px 25px;">
+            <a asp-action="Create" class="btn btn-primary shadow-sm" style="background-color: #78233d; border-color: #78233d; font-weight: bold; padding: 10px 25px;">
                 + إضافة كوبون جديد
             </a>
             <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary shadow-sm" style="font-weight: bold; padding: 10px 25px;">
@@ -31,7 +31,7 @@
                 <i class="fas fa-ticket-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
                 <h4>لا توجد كوبونات خصم حالياً</h4>
                 <p style="margin-bottom: 25px;">ابدأ بإضافة أول كوبون خصم لتفعيله للمشترين في المتجر.</p>
-                <a asp-action="Create" class="btn-joja-dark" style="background: #B7477E; padding: 12px 30px;">+ أضف أول كوبون</a>
+                <a asp-action="Create" class="btn-joja-dark" style="background: #78233d; padding: 12px 30px;">+ أضف أول كوبون</a>
             </div>
         }
         else
@@ -53,7 +53,7 @@
                         @foreach (var coupon in Model)
                         {
                             <tr style="border-bottom: 1px solid #eee;">
-                                <td style="padding: 15px; font-weight: bold; color: #B7477E; font-size: 1.1rem;">@coupon.Code</td>
+                                <td style="padding: 15px; font-weight: bold; color: #78233d; font-size: 1.1rem;">@coupon.Code</td>
                                 <td style="padding: 15px;">
                                     @if (coupon.DiscountType == "Percentage")
                                     {

@@ -69,7 +69,7 @@
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">@item.Quantity</div>
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">@((item.UnitPrice * item.Quantity).ToString("0.00")) @(isAr ? "ج.م" : "EGP")</div>
                         <div style="display: table-cell; padding: 15px; vertical-align: middle;">
-                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: #B7477E; text-decoration: none; font-size: 0.9rem;">&times; @(isAr ? "حذف" : "Remove")</a>
+                            <a asp-action="Remove" asp-route-productId="@item.ProductId" style="color: #78233d; text-decoration: none; font-size: 0.9rem; font-weight: bold;">&times; @(isAr ? "حذف" : "Remove")</a>
                         </div>
                     </div>
                 }
@@ -78,7 +78,7 @@
 
         <div class="cart-summary" style="margin-top: 30px; text-align: @(isAr ? "right" : "right");">
             <h3>@(isAr ? "الإجمالي:" : "Subtotal:") @Model.Total.ToString("0.00") @(isAr ? "ج.م" : "EGP")</h3>
-            <a asp-controller="Checkout" asp-action="Index" class="btn btn-lg mt-3 fw-bold shadow-sm" style="background-color: #B7477E; color: white; border-radius: 8px; font-size: 1.25rem; padding: 12px 35px;">
+            <a asp-controller="Checkout" asp-action="Index" class="btn btn-lg mt-3 fw-bold shadow-sm btn-joja-primary" style="background-color: #78233d !important; color: white !important; border-radius: 8px; font-size: 1.25rem; padding: 12px 35px;">
                 @(isAr ? "متابعة لإتمام الطلب 🛒" : "Proceed to Checkout 🛒")
             </a>
         </div>

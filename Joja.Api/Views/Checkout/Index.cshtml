@@ -72,7 +72,7 @@
                     </div>
 
                     <!-- Payment Instructions -->
-                    <div id="paymentInstructions" style="display: none; background: #f9f9f9; padding: 15px; border-left: 4px solid #B7477E; margin-bottom: 20px;">
+                    <div id="paymentInstructions" style="display: none; background: #f9f9f9; padding: 15px; border-left: 4px solid #78233d; margin-bottom: 20px;">
                         <p style="margin: 0; font-weight: bold;">@(isAr ? "قم بتحويل المبلغ الإجمالي إلى:" : "Transfer Total Amount to:")</p>
                         <p style="font-size: 1.2rem; color: #333; margin: 5px 0;">01090428764</p>
                         <p style="font-size: 0.9rem; color: #666;">@(isAr ? "يرجى تحويل المبلغ الإجمالي وكتابة رقم العملية أدناه." : "Please transfer the total amount and write the transaction reference below once completed.")</p>
@@ -81,7 +81,7 @@
                         <input asp-for="Notes" class="form-control" placeholder="@(isAr ? "مثال: تم التحويل من رقم 012..." : "e.g. Sent from 0123...")" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" />
                     </div>
 
-                    <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; background-color: #B7477E; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;">@(isAr ? "تأكيد الطلب" : "Place Order")</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; background-color: #78233d; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;">@(isAr ? "تأكيد الطلب" : "Place Order")</button>
                 </div>
             </form>
         </div>
@@ -118,16 +118,16 @@
                                         }
                                     </div>
                                     <div style="text-align: right;">
-                                        <span class="item-total-price-display" style="font-weight: bold; color: #B7477E; font-size: 0.95rem;">@((item.UnitPrice * item.Quantity).ToString("0.00")) @(isAr ? "ج.م" : "EGP")</span>
+                                        <span class="item-total-price-display" style="font-weight: bold; color: #78233d; font-size: 0.95rem;">@((item.UnitPrice * item.Quantity).ToString("0.00")) @(isAr ? "ج.م" : "EGP")</span>
                                         <div style="font-size: 0.75rem; color: #999;">@item.UnitPrice.ToString("0.00") x <span class="item-qty-text">@item.Quantity</span></div>
                                     </div>
                                 </div>
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
                                     <!-- Branded Mini Quantity Selector -->
-                                    <div style="display: flex; align-items: center; border: 1.5px solid #B7477E; border-radius: 20px; background: #fff; height: 32px; overflow: hidden; padding: 0 5px;">
-                                        <button type="button" class="btn btn-sm" onclick="changeQty(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))', -1)" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1rem; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 100%;">-</button>
-                                        <span class="item-qty-display" style="min-width: 20px; text-align: center; font-weight: 800; color: #B7477E; font-size: 0.9rem; display: inline-block;">@item.Quantity</span>
-                                        <button type="button" class="btn btn-sm" onclick="changeQty(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))', 1)" style="border: none; background: transparent; font-weight: bold; color: #B7477E; font-size: 1rem; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 100%;">+</button>
+                                    <div style="display: flex; align-items: center; border: 1.5px solid #78233d; border-radius: 20px; background: #fff; height: 32px; overflow: hidden; padding: 0 5px;">
+                                        <button type="button" class="btn btn-sm" onclick="changeQty(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))', -1)" style="border: none; background: transparent; font-weight: bold; color: #78233d; font-size: 1rem; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 100%;">-</button>
+                                        <span class="item-qty-display" style="min-width: 20px; text-align: center; font-weight: 800; color: #78233d; font-size: 0.9rem; display: inline-block;">@item.Quantity</span>
+                                        <button type="button" class="btn btn-sm" onclick="changeQty(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))', 1)" style="border: none; background: transparent; font-weight: bold; color: #78233d; font-size: 1rem; padding: 0 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 100%;">+</button>
                                     </div>
                                     <!-- Remove Button -->
                                     <button type="button" onclick="removeCartItem(@item.ProductId, '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.SelectedVariantsJson ?? ""))')" style="background: none; border: none; color: #dc3545; font-size: 0.9rem; cursor: pointer; padding: 5px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px; transition: background 0.2s;" onmouseover="this.style.background='#fff0f1'" onmouseout="this.style.background='none'">
@@ -164,13 +164,13 @@
                 </div>
 
                 <!-- Premium Coupon Input Field -->
-                <div style="background: #fff; padding: 15px; border-radius: 6px; border: 1px dashed #B7477E; margin-top: 15px;">
+                <div style="background: #fff; padding: 15px; border-radius: 6px; border: 1px dashed #78233d; margin-top: 15px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.85rem; color: #555;">
                         @(isAr ? "هل لديك كوبون خصم؟" : "Have a discount coupon?")
                     </label>
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="couponCodeInput" class="form-control" placeholder="@(isAr ? "رمز الكوبون" : "Coupon code")" style="padding: 8px 12px; font-size: 0.9rem; text-transform: uppercase; border: 1px solid #ddd; border-radius: 4px;" />
-                        <button type="button" onclick="applyCouponCode()" style="background-color: #B7477E; color: white; font-weight: bold; border: none; padding: 8px 15px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#9E3668'" onmouseout="this.style.background='#B7477E'">
+                        <button type="button" onclick="applyCouponCode()" style="background-color: #78233d; color: white; font-weight: bold; border: none; padding: 8px 15px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#5e1a2f'" onmouseout="this.style.background='#78233d'">
                             @(isAr ? "تطبيق" : "Apply")
                         </button>
                     </div>

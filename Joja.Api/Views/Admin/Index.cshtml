@@ -28,7 +28,7 @@
         <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
             <h3 style="color: #856404; margin-bottom: 10px;">⚠️ الترجمات غير موجودة!</h3>
             <p style="color: #856404; margin-bottom: 15px;">عشان اللغات تشتغل، لازم تضيف البيانات التجريبية للترجمات.</p>
-            <button onclick="seedTranslations()" class="btn-joja-dark" style="background: #B7477E; padding: 12px 30px;">
+            <button onclick="seedTranslations()" class="btn-joja-dark" style="background: #78233d; padding: 12px 30px;">
                 إضافة البيانات التجريبية - Seed Translations
             </button>
             <span id="seedStatus" style="margin-left: 15px; font-weight: bold;"></span>
@@ -39,14 +39,14 @@
     @{
         var heroBanner = ViewBag.HeroBanner as Joja.Api.Models.Banner;
     }
-    <div style="background: white; border: 2px solid #B7477E; border-radius: 12px; padding: 24px; margin-bottom: 40px; box-shadow: 0 4px 16px rgba(183,71,126,0.1);">
+    <div style="background: white; border: 2px solid #78233d; border-radius: 12px; padding: 24px; margin-bottom: 40px; box-shadow: 0 4px 16px rgba(120,35,61,0.1);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
             <h2 style="margin: 0; color: #121212; font-size: 1.2rem;">🖼️ البانر الرئيسي (Hero Banner)</h2>
             <div style="display: flex; gap: 10px;">
                 @if (heroBanner != null)
                 {
                     <a asp-controller="Banners" asp-action="Edit" asp-route-id="@heroBanner.Id"
-                       style="background:#B7477E; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600;">
+                       style="background:#78233d; color:white; padding:8px 20px; border-radius:6px; text-decoration:none; font-weight:600;">
                         ✏️ تعديل البانر
                     </a>
                 }
@@ -87,7 +87,7 @@
                         </tr>
                         <tr>
                             <td style="color:#888; padding: 6px 12px 6px 0;">الترتيب</td>
-                            <td><span style="background:#FBF1F6; padding:2px 10px; border-radius:12px; font-weight:700; color:#B7477E;">@heroBanner.DisplayOrder</span></td>
+                            <td><span style="background:#FBF1F6; padding:2px 10px; border-radius:12px; font-weight:700; color:#78233d;">@heroBanner.DisplayOrder</span></td>
                         </tr>
                         <tr>
                             <td style="color:#888; padding: 6px 12px 6px 0;">النوع</td>
@@ -98,7 +98,7 @@
                             <td>
                                 @if (!string.IsNullOrEmpty(heroBanner.LinkUrl) && heroBanner.LinkUrl != "#")
                                 {
-                                    <a href="@heroBanner.LinkUrl" target="_blank" style="color:#B7477E;">@heroBanner.LinkUrl</a>
+                                    <a href="@heroBanner.LinkUrl" target="_blank" style="color:#78233d;">@heroBanner.LinkUrl</a>
                                 }
                                 else { <span style="color:#ccc;">—</span> }
                             </td>
@@ -111,7 +111,7 @@
         {
             <div style="text-align:center; padding: 30px; color:#999; border: 2px dashed #eee; border-radius: 8px;">
                 <p style="font-size:1.1rem; margin-bottom: 12px;">لا يوجد بانر حتى الآن</p>
-                <a asp-controller="Banners" asp-action="Create" class="btn-joja-dark" style="background:#B7477E;">
+                <a asp-controller="Banners" asp-action="Create" class="btn-joja-dark" style="background:#78233d;">
                     + أضف أول بانر
                 </a>
             </div>
@@ -204,10 +204,10 @@
         </div>
 
         <!-- Coupons Management -->
-        <div class="admin-card" style="background: white; border: 2px solid #B7477E; border-radius: 8px; padding: 30px; box-shadow: 0 4px 12px rgba(183,71,126,0.08);">
-            <h3 style="margin-bottom: 15px; color: #B7477E;">🎫 كوبونات الخصم</h3>
+        <div class="admin-card" style="background: white; border: 2px solid #78233d; border-radius: 8px; padding: 30px; box-shadow: 0 4px 12px rgba(120,35,61,0.08);">
+            <h3 style="margin-bottom: 15px; color: #78233d;">🎫 كوبونات الخصم</h3>
             <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">إدارة كوبونات الخصم وشروط تفعيلها</p>
-            <a asp-controller="Coupons" asp-action="Index" class="btn-joja-dark" style="display: inline-block; text-decoration: none; background: #B7477E;">
+            <a asp-controller="Coupons" asp-action="Index" class="btn-joja-dark" style="display: inline-block; text-decoration: none; background: #78233d;">
                 إدارة الكوبونات (Manage Coupons)
             </a>
         </div>

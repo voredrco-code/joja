@@ -233,26 +233,64 @@ a { text-decoration: none !important; }
 }
 
 /* ============================
-   BUTTONS
+   BUTTONS & ACTIONS
    ============================ */
-.btn-primary, .btn-joja-dark {
-    background-color: var(--joja-brand);
-    color: #ffffff;
+.btn-primary, .btn-joja-dark, .btn-joja-primary {
+    background-color: var(--joja-brand) !important;
+    color: #ffffff !important;
     padding: 12px 30px;
     border: none;
-    text-decoration: none;
+    text-decoration: none !important;
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: background 0.3s;
-    font-family: 'Montserrat', sans-serif;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', 'Tajawal', sans-serif !important;
     display: inline-block;
-    border-radius: 4px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(120, 35, 61, 0.15);
 }
-.btn-primary:hover, .btn-joja-dark:hover {
-    background-color: var(--joja-brand-hover);
-    color: #fff;
+.btn-primary:hover, .btn-joja-dark:hover, .btn-joja-primary:hover {
+    background-color: var(--joja-brand-hover) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(120, 35, 61, 0.25);
+    transform: translateY(-1px);
+}
+
+.btn-secondary, .btn-joja-secondary {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    padding: 12px 30px;
+    border: none;
+    text-decoration: none !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', 'Tajawal', sans-serif !important;
+    display: inline-block;
+    border-radius: 6px;
+}
+.btn-secondary:hover, .btn-joja-secondary:hover {
+    background-color: var(--joja-brand) !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-joja, .btn-outline-primary {
+    background-color: transparent !important;
+    color: var(--joja-brand) !important;
+    border: 1.5px solid var(--joja-brand) !important;
+    padding: 10px 24px;
+    font-weight: 600;
+    border-radius: 6px;
+    font-family: 'Montserrat', 'Tajawal', sans-serif !important;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none !important;
+}
+.btn-outline-joja:hover, .btn-outline-primary:hover {
+    background-color: var(--joja-brand) !important;
+    color: #ffffff !important;
 }
 
 /* Filter Buttons */
@@ -272,9 +310,9 @@ a { text-decoration: none !important; }
     letter-spacing: 1px;
 }
 .btn-filter.active, .btn-filter:hover {
-    background-color: var(--joja-brand);
-    color: #ffffff;
-    border-color: var(--joja-brand);
+    background-color: var(--joja-brand) !important;
+    color: #ffffff !important;
+    border-color: var(--joja-brand) !important;
 }
 
 .filter-list {
