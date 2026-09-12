@@ -78,20 +78,22 @@ else
                             <a href="/Home/Details/@item.Id">
                                 <h5 class="product-title">@item.Name</h5>
                             </a>
-                            <div class="product-price">
-                                @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
-                                {
-                                    <span class="old-price">@item.OriginalPrice.Value EGP</span>
-                                }
-                                <span class="new-price">@item.Price EGP</span>
-                            </div>
-                            <div class="product-card-actions">
-                                <button type="button" class="btn-add-to-cart-card" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')">
-                                    <i class="fas fa-shopping-bag me-1"></i> ADD TO CART
-                                </button>
-                                <button type="button" class="btn-wishlist-card" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
-                                </button>
+                            <div class="product-price-row">
+                                <div class="product-price">
+                                    @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                    {
+                                        <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                                    }
+                                    <span class="new-price">@item.Price EGP</span>
+                                </div>
+                                <div class="product-card-actions-row">
+                                    <button type="button" class="btn-action-icon btn-add-cart-icon" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')" title="Add to Cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                    <button type="button" class="btn-action-icon btn-wishlist-icon" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -135,20 +137,22 @@ else
                                 <a href="/Home/Details/@item.Id">
                                     <h5 class="product-title">@item.Name</h5>
                                 </a>
-                                <div class="product-price">
-                                    @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
-                                    {
-                                        <span class="old-price">@item.OriginalPrice.Value EGP</span>
-                                    }
-                                    <span class="new-price">@item.Price EGP</span>
-                                </div>
-                                <div class="product-card-actions">
-                                    <button type="button" class="btn-add-to-cart-card" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')">
-                                        <i class="fas fa-shopping-bag me-1"></i> ADD TO CART
-                                    </button>
-                                    <button type="button" class="btn-wishlist-card" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
-                                        <i class="far fa-heart"></i>
-                                    </button>
+                                <div class="product-price-row">
+                                    <div class="product-price">
+                                        @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                        {
+                                            <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                                        }
+                                        <span class="new-price">@item.Price EGP</span>
+                                    </div>
+                                    <div class="product-card-actions-row">
+                                        <button type="button" class="btn-action-icon btn-add-cart-icon" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')" title="Add to Cart">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                        <button type="button" class="btn-action-icon btn-wishlist-icon" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
