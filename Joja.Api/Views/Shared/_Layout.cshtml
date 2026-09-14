@@ -641,8 +641,51 @@
                 }
             });
         }
+
+        function updateCartItemQty(productId, variantsJson, newQty) {
+            if (newQty < 1) {
+                removeFromCartAjax(productId, variantsJson);
+                return;
+            }
+            
+            let formData = new FormData();
+            formData.append('productId', productId);
+            if (variantsJson) formData.append('selectedVariantsJson', variantsJson);
+            formData.append('quantity', newQty);
+
+            fetch('/Cart/UpdateQuantityAjax', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    var countBadge = document.getElementById('cartItemCount');
+                    if(countBadge) countBadge.innerText = data.cartCount;
+                    updateCartUI(); // refresh the offcanvas
+                }
+            });
+        }
+
+        function removeFromCartAjax(productId, variantsJson) {
+            let formData = new FormData();
+            formData.append('productId', productId);
+            if (variantsJson) formData.append('selectedVariantsJson', variantsJson);
+
+            fetch('/Cart/RemoveAjax', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    var countBadge = document.getElementById('cartItemCount');
+                    if(countBadge) countBadge.innerText = data.cartCount;
+                    updateCartUI(); // refresh the offcanvas
+                }
+            });
+        }
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
