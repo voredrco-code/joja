@@ -52,10 +52,15 @@
                             <span class="new-price">@item.Price EGP</span>
                         </div>
                         <div class="product-card-actions-row">
-                            <button type="button" class="btn-action-icon btn-add-cart-icon" onclick="addToCart(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl')" title="Add to Cart">
+                            <div class="card-qty-wrap">
+                                <button type="button" class="card-qty-btn" onclick="adjustCardQty(@item.Id, -1)" aria-label="Decrease">-</button>
+                                <span class="card-qty-num" id="card-qty-@item.Id">1</span>
+                                <button type="button" class="card-qty-btn" onclick="adjustCardQty(@item.Id, 1)" aria-label="Increase">+</button>
+                            </div>
+                            <button type="button" class="btn-action-icon btn-add-cart-icon" onclick="addToCartAjax(@item.Id, getCardQty(@item.Id), null)" title="Add to Cart">
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
-                            <button type="button" class="btn-action-icon btn-wishlist-icon" onclick="toggleWishlist(@item.Id, '@item.Name.Replace("'", "\\'")', @item.Price, '@item.MainImageUrl', this)" title="Add to Wishlist">
+                            <button type="button" class="btn-action-icon btn-wishlist-icon wishlist-btn" data-product-id="@item.Id" onclick="toggleWishlist(event, @item.Id, this)" title="Add to Wishlist">
                                 <i class="far fa-heart"></i>
                             </button>
                         </div>
