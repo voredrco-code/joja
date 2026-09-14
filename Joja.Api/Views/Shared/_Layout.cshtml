@@ -377,6 +377,21 @@
         </div>
     </div>
 
+    <!-- Wishlist Offcanvas -->
+    <div class="offcanvas offcanvas-end shadow" tabindex="-1" id="wishlistOffcanvas" aria-labelledby="wishlistOffcanvasLabel">
+        <div class="offcanvas-header" style="border-bottom: 2px solid #f1e0ea; background: #FBF1F6;">
+            <h5 class="offcanvas-title fw-bold" id="wishlistOffcanvasLabel" style="color: #78233d;">
+                <i class="fas fa-heart me-2"></i> Wishlist
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0" id="wishlistOffcanvasBody">
+            <div class="text-center py-5">
+                <div class="spinner-border" role="status" style="color: #78233d;"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -507,11 +522,77 @@
         function showWishlistModal(e) {
             e.preventDefault();
             let wl = getWishlist();
+
+            // Open the offcanvas
+            var el = document.getElementById('wishlistOffcanvas');
+            var bsOffcanvas = bootstrap.Offcanvas.getInstance(el) || new bootstrap.Offcanvas(el);
+            bsOffcanvas.show();
+
+            var body = document.getElementById('wishlistOffcanvasBody');
+
             if (wl.length === 0) {
-                Swal.fire('Wishlist', 'Your wishlist is empty!', 'info');
-            } else {
-                Swal.fire('Wishlist', 'You have ' + wl.length + ' items in your wishlist. Go to the products to view them!', 'info');
-                // In a full implementation, this could fetch products by ID and display them in a modal.
+                body.innerHTML = `
+                    <div class="text-center py-5 px-4">
+                        <i class="far fa-heart fa-3x mb-3" style="color:#ddd;"></i>
+                        <p class="text-muted" style="font-size:1rem;">Your wishlist is empty.</p>
+                        <a href="/Home/Shop" class="btn btn-sm mt-2" style="background:#78233d;color:#fff;border-radius:20px;padding:8px 24px;">Shop Now</a>
+                    </div>`;
+                return;
+            }
+
+            // Show spinner while loading
+            body.innerHTML = '<div class="text-center py-5"><div class="spinner-border" style="color:#78233d;"></div></div>';
+
+            fetch('/Home/GetWishlistItems?ids=' + wl.join(','))
+                .then(r => r.json())
+                .then(products => {
+                    if (!products || products.length === 0) {
+                        body.innerHTML = '<div class="text-center py-5 px-4"><p class="text-muted">Could not load wishlist items.</p></div>';
+                        return;
+                    }
+                    body.innerHTML = products.map(p => {
+                        var hasDiscount = p.originalPrice && p.originalPrice > p.price;
+                        var discHtml = hasDiscount
+                            ? `<span style="text-decoration:line-through;color:#aaa;font-size:0.82rem;margin-right:6px;">${p.originalPrice} EGP</span>`
+                            : '';
+                        return `
+                        <div class="wishlist-item d-flex align-items-center gap-3 p-3" style="border-bottom:1px solid #f5e9f0;" id="wl-item-${p.id}">
+                            <a href="${p.detailsUrl}" style="flex-shrink:0;">
+                                <img src="${p.imageUrl}" alt="${p.name}" style="width:72px;height:72px;object-fit:contain;border-radius:8px;border:1px solid #f0e0e8;background:#fff;padding:4px;">
+                            </a>
+                            <div style="flex:1;min-width:0;">
+                                <a href="${p.detailsUrl}" style="color:#1a1a1a;font-weight:700;font-size:0.92rem;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</a>
+                                <div class="mt-1">
+                                    ${discHtml}
+                                    <span style="color:#78233d;font-weight:800;font-size:1rem;">${p.price} EGP</span>
+                                </div>
+                                <div class="d-flex gap-2 mt-2">
+                                    <button onclick="addToCartAjax(${p.id},1,null)" class="btn btn-sm" style="background:#78233d;color:#fff;border-radius:16px;font-size:0.8rem;padding:4px 14px;font-weight:600;">
+                                        <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                                    </button>
+                                    <button onclick="removeFromWishlistPanel(${p.id})" class="btn btn-sm" style="background:transparent;border:1px solid #ccc;border-radius:16px;font-size:0.8rem;padding:4px 12px;color:#888;">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                })
+                .catch(() => {
+                    body.innerHTML = '<div class="text-center py-5 px-4"><p class="text-muted">Failed to load wishlist.</p></div>';
+                });
+        }
+
+        function removeFromWishlistPanel(productId) {
+            let wl = getWishlist().filter(x => x !== productId);
+            saveWishlist(wl);
+            // Remove the item row from panel
+            var row = document.getElementById('wl-item-' + productId);
+            if (row) row.style.transition = 'opacity 0.3s', row.style.opacity = '0', setTimeout(() => row.remove(), 300);
+            // If empty now, update panel
+            if (wl.length === 0) {
+                var body = document.getElementById('wishlistOffcanvasBody');
+                if (body) body.innerHTML = `<div class="text-center py-5 px-4"><i class="far fa-heart fa-3x mb-3" style="color:#ddd;"></i><p class="text-muted">Your wishlist is empty.</p></div>`;
             }
         }
         document.addEventListener('DOMContentLoaded', updateWishlistBadge);

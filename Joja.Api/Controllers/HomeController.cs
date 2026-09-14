@@ -325,6 +325,39 @@ _تم إرسال هذا الطلب في: {OrderDate}_
         return Json(products);
     }
 
+    // Wishlist: fetch product details by IDs stored in localStorage
+    [HttpGet]
+    public async Task<IActionResult> GetWishlistItems(string ids)
+    {
+        if (string.IsNullOrWhiteSpace(ids))
+            return Json(new List<object>());
+
+        var idList = ids.Split(',')
+            .Select(s => int.TryParse(s.Trim(), out var n) ? n : 0)
+            .Where(n => n > 0)
+            .Distinct()
+            .ToList();
+
+        if (!idList.Any())
+            return Json(new List<object>());
+
+        var lang = Request.Cookies["UserLanguage"] ?? "en";
+
+        var products = await _context.Products.AsNoTracking()
+            .Where(p => idList.Contains(p.Id))
+            .Select(p => new {
+                id = p.Id,
+                name = lang == "ar" ? (p.Name ?? p.NameEn) : (p.NameEn ?? p.Name),
+                price = p.Price,
+                originalPrice = p.OriginalPrice,
+                imageUrl = p.MainImageUrl,
+                detailsUrl = "/Home/Details/" + p.Id
+            })
+            .ToListAsync();
+
+        return Json(products);
+    }
+
     public async Task<IActionResult> Details(int id)
     {
         var cacheKey = $"ProductDetails_{id}";
