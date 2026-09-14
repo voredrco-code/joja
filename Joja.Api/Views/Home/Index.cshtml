@@ -180,60 +180,117 @@ else
     <div class="container text-center">
         <h2 class="feedback-title">CUSTOMER FEEDBACK</h2>
         <div class="feedback-stars my-2">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
-        <div class="feedback-slider mt-4">
-            @if (Model.VideoBanners != null && Model.VideoBanners.Any())
-            {
-                foreach (var item in Model.VideoBanners)
+
+        @{
+            // Use VideoBanners as image source (images only, no video rendering)
+            var feedbackImages = Model.VideoBanners?
+                .Where(v => !string.IsNullOrEmpty(v.VideoUrl))
+                .ToList();
+            bool hasFeedbackImages = feedbackImages != null && feedbackImages.Any();
+        }
+
+        <div class="reviews-carousel-wrap mt-4">
+            <div class="reviews-carousel" id="reviewsCarousel">
+                @if (hasFeedbackImages)
                 {
-                    <div class="feedback-card">
-                        @if (item.VideoUrl.EndsWith(".mp4") || item.VideoUrl.EndsWith(".webm"))
-                        {
-                            <video src="@item.VideoUrl" controls class="feedback-img"></video>
-                        }
-                        else
-                        {
-                            <img src="@item.VideoUrl" class="feedback-img" alt="@item.Title" />
-                        }
+                    foreach (var fb in feedbackImages!)
+                    {
+                        <div class="reviews-slide">
+                            <img src="@fb.VideoUrl" alt="@(fb.Title ?? "Customer Review")" class="review-slide-img" loading="lazy" />
+                        </div>
+                    }
+                }
+                else
+                {
+                    <!-- Fallback sample WhatsApp feedback cards -->
+                    <div class="reviews-slide">
+                        <div class="feedback-chat-box">
+                            <div class="chat-bubble">"مساء النور.. الـ body spray حلو قوي وريحته رقيقة جداً شكراً ليكوا 🙏"</div>
+                            <div class="chat-time">2:17 pm ✓✓</div>
+                        </div>
+                    </div>
+                    <div class="reviews-slide">
+                        <div class="feedback-chat-box">
+                            <div class="chat-bubble">"ايوه وصل تسلمي وتوحفة، الاسبلاشر تحفه تحفه ❤️"</div>
+                            <div class="chat-time">2:44 pm ✓✓</div>
+                        </div>
+                    </div>
+                    <div class="reviews-slide">
+                        <div class="feedback-chat-box">
+                            <div class="chat-bubble">"المنتجات بجد فوق الوصف.. البودي زبدة بتسيب الجسم ناعم وريحته تحفة ثابتة طول اليوم! ✨"</div>
+                            <div class="chat-time">4:12 pm ✓✓</div>
+                        </div>
+                    </div>
+                    <div class="reviews-slide">
+                        <div class="feedback-chat-box">
+                            <div class="chat-bubble">"أول ما جرب المنتج حسيت بفرق فوري، هوصي بيه لأي حد! 💯"</div>
+                            <div class="chat-time">7:30 pm ✓✓</div>
+                        </div>
                     </div>
                 }
-            }
-            else
-            {
-                <!-- Sample Customer Feedback Screenshots -->
-                <div class="feedback-card">
-                    <div class="feedback-chat-box p-4 d-flex flex-column justify-content-between h-100" style="background: #111b21; color: #e9edef; font-family: 'Tajawal', sans-serif; border-radius: 16px; text-align: right; direction: rtl;">
-                        <div class="chat-bubble p-3 rounded-3" style="background: #005c4b; color: #fff; max-width: 90%; align-self: flex-start; line-height: 1.6;">
-                            "مساء النور.. الـ body spray حلو قوي وريحته رقيقة جداً شكراً ليكوا 🙏"
-                        </div>
-                        <div class="chat-time text-muted mt-2" style="font-size: 0.8rem;">2:17 pm</div>
-                    </div>
-                </div>
-                <div class="feedback-card">
-                    <div class="feedback-chat-box p-4 d-flex flex-column justify-content-between h-100" style="background: #111b21; color: #e9edef; font-family: 'Tajawal', sans-serif; border-radius: 16px; text-align: right; direction: rtl;">
-                        <div class="chat-bubble p-3 rounded-3" style="background: #005c4b; color: #fff; max-width: 90%; align-self: flex-start; line-height: 1.6;">
-                            "ايوه وصل تسلمي وتوحفة، الاسبلاشر تحفه تحفه ❤️"
-                        </div>
-                        <div class="chat-time text-muted mt-2" style="font-size: 0.8rem;">2:44 pm</div>
-                    </div>
-                </div>
-                <div class="feedback-card">
-                    <div class="feedback-chat-box p-4 d-flex flex-column justify-content-between h-100" style="background: #111b21; color: #e9edef; font-family: 'Tajawal', sans-serif; border-radius: 16px; text-align: right; direction: rtl;">
-                        <div class="chat-bubble p-3 rounded-3" style="background: #005c4b; color: #fff; max-width: 90%; align-self: flex-start; line-height: 1.6;">
-                            "المنتجات بجد فوق الوصف.. البودي زبدة بتسيب الجسم ناعم وريحته تحفة ثابتة طول اليوم! ✨"
-                        </div>
-                        <div class="chat-time text-muted mt-2" style="font-size: 0.8rem;">4:12 pm</div>
-                    </div>
-                </div>
-            }
+            </div>
+
+            <!-- Dot indicators -->
+            <div class="reviews-dots" id="reviewsDots"></div>
         </div>
     </div>
 </div>
+
+<script>
+(function() {
+    var carousel   = document.getElementById('reviewsCarousel');
+    var dotsWrap   = document.getElementById('reviewsDots');
+    if (!carousel) return;
+
+    var slides     = Array.from(carousel.querySelectorAll('.reviews-slide'));
+    var total      = slides.length;
+    var current    = 0;
+    var autoTimer  = null;
+    var touchStartX = 0;
+
+    // Build dots
+    slides.forEach(function(_, i) {
+        var dot = document.createElement('button');
+        dot.className = 'reviews-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+        dot.addEventListener('click', function() { goTo(i); resetTimer(); });
+        dotsWrap.appendChild(dot);
+    });
+
+    function goTo(idx) {
+        slides[current].classList.remove('active');
+        dotsWrap.children[current].classList.remove('active');
+        current = (idx + total) % total;
+        slides[current].classList.add('active');
+        dotsWrap.children[current].classList.add('active');
+    }
+
+    function next() { goTo(current + 1); }
+
+    function resetTimer() {
+        clearInterval(autoTimer);
+        autoTimer = setInterval(next, 3200);
+    }
+
+    // Init first slide
+    slides[0].classList.add('active');
+
+    // Touch / swipe support
+    carousel.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    carousel.addEventListener('touchend', function(e) {
+        var diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) { diff > 0 ? next() : goTo(current - 1); resetTimer(); }
+    }, { passive: true });
+
+    // Start auto-play
+    resetTimer();
+})();
+</script>
 
 @section Scripts {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
