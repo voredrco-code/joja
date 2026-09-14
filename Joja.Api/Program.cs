@@ -51,6 +51,7 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<Joja.Api.Services.CartService>();
 builder.Services.AddScoped<Joja.Api.Services.ILocalizationService, Joja.Api.Services.LocalizationService>();
+builder.Services.AddHostedService<Joja.Api.Services.KeepAliveService>(); // <-- Keeps Render awake
 
 // 5. إعدادات Cloudinary
 var cloudName = builder.Configuration["Cloudinary:CloudName"] ?? Environment.GetEnvironmentVariable("Cloudinary__CloudName");

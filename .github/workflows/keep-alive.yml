@@ -2,8 +2,8 @@ name: Keep Render App Alive
 
 on:
   schedule:
-    # Ping every 14 minutes (Render free tier sleeps after 15 min)
-    - cron: "*/14 * * * *"
+    # Ping every 5 minutes (Render free tier sleeps after 15 min, but GitHub Actions cron is often delayed)
+    - cron: "*/5 * * * *"
     # Monthly auto-commit to prevent GitHub from disabling this workflow
     # GitHub disables scheduled workflows after 60 days of repo inactivity
     - cron: "0 12 1 * *"
@@ -13,8 +13,8 @@ jobs:
   ping:
     name: Ping Health Check
     runs-on: ubuntu-latest
-    # Only runs on the 14-min schedule, not the monthly one
-    if: github.event.schedule == '*/14 * * * *' || github.event_name == 'workflow_dispatch'
+    # Only runs on the 5-min schedule, not the monthly one
+    if: github.event.schedule == '*/5 * * * *' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Ping /health endpoint
         run: |
