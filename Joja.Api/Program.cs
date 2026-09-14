@@ -136,6 +136,10 @@ app.MapGet("/apply-db-migrations-secret-url", async (IServiceProvider services) 
     }
 });
 
+// ✅ Lightweight health check endpoint - used by GitHub Action to keep Render awake
+// Returns instantly with no DB query - prevents Render free tier from sleeping
+app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }));
+
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";

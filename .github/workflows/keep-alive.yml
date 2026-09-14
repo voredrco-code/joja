@@ -2,12 +2,42 @@ name: Keep Render App Alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *" # Runs every 10 minutes
-  workflow_dispatch: # Allows manual triggering if needed
+    # Ping every 14 minutes (Render free tier sleeps after 15 min)
+    - cron: "*/14 * * * *"
+    # Monthly auto-commit to prevent GitHub from disabling this workflow
+    # GitHub disables scheduled workflows after 60 days of repo inactivity
+    - cron: "0 12 1 * *"
+  workflow_dispatch:
 
 jobs:
   ping:
+    name: Ping Health Check
     runs-on: ubuntu-latest
+    # Only runs on the 14-min schedule, not the monthly one
+    if: github.event.schedule == '*/14 * * * *' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Ping Website
-        run: curl -sSf https://jojaskincare.com/ > /dev/null || echo "Ping failed, but continuing..."
+      - name: Ping /health endpoint
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://jojaskincare.com/health)
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Warning: /health returned $STATUS - site may be waking up"
+          fi
+
+  keep-workflow-active:
+    name: Keep Workflow Active (monthly)
+    runs-on: ubuntu-latest
+    # Only runs on the 1st of each month to prevent GitHub from disabling this workflow
+    if: github.event.schedule == '0 12 1 * *'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Touch keep-alive timestamp
+        run: |
+          echo "Last auto-keep-alive: $(date -u '+%Y-%m-%d %H:%M UTC')" > .github/keep-alive-log.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/keep-alive-log.txt
+          git commit -m "chore: monthly keep-alive ping [skip ci]" || echo "Nothing to commit"
+          git push
