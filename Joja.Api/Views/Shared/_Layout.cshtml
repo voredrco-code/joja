@@ -457,30 +457,39 @@
                     badge.style.display = 'none';
                 }
             }
-            // Update all hearts
+            // Update all hearts using data-product-id attribute
             document.querySelectorAll('.wishlist-btn').forEach(btn => {
-                let id = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
+                let id = parseInt(btn.getAttribute('data-product-id'));
+                let icon = btn.querySelector('i');
                 if (wl.includes(id)) {
                     btn.style.color = '#78233d';
+                    if (icon) { icon.classList.remove('far'); icon.classList.add('fas'); }
                 } else {
                     btn.style.color = '#ccc';
+                    if (icon) { icon.classList.remove('fas'); icon.classList.add('far'); }
                 }
             });
         }
         function toggleWishlist(e, id, btn) {
-            e.preventDefault();
-            e.stopPropagation();
+            if (e && e.preventDefault) { e.preventDefault(); e.stopPropagation(); }
             let wl = getWishlist();
+            let icon = btn ? btn.querySelector('i') : null;
             if (wl.includes(id)) {
                 wl = wl.filter(x => x !== id);
-                btn.style.color = '#ccc';
+                if (btn) btn.style.color = '#ccc';
+                if (icon) { icon.classList.remove('fas'); icon.classList.add('far'); }
                 Swal.fire({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 2000, icon: 'info', title: 'Removed from wishlist' });
             } else {
                 wl.push(id);
-                btn.style.color = '#78233d';
+                if (btn) btn.style.color = '#78233d';
+                if (icon) { icon.classList.remove('far'); icon.classList.add('fas'); }
                 Swal.fire({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 2000, icon: 'success', title: 'Added to wishlist ❤️' });
             }
             saveWishlist(wl);
+        }
+        // Alias for backward compatibility
+        function addToCart(productId, name, price, image) {
+            addToCartAjax(productId, 1, null);
         }
         function showWishlistModal(e) {
             e.preventDefault();
