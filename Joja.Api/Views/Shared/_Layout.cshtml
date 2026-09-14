@@ -642,6 +642,17 @@
             });
         }
 
+        function updateCartUI() {
+            fetch('/Cart/GetCartAjax')
+                .then(response => response.text())
+                .then(html => {
+                    var cartOffcanvasElement = document.getElementById('cartOffcanvas');
+                    if (cartOffcanvasElement) {
+                        cartOffcanvasElement.innerHTML = html;
+                    }
+                });
+        }
+
         function updateCartItemQty(productId, variantsJson, newQty) {
             if (newQty < 1) {
                 removeFromCartAjax(productId, variantsJson);
@@ -660,7 +671,7 @@
             .then(r => r.json())
             .then(data => {
                 if(data.success) {
-                    var countBadge = document.getElementById('cartItemCount');
+                    var countBadge = document.getElementById('cart-badge');
                     if(countBadge) countBadge.innerText = data.cartCount;
                     updateCartUI(); // refresh the offcanvas
                 }
@@ -679,7 +690,7 @@
             .then(r => r.json())
             .then(data => {
                 if(data.success) {
-                    var countBadge = document.getElementById('cartItemCount');
+                    var countBadge = document.getElementById('cart-badge');
                     if(countBadge) countBadge.innerText = data.cartCount;
                     updateCartUI(); // refresh the offcanvas
                 }
