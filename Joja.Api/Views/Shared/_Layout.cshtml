@@ -491,6 +491,19 @@
         function addToCart(productId, name, price, image) {
             addToCartAjax(productId, 1, null);
         }
+
+        // Mini quantity selector helpers for product cards
+        function getCardQty(productId) {
+            var el = document.getElementById('card-qty-' + productId);
+            return el ? (parseInt(el.innerText) || 1) : 1;
+        }
+        function adjustCardQty(productId, delta) {
+            var el = document.getElementById('card-qty-' + productId);
+            if (!el) return;
+            var current = parseInt(el.innerText) || 1;
+            var next = Math.max(1, current + delta);
+            el.innerText = next;
+        }
         function showWishlistModal(e) {
             e.preventDefault();
             let wl = getWishlist();
