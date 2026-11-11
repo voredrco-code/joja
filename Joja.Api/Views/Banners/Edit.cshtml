@@ -21,7 +21,7 @@
             <div class="col-md-6 mb-3">
                 <div class="card p-3 h-100 border-1">
                     <h5 class="fw-bold" style="color: #78233d;">🖥️ Desktop Banner Image</h5>
-                    <p class="small text-muted mb-2">Recommended size: <strong>1920 × 800 px</strong> (landscape, wide aspect ratio)</p>
+                    <p class="small text-muted mb-2">Recommended size: <strong>2400 × 1600 px</strong> (Landscape, 3:2 aspect ratio)</p>
 
                     <div class="mb-3 text-center" style="background:#f8f9fa; border:1px solid #eee; border-radius:6px; padding:10px;">
                         @if (!string.IsNullOrEmpty(Model.ImageUrl) && Model.ImageUrl.Trim().Length > 0)
@@ -44,7 +44,7 @@
             <div class="col-md-6 mb-3">
                 <div class="card p-3 h-100 border-1">
                     <h5 class="fw-bold" style="color: #78233d;">📱 Mobile Banner Image</h5>
-                    <p class="small text-muted mb-2">Recommended size: <strong>1200 × 1600 px</strong> (vertical aspect ratio). Fallback uses desktop image if empty.</p>
+                    <p class="small text-muted mb-2">Recommended size: <strong>1200 × 1600 px</strong> (Portrait, 3:4 aspect ratio). Fallback uses desktop image if empty.</p>
 
                     <div class="mb-3 text-center" style="background:#f8f9fa; border:1px solid #eee; border-radius:6px; padding:10px;">
                         @if (!string.IsNullOrEmpty(Model.MobileImageUrl) && Model.MobileImageUrl.Trim().Length > 0)

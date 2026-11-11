@@ -17,6 +17,7 @@
                 var mobileImg = !string.IsNullOrEmpty(banner.MobileImageUrl) ? banner.MobileImageUrl : banner.ImageUrl;
                 <div class="carousel-item @(i == 0 ? "active" : "")">
                     <div class="hero-section hero-banner-wrapper">
+                        <div class="hero-ambient-bg" style="background-image: url('@desktopImg');"></div>
                         <picture class="hero-picture">
                             @if (!string.IsNullOrEmpty(mobileImg))
                             {

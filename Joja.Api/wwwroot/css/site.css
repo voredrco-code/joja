@@ -207,7 +207,6 @@ a { text-decoration: none !important; }
    HERO SECTION
    ============================ */
 .hero-section {
-    height: 500px;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -215,26 +214,53 @@ a { text-decoration: none !important; }
     justify-content: center;
     text-align: center;
     color: white;
+    background-color: #141414;
+    width: 100%;
+    min-height: 520px;
+    height: clamp(520px, 48vw, 680px);
+    max-height: 80vh;
 }
 .hero-banner-wrapper {
     position: relative;
     width: 100%;
 }
+/* Dual-Layer Ambient Background: blurred desktop banner fills surrounding horizontal space */
+.hero-ambient-bg {
+    position: absolute;
+    top: -24px;
+    left: -24px;
+    right: -24px;
+    bottom: -24px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px) brightness(0.65);
+    transform: scale(1.08);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.85;
+}
+/* Foreground Picture Container: centered, full container bounds */
 .hero-picture {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
 }
+/* Foreground Banner Image: strictly contained, 100% visible, zero cropping */
 .hero-bg-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
     display: block;
     max-width: 100%;
+    max-height: 100%;
 }
 .hero-overlay {
     position: absolute;
@@ -242,12 +268,13 @@ a { text-decoration: none !important; }
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.32);
-    z-index: 2;
+    background: rgba(0, 0, 0, 0.28);
+    z-index: 3;
+    pointer-events: none;
 }
 .hero-content {
     position: relative;
-    z-index: 3;
+    z-index: 4;
 }
 .hero-content h1 {
     font-size: 3rem;
@@ -261,12 +288,28 @@ a { text-decoration: none !important; }
     text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
 }
 @media (max-width: 991px) {
-    .hero-section { height: 450px; }
+    .hero-section {
+        min-height: 460px;
+        height: clamp(460px, 52vw, 560px);
+    }
     .hero-content h1 { font-size: 2.2rem; }
     .hero-content p { font-size: 1.05rem; }
 }
 @media (max-width: 768px) {
-    .hero-section { height: 480px; }
+    .hero-section {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 3 / 4;
+        min-height: unset;
+        max-height: none;
+    }
+    .hero-ambient-bg {
+        display: none;
+    }
+    .hero-bg-img {
+        object-fit: contain;
+        object-position: center;
+    }
     .hero-content h1 { font-size: 1.85rem; }
     .hero-content p { font-size: 0.95rem; }
 }
