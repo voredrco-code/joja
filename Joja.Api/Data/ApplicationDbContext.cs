@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<CategoryTranslation> CategoryTranslations { get; set; }
     public DbSet<UiTranslation> UiTranslations { get; set; }
     public DbSet<Banner> Banners { get; set; }
+    public DbSet<RecentOffer> RecentOffers { get; set; }
     public DbSet<ContentPage> ContentPages { get; set; }
     public DbSet<VideoBanner> VideoBanners { get; set; }
     public DbSet<AppSettings> AppSettings { get; set; }

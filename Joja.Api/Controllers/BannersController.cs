@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Joja.Api.Data;
 using Joja.Api.Models;
-// مكتبات Cloudinary
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 
@@ -18,12 +18,13 @@ namespace Joja.Api.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly Cloudinary _cloudinary;
+        private static readonly string[] AllowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+        private const long MaxImageSizeBytes = 8 * 1024 * 1024; // 8 MB
+        private const long MaxVideoSizeBytes = 50 * 1024 * 1024; // 50 MB
 
-        // تعديل الـ Constructor عشان نضمن القراءة من الـ Config
         public BannersController(ApplicationDbContext context, IConfiguration config)
         {
             _context = context;
-            // إنشاء الكائن مباشرة لضمان عدم وجود Null
             var cloudName = config["Cloudinary:CloudName"] ?? config["Cloudinary__CloudName"];
             var apiKey = config["Cloudinary:ApiKey"] ?? config["Cloudinary__ApiKey"];
             var apiSecret = config["Cloudinary:ApiSecret"] ?? config["Cloudinary__ApiSecret"];
@@ -47,14 +48,54 @@ namespace Joja.Api.Controllers
         // POST: Banners/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Banner banner, IFormFile ImageFile, IFormFile VideoFile)
+        public async Task<IActionResult> Create(Banner banner, IFormFile? ImageFile, IFormFile? MobileImageFile, IFormFile? VideoFile)
         {
             if (banner == null) banner = new Banner();
             banner.Subtitle = banner.Subtitle ?? " ";
             banner.Title = banner.Title ?? " ";
 
+            // Validate Desktop Image
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                var ext = Path.GetExtension(ImageFile.FileName).ToLowerInvariant();
+                if (!AllowedImageExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("ImageUrl", "Desktop file must be a valid image (.jpg, .jpeg, .png, .webp).");
+                }
+                if (ImageFile.Length > MaxImageSizeBytes)
+                {
+                    ModelState.AddModelError("ImageUrl", "Desktop image cannot exceed 8 MB.");
+                }
+            }
+
+            // Validate Mobile Image
+            if (MobileImageFile != null && MobileImageFile.Length > 0)
+            {
+                var ext = Path.GetExtension(MobileImageFile.FileName).ToLowerInvariant();
+                if (!AllowedImageExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("MobileImageUrl", "Mobile file must be a valid image (.jpg, .jpeg, .png, .webp).");
+                }
+                if (MobileImageFile.Length > MaxImageSizeBytes)
+                {
+                    ModelState.AddModelError("MobileImageUrl", "Mobile image cannot exceed 8 MB.");
+                }
+            }
+
+            // Validate Video
+            if (VideoFile != null && VideoFile.Length > 0 && VideoFile.Length > MaxVideoSizeBytes)
+            {
+                ModelState.AddModelError("VideoUrl", "Video cannot exceed 50 MB.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(banner);
+            }
+
             try 
             {
+                // Upload Desktop Image
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
@@ -63,13 +104,42 @@ namespace Joja.Api.Controllers
                     {
                         var uploadParams = new ImageUploadParams()
                         {
-                            File = new FileDescription(ImageFile.FileName, stream)
+                            File = new FileDescription(ImageFile.FileName, stream),
+                            Folder = "joja/banners/desktop"
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
                         banner.ImageUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
 
+                // Upload Mobile Image
+                if (MobileImageFile != null && MobileImageFile.Length > 0)
+                {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
+                    using (var stream = MobileImageFile.OpenReadStream())
+                    {
+                        var uploadParams = new ImageUploadParams()
+                        {
+                            File = new FileDescription(MobileImageFile.FileName, stream),
+                            Folder = "joja/banners/mobile"
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        banner.MobileImageUrl = uploadResult.SecureUrl?.ToString();
+                    }
+                }
+
+                // Fallbacks: if one is uploaded and the other is empty
+                if (string.IsNullOrEmpty(banner.ImageUrl) && !string.IsNullOrEmpty(banner.MobileImageUrl))
+                {
+                    banner.ImageUrl = banner.MobileImageUrl;
+                }
+                else if (string.IsNullOrEmpty(banner.MobileImageUrl) && !string.IsNullOrEmpty(banner.ImageUrl))
+                {
+                    banner.MobileImageUrl = banner.ImageUrl;
+                }
+
+                // Upload Video
                 if (VideoFile != null && VideoFile.Length > 0)
                 {
                     if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
@@ -78,16 +148,18 @@ namespace Joja.Api.Controllers
                     {
                         var uploadParams = new VideoUploadParams()
                         {
-                            File = new FileDescription(VideoFile.FileName, stream)
+                            File = new FileDescription(VideoFile.FileName, stream),
+                            Folder = "joja/banners/videos"
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
+                        banner.VideoUrl = uploadResult.SecureUrl?.ToString();
+                        banner.BannerType = "Video";
                     }
                 }
 
                 if (string.IsNullOrEmpty(banner.ImageUrl))
                 {
-                    banner.ImageUrl = " "; // مسافة واحدة تهزم الـ NOT NULL
+                    banner.ImageUrl = " ";
                 }
 
                 _context.Add(banner);
@@ -119,7 +191,7 @@ namespace Joja.Api.Controllers
         // POST: Banners/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Banner banner, IFormFile ImageFile, IFormFile VideoFile)
+        public async Task<IActionResult> Edit(int id, Banner banner, IFormFile? ImageFile, IFormFile? MobileImageFile, IFormFile? VideoFile)
         {
             if (banner == null) banner = new Banner();
             if (id != banner.Id) return NotFound();
@@ -127,10 +199,50 @@ namespace Joja.Api.Controllers
             banner.Subtitle = banner.Subtitle ?? " ";
             banner.Title = banner.Title ?? " ";
 
+            // Validate Desktop Image
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                var ext = Path.GetExtension(ImageFile.FileName).ToLowerInvariant();
+                if (!AllowedImageExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("ImageUrl", "Desktop file must be a valid image (.jpg, .jpeg, .png, .webp).");
+                }
+                if (ImageFile.Length > MaxImageSizeBytes)
+                {
+                    ModelState.AddModelError("ImageUrl", "Desktop image cannot exceed 8 MB.");
+                }
+            }
+
+            // Validate Mobile Image
+            if (MobileImageFile != null && MobileImageFile.Length > 0)
+            {
+                var ext = Path.GetExtension(MobileImageFile.FileName).ToLowerInvariant();
+                if (!AllowedImageExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("MobileImageUrl", "Mobile file must be a valid image (.jpg, .jpeg, .png, .webp).");
+                }
+                if (MobileImageFile.Length > MaxImageSizeBytes)
+                {
+                    ModelState.AddModelError("MobileImageUrl", "Mobile image cannot exceed 8 MB.");
+                }
+            }
+
+            // Validate Video
+            if (VideoFile != null && VideoFile.Length > 0 && VideoFile.Length > MaxVideoSizeBytes)
+            {
+                ModelState.AddModelError("VideoUrl", "Video cannot exceed 50 MB.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(banner);
+            }
+
             try
             {
                 var existingBanner = await _context.Banners.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
 
+                // Desktop Image Upload / Retain
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
@@ -139,10 +251,11 @@ namespace Joja.Api.Controllers
                     {
                         var uploadParams = new ImageUploadParams()
                         {
-                            File = new FileDescription(ImageFile.FileName, stream)
+                            File = new FileDescription(ImageFile.FileName, stream),
+                            Folder = "joja/banners/desktop"
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.ImageUrl = uploadResult.SecureUrl.ToString();
+                        banner.ImageUrl = uploadResult.SecureUrl?.ToString();
                     }
                 }
                 else if (existingBanner != null)
@@ -150,6 +263,38 @@ namespace Joja.Api.Controllers
                     banner.ImageUrl = existingBanner.ImageUrl;
                 }
 
+                // Mobile Image Upload / Retain
+                if (MobileImageFile != null && MobileImageFile.Length > 0)
+                {
+                    if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
+                    
+                    using (var stream = MobileImageFile.OpenReadStream())
+                    {
+                        var uploadParams = new ImageUploadParams()
+                        {
+                            File = new FileDescription(MobileImageFile.FileName, stream),
+                            Folder = "joja/banners/mobile"
+                        };
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        banner.MobileImageUrl = uploadResult.SecureUrl?.ToString();
+                    }
+                }
+                else if (existingBanner != null)
+                {
+                    banner.MobileImageUrl = existingBanner.MobileImageUrl;
+                }
+
+                // Fallbacks: if one is set and the other is empty
+                if (string.IsNullOrEmpty(banner.ImageUrl) && !string.IsNullOrEmpty(banner.MobileImageUrl))
+                {
+                    banner.ImageUrl = banner.MobileImageUrl;
+                }
+                else if (string.IsNullOrEmpty(banner.MobileImageUrl) && !string.IsNullOrEmpty(banner.ImageUrl))
+                {
+                    banner.MobileImageUrl = banner.ImageUrl;
+                }
+
+                // Video Upload / Retain
                 if (VideoFile != null && VideoFile.Length > 0)
                 {
                     if (_cloudinary == null) throw new Exception("Cloudinary service is not initialized.");
@@ -158,10 +303,12 @@ namespace Joja.Api.Controllers
                     {
                         var uploadParams = new VideoUploadParams()
                         {
-                            File = new FileDescription(VideoFile.FileName, stream)
+                            File = new FileDescription(VideoFile.FileName, stream),
+                            Folder = "joja/banners/videos"
                         };
                         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-                        banner.VideoUrl = uploadResult.SecureUrl.ToString();
+                        banner.VideoUrl = uploadResult.SecureUrl?.ToString();
+                        banner.BannerType = "Video";
                     }
                 }
                 else if (existingBanner != null)
@@ -171,7 +318,7 @@ namespace Joja.Api.Controllers
 
                 if (string.IsNullOrEmpty(banner.ImageUrl))
                 {
-                    banner.ImageUrl = " "; // مسافة واحدة تهزم الـ NOT NULL
+                    banner.ImageUrl = " ";
                 }
 
                 _context.Update(banner);
@@ -212,11 +359,9 @@ namespace Joja.Api.Controllers
             if (index > 0)
             {
                 var above = allBanners[index - 1];
-                // Swap DisplayOrder values
                 int temp = current.DisplayOrder;
                 current.DisplayOrder = above.DisplayOrder;
                 above.DisplayOrder = temp;
-                // If orders are equal, force a difference
                 if (current.DisplayOrder == above.DisplayOrder)
                 {
                     above.DisplayOrder = current.DisplayOrder - 1;
@@ -241,11 +386,9 @@ namespace Joja.Api.Controllers
             if (index < allBanners.Count - 1)
             {
                 var below = allBanners[index + 1];
-                // Swap DisplayOrder values
                 int temp = current.DisplayOrder;
                 current.DisplayOrder = below.DisplayOrder;
                 below.DisplayOrder = temp;
-                // If orders are equal, force a difference
                 if (current.DisplayOrder == below.DisplayOrder)
                 {
                     below.DisplayOrder = current.DisplayOrder + 1;
@@ -257,7 +400,7 @@ namespace Joja.Api.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Banners/UpdateOrder (JSON endpoint for compatibility)
+        // POST: Banners/UpdateOrder
         [HttpPost]
         public async Task<IActionResult> UpdateOrder([FromBody] List<int> ids)
         {

@@ -132,6 +132,9 @@ namespace Joja.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("MobileImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Subtitle")
                         .IsRequired()
                         .HasColumnType("text");
@@ -239,6 +242,42 @@ namespace Joja.Api.Migrations
                     b.ToTable("ContentPages");
                 });
 
+            modelBuilder.Entity("Joja.Api.Models.Coupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicableProductIds")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DiscountType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("DiscountValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal?>("MinOrderPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("MinProductCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Coupons");
+                });
+
             modelBuilder.Entity("Joja.Api.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -287,12 +326,18 @@ namespace Joja.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("CouponCode")
+                        .HasColumnType("text");
+
                     b.Property<int?>("CustomerId")
                         .HasColumnType("integer");
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp without time zone");
@@ -575,6 +620,65 @@ namespace Joja.Api.Migrations
                     b.ToTable("ProductVariants");
                 });
 
+            modelBuilder.Entity("Joja.Api.Models.RecentOffer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionUrl")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DiscountPercentage")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("DiscountedPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("RecentOffers");
+                });
+
             modelBuilder.Entity("Joja.Api.Models.SiteSetting", b =>
                 {
                     b.Property<int>("Id")
@@ -742,6 +846,15 @@ namespace Joja.Api.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Joja.Api.Models.RecentOffer", b =>
+                {
+                    b.HasOne("Joja.Api.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("Product");
                 });

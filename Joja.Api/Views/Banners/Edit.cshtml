@@ -4,78 +4,139 @@
     ViewData["Title"] = "Edit Banner";
 }
 
-<div class="container" style="margin-top: 50px;">
+<div class="container" style="margin-top: 50px; max-width: 900px;">
     <h1 class="brand-font">Edit Banner</h1>
+    <p class="text-muted">Independently update desktop and mobile hero images. Replacing one will preserve the other.</p>
     <hr />
-    <div class="row">
-        <div class="col-md-8">
-            <form asp-action="Edit" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="ImageUrl" />
-                <input type="hidden" asp-for="VideoUrl" />
-                <input type="hidden" asp-for="BannerType" />
-                
-                <div class="form-group mb-3">
-                    <label asp-for="Title" class="control-label"></label>
-                    <input asp-for="Title" class="form-control" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
-                </div>
+    <form asp-action="Edit" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImageUrl" />
+        <input type="hidden" asp-for="MobileImageUrl" />
+        <input type="hidden" asp-for="VideoUrl" />
+        <input type="hidden" asp-for="BannerType" />
 
-                <div class="form-group mb-3">
-                    <label asp-for="Subtitle" class="control-label"></label>
-                    <input asp-for="Subtitle" class="form-control" />
-                    <span asp-validation-for="Subtitle" class="text-danger"></span>
-                </div>
+        <div class="row">
+            <!-- Desktop Image Column -->
+            <div class="col-md-6 mb-3">
+                <div class="card p-3 h-100 border-1">
+                    <h5 class="fw-bold" style="color: #78233d;">🖥️ Desktop Banner Image</h5>
+                    <p class="small text-muted mb-2">Recommended size: <strong>1920 × 800 px</strong></p>
 
-                <div class="form-group mb-3">
-                    <label asp-for="LinkUrl" class="control-label">Link URL</label>
+                    <div class="mb-3 text-center" style="background:#f8f9fa; border:1px solid #eee; border-radius:6px; padding:10px;">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl) && Model.ImageUrl.Trim().Length > 0)
+                        {
+                            <img src="@Model.ImageUrl" id="currentDesktopImg" class="img-fluid" style="max-height: 140px; border-radius: 4px; object-fit: cover;" alt="Desktop Banner" />
+                        }
+                        else
+                        {
+                            <span class="text-muted small">No desktop image currently set</span>
+                        }
+                    </div>
+
+                    <label class="form-label fw-bold small">Replace Desktop Image</label>
+                    <input type="file" name="ImageFile" id="desktopImageInput" class="form-control" accept="image/*" />
+                    <small class="text-muted">Leave empty to keep existing desktop image.</small>
+                </div>
+            </div>
+
+            <!-- Mobile Image Column -->
+            <div class="col-md-6 mb-3">
+                <div class="card p-3 h-100 border-1">
+                    <h5 class="fw-bold" style="color: #78233d;">📱 Mobile Banner Image</h5>
+                    <p class="small text-muted mb-2">Recommended size: <strong>750 × 1000 px</strong> (vertical)</p>
+
+                    <div class="mb-3 text-center" style="background:#f8f9fa; border:1px solid #eee; border-radius:6px; padding:10px;">
+                        @if (!string.IsNullOrEmpty(Model.MobileImageUrl) && Model.MobileImageUrl.Trim().Length > 0)
+                        {
+                            <img src="@Model.MobileImageUrl" id="currentMobileImg" class="img-fluid" style="max-height: 140px; border-radius: 4px; object-fit: cover;" alt="Mobile Banner" />
+                        }
+                        else
+                        {
+                            <span class="text-muted small">No mobile image set (desktop image used as fallback)</span>
+                        }
+                    </div>
+
+                    <label class="form-label fw-bold small">Replace Mobile Image</label>
+                    <input type="file" name="MobileImageFile" id="mobileImageInput" class="form-control" accept="image/*" />
+                    <small class="text-muted">Leave empty to keep existing mobile image.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-3 mb-3 mt-3 bg-light border-0">
+            <h5 class="fw-bold mb-3">Banner Details & Optional Video</h5>
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label fw-bold"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Subtitle" class="control-label fw-bold"></label>
+                <input asp-for="Subtitle" class="form-control" />
+                <span asp-validation-for="Subtitle" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="LinkUrl" class="control-label fw-bold">Link URL</label>
                     <input asp-for="LinkUrl" class="form-control" />
                     <span asp-validation-for="LinkUrl" class="text-danger"></span>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="DisplayOrder" class="control-label">Display Order</label>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DisplayOrder" class="control-label fw-bold">Display Order</label>
                     <input asp-for="DisplayOrder" class="form-control" type="number" />
                     <span asp-validation-for="DisplayOrder" class="text-danger"></span>
                 </div>
+            </div>
 
-                @if (Model.BannerType == "Image" && !string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <div class="mb-3">
-                        <label class="control-label">Current Image</label><br />
-                        <img src="@Model.ImageUrl" class="img-fluid" style="max-height: 200px; border-radius: 8px;" />
-                    </div>
-                }
-                else if (Model.BannerType == "Video" && !string.IsNullOrEmpty(Model.VideoUrl))
-                {
-                    <div class="mb-3">
-                        <label class="control-label">Current Video</label><br />
-                        <video src="@Model.VideoUrl" controls style="max-height: 200px; border-radius: 8px;"></video>
-                    </div>
-                }
-
-                <div class="form-group mb-3">
-                    <label class="control-label">Change Image</label>
-                    <input type="file" name="ImageFile" class="form-control" accept="image/*" />
-                    <small class="text-muted">Or upload video instead:</small>
+            @if (Model.BannerType == "Video" && !string.IsNullOrEmpty(Model.VideoUrl))
+            {
+                <div class="mb-3">
+                    <label class="control-label fw-bold">Current Video</label><br />
+                    <video src="@Model.VideoUrl" controls style="max-height: 180px; border-radius: 8px;"></video>
                 </div>
+            }
 
-                <div class="form-group mb-3">
-                    <label class="control-label">Change Video</label>
-                    <input type="file" name="VideoFile" class="form-control" accept="video/*" />
-                </div>
-
-                <div class="form-group mt-4">
-                    <input type="submit" value="Save Changes" class="btn-joja-dark" />
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                </div>
-            </form>
+            <div class="form-group mb-2">
+                <label class="control-label fw-bold">Change Video (Optional)</label>
+                <input type="file" name="VideoFile" class="form-control" accept="video/*" />
+            </div>
         </div>
-    </div>
+
+        <div class="form-group mt-4 mb-5">
+            <input type="submit" value="Save Changes" class="btn-joja-dark me-2" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <script>
+        document.getElementById('desktopImageInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    var img = document.getElementById('currentDesktopImg');
+                    if (img) img.src = evt.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
 
+        document.getElementById('mobileImageInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    var img = document.getElementById('currentMobileImg');
+                    if (img) img.src = evt.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+}
