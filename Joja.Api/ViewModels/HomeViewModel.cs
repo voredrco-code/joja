@@ -12,8 +12,8 @@ public class HomeViewModel
     // Products grouped by category for the new homepage sections
     public List<CategorySection> CategorySections { get; set; } = new List<CategorySection>();
 
-    // Products with discounts (OriginalPrice > Price)
-    public IEnumerable<Product> RecentOffers { get; set; } = new List<Product>();
+    // Dedicated Recent Offers
+    public IEnumerable<RecentOffer> RecentOffers { get; set; } = new List<RecentOffer>();
 }
 
 public class CategorySection

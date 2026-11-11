@@ -168,11 +168,16 @@ _تم إرسال هذا الطلب في: {OrderDate}_
             return await _context.VideoBanners.AsNoTracking().Where(v => v.IsActive).OrderBy(v => v.DisplayOrder).ToListAsync();
         });
 
-        // Build Recent Offers: products with a discount (OriginalPrice > Price)
-        var recentOffers = localizedProducts
-            .Where(p => p.OriginalPrice.HasValue && p.OriginalPrice > p.Price)
+        // Fetch Active Recent Offers independently from RecentOffers table
+        var now = DateTime.UtcNow;
+        var recentOffers = await _context.RecentOffers
+            .AsNoTracking()
+            .Include(r => r.Product)
+            .Where(r => r.IsActive && (!r.StartDate.HasValue || r.StartDate.Value <= now) && (!r.EndDate.HasValue || r.EndDate.Value >= now))
+            .OrderBy(r => r.DisplayOrder)
+            .ThenByDescending(r => r.CreatedAt)
             .Take(8)
-            .ToList();
+            .ToListAsync();
 
         // Build Category Sections: group products by their category, ordered by category
         var categorySections = localizedCats

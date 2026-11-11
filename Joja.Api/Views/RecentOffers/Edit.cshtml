@@ -1,0 +1,165 @@
+@model Joja.Api.Models.RecentOffer
+
+@{
+    ViewData["Title"] = "Edit Recent Offer";
+}
+
+<div class="container" style="margin-top: 50px; max-width: 900px;">
+    <h1 class="brand-font">Edit Recent Offer</h1>
+    <p class="text-muted">Modify promotional details, pricing, scheduling, or update the offer image.</p>
+    <hr />
+
+    <form asp-action="Edit" enctype="multipart/form-data" id="offerForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImageUrl" id="existingImageUrl" />
+        <input type="hidden" asp-for="CreatedAt" />
+
+        <div class="row">
+            <!-- Left Column: Details & Pricing -->
+            <div class="col-md-7">
+                <div class="form-group mb-3">
+                    <label asp-for="Title" class="form-label fw-bold">Offer Title *</label>
+                    <input asp-for="Title" class="form-control" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="form-label">Description (Optional)</label>
+                    <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label fw-bold">Associated Product / Bundle (Optional)</label>
+                    <select asp-for="ProductId" class="form-select" asp-items="ViewBag.ProductId">
+                        <option value="">-- No direct product link (Custom Offer) --</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ActionUrl" class="form-label">Custom Action Link (Optional)</label>
+                    <input asp-for="ActionUrl" class="form-control" placeholder="e.g. /Home/Shop" />
+                </div>
+
+                <div class="card p-3 mb-3 bg-light border-0">
+                    <h5 class="card-title fw-bold" style="color: #78233d;">Pricing & Auto Discount</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label asp-for="OriginalPrice" class="form-label fw-bold">Original Price (EGP) *</label>
+                            <input asp-for="OriginalPrice" id="originalPriceInput" type="number" step="0.01" class="form-control" required />
+                            <span asp-validation-for="OriginalPrice" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label asp-for="DiscountedPrice" class="form-label fw-bold">Discounted Price (EGP) *</label>
+                            <input asp-for="DiscountedPrice" id="discountedPriceInput" type="number" step="0.01" class="form-control" required />
+                            <span asp-validation-for="DiscountedPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <span class="me-2 fw-bold">Calculated Discount:</span>
+                        <span id="discountPercentBadge" class="badge bg-success fs-6">-@Model.DiscountPercentage%</span>
+                        <input type="hidden" asp-for="DiscountPercentage" id="discountPercentageInput" />
+                    </div>
+                </div>
+
+                <div class="card p-3 mb-3 bg-light border-0">
+                    <h5 class="card-title fw-bold">Scheduling & Visibility</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label asp-for="StartDate" class="form-label">Start Date (UTC)</label>
+                            <input asp-for="StartDate" class="form-control" type="datetime-local" />
+                            <small class="text-muted">Empty = Start immediately</small>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label asp-for="EndDate" class="form-label">Expiration Date (UTC)</label>
+                            <input asp-for="EndDate" class="form-control" type="datetime-local" />
+                            <small class="text-muted">Empty = Never expires</small>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <label asp-for="DisplayOrder" class="form-label">Display Order</label>
+                            <input asp-for="DisplayOrder" class="form-control" type="number" />
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center pt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="IsActive">
+                                <label class="form-check-label fw-bold" asp-for="IsActive">Active</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Image & Live Preview -->
+            <div class="col-md-5">
+                <div class="card p-3 mb-3">
+                    <label class="form-label fw-bold">Update Offer Image</label>
+                    <input type="file" name="ImageFile" id="imageFileInput" class="form-control" accept="image/*" />
+                    <small class="text-muted mb-3 d-block">Leave empty to keep existing image</small>
+
+                    <h6 class="fw-bold text-muted mt-2">Current / Live Card Preview:</h6>
+                    <div style="max-width: 260px; margin: 0 auto;">
+                        <div class="product-card" style="border: 1px solid #eee; border-radius: 12px; padding: 10px; background:#fff;">
+                            <div class="image-box" style="position:relative; aspect-ratio:6/5; border-radius:8px; overflow:hidden; background:#FBF1F6;">
+                                <img id="previewImg" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/logo.png" : Model.ImageUrl)" style="width:100%; height:100%; object-fit:contain;" alt="Preview" />
+                                <span id="previewDiscountBadge" class="discount-badge" style="position:absolute; top:8px; right:8px; background:#78233d; color:white; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:0.75rem;">-@Model.DiscountPercentage%</span>
+                            </div>
+                            <div class="product-info mt-2">
+                                <h6 id="previewTitle" class="fw-bold mb-1 text-truncate" style="color:#121212;">@Model.Title</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span id="previewOldPrice" class="text-muted text-decoration-line-through small">@Model.OriginalPrice EGP</span>
+                                    <span id="previewNewPrice" class="fw-bold" style="color:#78233d;">@Model.DiscountedPrice EGP</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 mb-5">
+            <button type="submit" class="btn-joja-dark me-2">Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function updateCalculations() {
+            var orig = parseFloat(document.getElementById('originalPriceInput').value) || 0;
+            var disc = parseFloat(document.getElementById('discountedPriceInput').value) || 0;
+            var pct = 0;
+            if (orig > 0 && disc >= 0 && disc < orig) {
+                pct = Math.round((1 - (disc / orig)) * 100);
+            }
+            document.getElementById('discountPercentageInput').value = pct;
+            document.getElementById('discountPercentBadge').textContent = '-' + pct + '%';
+            document.getElementById('previewDiscountBadge').textContent = '-' + pct + '%';
+            
+            document.getElementById('previewOldPrice').textContent = orig + ' EGP';
+            document.getElementById('previewNewPrice').textContent = disc + ' EGP';
+        }
+
+        document.getElementById('originalPriceInput').addEventListener('input', updateCalculations);
+        document.getElementById('discountedPriceInput').addEventListener('input', updateCalculations);
+
+        document.querySelector('input[name="Title"]').addEventListener('input', function() {
+            document.getElementById('previewTitle').textContent = this.value || 'Offer Title';
+        });
+
+        document.getElementById('imageFileInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('previewImg').src = evt.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+}

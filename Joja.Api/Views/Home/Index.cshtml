@@ -13,11 +13,25 @@
             @for (int i = 0; i < Model.Banners.Count(); i++)
             {
                 var banner = Model.Banners.ElementAt(i);
+                var desktopImg = !string.IsNullOrEmpty(banner.ImageUrl) ? banner.ImageUrl : banner.MobileImageUrl;
+                var mobileImg = !string.IsNullOrEmpty(banner.MobileImageUrl) ? banner.MobileImageUrl : banner.ImageUrl;
                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                    <div class="hero-section" style="background-image: url('@banner.ImageUrl');">
+                    <div class="hero-section hero-banner-wrapper">
+                        <picture class="hero-picture">
+                            @if (!string.IsNullOrEmpty(mobileImg))
+                            {
+                                <source media="(max-width: 768px)" srcset="@mobileImg">
+                            }
+                            <img src="@desktopImg" alt="@banner.Title" class="hero-bg-img" loading="@(i == 0 ? "eager" : "lazy")" />
+                        </picture>
+                        <div class="hero-overlay"></div>
                         <div class="container hero-content">
                             <h1>@banner.Title</h1>
                             <p>@banner.Subtitle</p>
+                            @if (!string.IsNullOrEmpty(banner.LinkUrl) && banner.LinkUrl != "#")
+                            {
+                                <a href="@banner.LinkUrl" class="btn-joja-primary mt-3">@(ViewBag.ShopNow ?? "Shop Now")</a>
+                            }
                         </div>
                     </div>
                 </div>
@@ -47,7 +61,7 @@ else
 }
 
 <!-- ========================
-     Recent Offers Section
+     Recent Offers Section (Independent)
      ======================== -->
 @if (Model.RecentOffers != null && Model.RecentOffers.Any())
 {
@@ -63,36 +77,51 @@ else
             <div class="product-row-grid">
                 @foreach (var item in Model.RecentOffers)
                 {
+                    var targetLink = !string.IsNullOrEmpty(item.ActionUrl) 
+                        ? item.ActionUrl 
+                        : (item.ProductId.HasValue ? $"/Home/Details/{item.ProductId.Value}" : "/Home/Shop");
+                    var discount = item.DiscountPercentage > 0 
+                        ? item.DiscountPercentage 
+                        : (item.OriginalPrice > item.DiscountedPrice && item.OriginalPrice > 0 ? (int)Math.Round((1 - (double)item.DiscountedPrice / (double)item.OriginalPrice) * 100) : 0);
+
                     <div class="product-card">
                         <div class="image-box">
-                            <a href="/Home/Details/@item.Id">
-                                <img src="@item.MainImageUrl" class="product-img" loading="lazy" alt="@item.Name">
+                            <a href="@targetLink">
+                                <img src="@item.ImageUrl" class="product-img" loading="lazy" alt="@item.Title">
                             </a>
-                            @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                            @if (discount > 0)
                             {
-                                var discPct = (int)Math.Round((1 - (double)item.Price / (double)item.OriginalPrice.Value) * 100);
-                                <span class="discount-badge">-@discPct%</span>
+                                <span class="discount-badge">-@discount%</span>
                             }
                         </div>
                         <div class="product-info">
-                            <a href="/Home/Details/@item.Id">
-                                <h5 class="product-title">@item.Name</h5>
+                            <a href="@targetLink">
+                                <h5 class="product-title">@item.Title</h5>
                             </a>
                             <div class="product-price-row">
                                 <div class="product-price">
-                                    @if (item.OriginalPrice.HasValue && item.OriginalPrice > item.Price)
+                                    @if (item.OriginalPrice > item.DiscountedPrice)
                                     {
-                                        <span class="old-price">@item.OriginalPrice.Value EGP</span>
+                                        <span class="old-price">@item.OriginalPrice.ToString("0.##") EGP</span>
                                     }
-                                    <span class="new-price">@item.Price EGP</span>
+                                    <span class="new-price">@item.DiscountedPrice.ToString("0.##") EGP</span>
                                 </div>
                                 <div class="product-card-actions-row">
-                                    <button type="button" class="btn-action-icon btn-add-cart-icon" onclick="addToCartAjax(@item.Id, 1, null)" title="Add to Cart">
-                                        <i class="fas fa-shopping-cart"></i>
-                                    </button>
-                                    <button type="button" class="btn-action-icon btn-wishlist-icon wishlist-btn" data-product-id="@item.Id" onclick="toggleWishlist(event, @item.Id, this)" title="Add to Wishlist">
-                                        <i class="far fa-heart"></i>
-                                    </button>
+                                    @if (item.ProductId.HasValue)
+                                    {
+                                        <button type="button" class="btn-action-icon btn-add-cart-icon" onclick="addToCartAjax(@item.ProductId.Value, 1, null)" title="Add to Cart">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                        <button type="button" class="btn-action-icon btn-wishlist-icon wishlist-btn" data-product-id="@item.ProductId.Value" onclick="toggleWishlist(event, @item.ProductId.Value, this)" title="Add to Wishlist">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <a href="@targetLink" class="btn-action-icon btn-add-cart-icon" title="View Offer">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </div>
