@@ -75,8 +75,9 @@
                 @for (int i = 0; i < offerList.Count; i++)
                 {
                     var item = offerList[i];
-                    var isExpired = item.EndDate.HasValue && item.EndDate.Value < DateTime.UtcNow;
-                    var isUpcoming = item.StartDate.HasValue && item.StartDate.Value > DateTime.UtcNow;
+                    var cairoNow = Joja.Api.Services.TimeHelper.GetEgyptNow();
+                    var isExpired = item.EndDate.HasValue && item.EndDate.Value < cairoNow;
+                    var isUpcoming = item.StartDate.HasValue && item.StartDate.Value > cairoNow;
 
                     <tr>
                         <td>

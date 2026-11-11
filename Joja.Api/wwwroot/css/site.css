@@ -234,6 +234,7 @@ a { text-decoration: none !important; }
     object-fit: cover;
     object-position: center;
     display: block;
+    max-width: 100%;
 }
 .hero-overlay {
     position: absolute;

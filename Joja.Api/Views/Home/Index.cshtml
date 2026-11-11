@@ -61,19 +61,19 @@ else
 }
 
 <!-- ========================
-     Recent Offers Section (Independent)
+     Recent Offers Section (Independent & Permanent)
      ======================== -->
-@if (Model.RecentOffers != null && Model.RecentOffers.Any())
-{
-    <div class="home-section" id="recent-offers">
-        <div class="container">
-            <div class="home-section-header">
-                <div class="home-section-title-group">
-                    <span class="home-section-label">✨ Limited Time</span>
-                    <h2 class="home-section-title">Recent Offers</h2>
-                </div>
-                <a href="/Home/Shop" class="home-section-view-all">View All &rarr;</a>
+<div class="home-section" id="recent-offers">
+    <div class="container">
+        <div class="home-section-header">
+            <div class="home-section-title-group">
+                <span class="home-section-label">⚡ Limited Time</span>
+                <h2 class="home-section-title">Recent Offers</h2>
             </div>
+            <a href="/Home/Shop" class="home-section-view-all">View All &rarr;</a>
+        </div>
+        @if (Model.RecentOffers != null && Model.RecentOffers.Any())
+        {
             <div class="product-row-grid">
                 @foreach (var item in Model.RecentOffers)
                 {
@@ -128,9 +128,15 @@ else
                     </div>
                 }
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="recent-offers-empty text-center py-5" style="background: #faf8f5; border-radius: 12px; border: 1px dashed #e2d9d2; padding: 40px 20px;">
+                <p class="text-muted fs-5 mb-0" style="color: #6c757d; font-weight: 500;">Stay tuned! New offers are coming soon.</p>
+            </div>
+        }
     </div>
-}
+</div>
 
 <!-- ========================
      Category Sections

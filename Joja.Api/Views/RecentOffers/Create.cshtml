@@ -66,13 +66,13 @@
                     <h5 class="card-title fw-bold">Scheduling & Visibility</h5>
                     <div class="row">
                         <div class="col-md-6 mb-2">
-                            <label asp-for="StartDate" class="form-label">Start Date (UTC)</label>
-                            <input asp-for="StartDate" class="form-control" type="datetime-local" />
+                            <label asp-for="StartDate" class="form-label">Start Date (Cairo Time)</label>
+                            <input asp-for="StartDate" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                             <small class="text-muted">Empty = Start immediately</small>
                         </div>
                         <div class="col-md-6 mb-2">
-                            <label asp-for="EndDate" class="form-label">Expiration Date (UTC)</label>
-                            <input asp-for="EndDate" class="form-control" type="datetime-local" />
+                            <label asp-for="EndDate" class="form-label">Expiration Date (Cairo Time)</label>
+                            <input asp-for="EndDate" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                             <small class="text-muted">Empty = Never expires</small>
                         </div>
                     </div>
